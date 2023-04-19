@@ -3,10 +3,10 @@ function [fy0] = MF96_FY0(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 
-  [kappa__y, By, Cy, Dy, Ey, SVy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
+  [alpha__y, By, Cy, Dy, Ey, SVy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
 
  % main code
 
-  fy0 = magic_formula(kappa__y, By, Cy, Dy, Ey, SVy);
+  fy0 = magic_formula(alpha__y, By, Cy, Dy, Ey, SVy);
   
  end

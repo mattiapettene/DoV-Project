@@ -1,5 +1,5 @@
-% Coefficients for Magic Formula  lateral/longitudinal force
-function [kappa__xy, Bxy, Cxy, Dxy, Exy, SVxy] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_data)
+% Coefficients for Magic Formula combined
+function [Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 
