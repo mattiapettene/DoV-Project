@@ -1,5 +1,5 @@
 % Coefficients for Magic Formula pure lateral force
-function [alpha__y, By, Cy, Dy, Ey, SVy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data)
+function [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 
