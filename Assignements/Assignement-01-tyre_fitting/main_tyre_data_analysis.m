@@ -19,31 +19,31 @@ to_rad = pi/180;
 to_deg = 180/pi;
 %% Select tyre dataset
 %dataset path
-data_set_path = 'dataset/';
+data_set_path = 'TTC_dataset/';
 % dataset selection and loading
 
-data_set = 'Hoosier_B1464run23'; % pure lateral forces
-%data_set = 'Hoosier_B1464run30';  % braking/traction (pure log. force) + combined
+%data_set = 'B1464run23'; % pure lateral forces
+data_set = 'B1464run30';  % braking/traction (pure log. force) + combined
 
 % tyre geometric data:
-% Hoosier 20.5 x 7.0 - 13 R25B
-% 20.5 diameter in inches
-% 7.0 section width in inches
+% Hoosier	18.0x6.0-10
+% 18 diameter in inches
+% 6.0 section width in inches
 % tread width in inches
-diameter = 20.5*2.56; %
+diameter = 18*2.56; %
 Fz0 = 220;   % [N] nominal load is given
 R0  = diameter/2/100; % [m] get from nominal load R0 (m) *** TO BE CHANGED ***
 
 
 fprintf('Loading dataset ...')
 switch data_set
-  case 'Hoosier_B1464run23'
-  load ([data_set_path, 'Hoosier_B1464run23.mat']); % pure lateral
-  cut_start = 27760; %% COME RICAVIAMO QUESTI?
+  case 'B1464run23'
+  load ([data_set_path, 'B1464run23.mat']); % pure lateral
+  cut_start = 27760;
   cut_end   = 54500;
-  case 'Hoosier_B1464run30'
-  load ([data_set_path, 'Hoosier_B1464run30.mat']); % pure longitudinal
-  cut_start = 19028; %% COME RICAVIAMO QUESTI?
+  case 'B1464run30'
+  load ([data_set_path, 'B1464run30.mat']); % pure longitudinal
+  cut_start = 19028;
   cut_end   = 37643;
   otherwise 
   error('Not found dataset: `%s`\n', data_set) ;
