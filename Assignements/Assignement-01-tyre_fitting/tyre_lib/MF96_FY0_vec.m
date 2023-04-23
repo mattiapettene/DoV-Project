@@ -1,4 +1,4 @@
-% Pure longitudinal force FX0
+% Pure lateral force FY0
 % this function remap the sclar function to its vectorial form
 function [fy0_vec] = MF96_FY0(kappa_vec, alpha_vec, phi_vec, Fz_vec, tyre_data)
 
