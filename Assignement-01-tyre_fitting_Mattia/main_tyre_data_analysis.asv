@@ -661,93 +661,92 @@ linkaxes(ax_list,'x')
 %% Select some specific data
 % Cut crappy data and select only 12 psi data
 
-vec_samples = 1:1:length(smpl_range);
-tyre_data = table(); % create empty table
+vec_samples_pl = 1:1:length(smpl_range_pl);
+tyre_data_pl = table(); % create empty table
 % store raw data in table
-tyre_data.SL =  SL(smpl_range);
-tyre_data.SA = -SA(smpl_range)*to_rad;
-tyre_data.FZ = -FZ(smpl_range);  % 0.453592  lb/kg
-tyre_data.FX =  FX(smpl_range);
-tyre_data.FY =  FY(smpl_range);
-tyre_data.MZ =  MZ(smpl_range);
-tyre_data.IA =  IA(smpl_range)*to_rad;
+tyre_data_pl.SL =  SL(smpl_range_pl);
+tyre_data_pl.SA = -SA(smpl_range_pl)*to_rad;
+tyre_data_pl.FZ = -FZ(smpl_range_pl);  % 0.453592  lb/kg
+tyre_data_pl.FX =  FX(smpl_range_pl);
+tyre_data_pl.FY =  FY(smpl_range_pl);
+tyre_data_pl.MZ =  MZ(smpl_range_pl);
+tyre_data_pl.IA =  IA(smpl_range_pl)*to_rad;
 
 % Extract points at constant inclination angle
 GAMMA_tol = 0.05*to_rad;
-idx.GAMMA_0 = 0.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 0.0*to_rad+GAMMA_tol;
-idx.GAMMA_1 = 1.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 1.0*to_rad+GAMMA_tol;
-idx.GAMMA_2 = 2.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 2.0*to_rad+GAMMA_tol;
-idx.GAMMA_3 = 3.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 3.0*to_rad+GAMMA_tol;
-idx.GAMMA_4 = 4.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 4.0*to_rad+GAMMA_tol;
-idx.GAMMA_5 = 5.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 5.0*to_rad+GAMMA_tol;
-GAMMA_0  = tyre_data( idx.GAMMA_0, : );
-GAMMA_1  = tyre_data( idx.GAMMA_1, : );
-GAMMA_2  = tyre_data( idx.GAMMA_2, : );
-GAMMA_3  = tyre_data( idx.GAMMA_3, : );
-GAMMA_4  = tyre_data( idx.GAMMA_4, : );
-GAMMA_5  = tyre_data( idx.GAMMA_5, : );
+idx_pl.GAMMA_0 = 0.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 0.0*to_rad+GAMMA_tol;
+idx_pl.GAMMA_1 = 1.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 1.0*to_rad+GAMMA_tol;
+idx_pl.GAMMA_2 = 2.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 2.0*to_rad+GAMMA_tol;
+idx_pl.GAMMA_3 = 3.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 3.0*to_rad+GAMMA_tol;
+idx_pl.GAMMA_4 = 4.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 4.0*to_rad+GAMMA_tol;
+idx_pl.GAMMA_5 = 5.0*to_rad-GAMMA_tol < tyre_data_pl.IA & tyre_data_pl.IA < 5.0*to_rad+GAMMA_tol;
+GAMMA_0_pl  = tyre_data_pl( idx_pl.GAMMA_0, : );
+GAMMA_1_pl  = tyre_data_pl( idx_pl.GAMMA_1, : );
+GAMMA_2_pl  = tyre_data_pl( idx_pl.GAMMA_2, : );
+GAMMA_3_pl  = tyre_data_pl( idx_pl.GAMMA_3, : );
+GAMMA_4_pl  = tyre_data_pl( idx_pl.GAMMA_4, : );
+GAMMA_5_pl  = tyre_data_pl( idx_pl.GAMMA_5, : );
 
 % Extract points at constant vertical load
 % Test data done at: 
 %  - 50lbf  ( 50*0.453592*9.81 =  223N )
+%  - 100lbf (100*0.453592*9.81 =  445N )
 %  - 150lbf (150*0.453592*9.81 =  667N )
 %  - 200lbf (200*0.453592*9.81 =  890N )
 %  - 250lbf (250*0.453592*9.81 = 1120N )
 
 FZ_tol = 100;
-idx.FZ_220  = 220-FZ_tol < tyre_data.FZ & tyre_data.FZ < 220+FZ_tol;
-idx.FZ_440  = 440-FZ_tol < tyre_data.FZ & tyre_data.FZ < 440+FZ_tol;
-idx.FZ_700  = 700-FZ_tol < tyre_data.FZ & tyre_data.FZ < 700+FZ_tol;
-idx.FZ_900  = 900-FZ_tol < tyre_data.FZ & tyre_data.FZ < 900+FZ_tol;
-idx.FZ_1120 = 1120-FZ_tol < tyre_data.FZ & tyre_data.FZ < 1120+FZ_tol;
-FZ_220  = tyre_data( idx.FZ_220, : );
-FZ_440  = tyre_data( idx.FZ_440, : );
-FZ_700  = tyre_data( idx.FZ_700, : );
-FZ_900  = tyre_data( idx.FZ_900, : );
-FZ_1120 = tyre_data( idx.FZ_1120, : );
+idx_pl.FZ_220  = 220-FZ_tol < tyre_data_pl.FZ & tyre_data_pl.FZ < 220+FZ_tol;
+idx_pl.FZ_440  = 440-FZ_tol < tyre_data_pl.FZ & tyre_data_pl.FZ < 440+FZ_tol;
+idx_pl.FZ_700  = 700-FZ_tol < tyre_data_pl.FZ & tyre_data_pl.FZ < 700+FZ_tol;
+idx_pl.FZ_900  = 900-FZ_tol < tyre_data_pl.FZ & tyre_data_pl.FZ < 900+FZ_tol;
+idx_pl.FZ_1120 = 1120-FZ_tol < tyre_data_pl.FZ & tyre_data_pl.FZ < 1120+FZ_tol;
+FZ_220_pl  = tyre_data_pl( idx_pl.FZ_220, : );
+FZ_440_pl  = tyre_data_pl( idx_pl.FZ_440, : );
+FZ_700_pl  = tyre_data_pl( idx_pl.FZ_700, : );
+FZ_900_pl  = tyre_data_pl( idx_pl.FZ_900, : );
+FZ_1120_pl = tyre_data_pl( idx_pl.FZ_1120, : );
 
 % The slip angle is varied continuously between -4 and +12° and then
 % between -12° and +4° for the pure slip case
 
-SL_tol = 0.01;
-idx.SL_0    =  0-SL_tol          < tyre_data.SL & tyre_data.SL < 0+SL_tol;
-SL_0     = tyre_data( idx.SL_0, : );
+% % The slip angle is varied step wise for longitudinal slip tests
+% % 0° , - 3° , -6 °
+% SA_tol = 0.5*to_rad;
+% idx_pl.SA_0    =  0-SA_tol          < tyre_data_pl.SA & tyre_data_pl.SA < 0+SA_tol;
+% idx_pl.SA_3neg = -(3*to_rad+SA_tol) < tyre_data_pl.SA & tyre_data_pl.SA < -3*to_rad+SA_tol;
+% idx_pl.SA_6neg = -(6*to_rad+SA_tol) < tyre_data_pl.SA & tyre_data_pl.SA < -6*to_rad+SA_tol;
+% SA_0_pl     = tyre_data_pl( idx_pl.SA_0, : );
+% SA_3neg_pl  = tyre_data_pl( idx_pl.SA_3neg, : );
+% SA_6neg_pl  = tyre_data_pl( idx_pl.SA_6neg, : );
 
 figure()
-tiledlayout(3,1)
+tiledlayout(2,1)
 
 ax_list(1) = nexttile;
-plot(tyre_data.IA*to_deg)
+plot(tyre_data_pl.IA*to_deg)
 hold on
-plot(vec_samples(idx.GAMMA_0),GAMMA_0.IA*to_deg,'.');
-plot(vec_samples(idx.GAMMA_1),GAMMA_1.IA*to_deg,'.');
-plot(vec_samples(idx.GAMMA_2),GAMMA_2.IA*to_deg,'.');
-plot(vec_samples(idx.GAMMA_3),GAMMA_3.IA*to_deg,'.');
-plot(vec_samples(idx.GAMMA_4),GAMMA_4.IA*to_deg,'.');
-plot(vec_samples(idx.GAMMA_5),GAMMA_5.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_0),GAMMA_0_pl.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_1),GAMMA_1_pl.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_2),GAMMA_2_pl.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_3),GAMMA_3_pl.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_4),GAMMA_4_pl.IA*to_deg,'.');
+plot(vec_samples_pl(idx_pl.GAMMA_5),GAMMA_5_pl.IA*to_deg,'.');
 title('Camber angle')
 xlabel('Samples [-]')
 ylabel('[deg]')
 
 ax_list(2) = nexttile;
-plot(tyre_data.FZ)
+plot(tyre_data_pl.FZ)
 hold on
-plot(vec_samples(idx.FZ_220),FZ_220.FZ,'.');
-plot(vec_samples(idx.FZ_440),FZ_440.FZ,'.');
-plot(vec_samples(idx.FZ_700),FZ_700.FZ,'.');
-plot(vec_samples(idx.FZ_900),FZ_900.FZ,'.');
-plot(vec_samples(idx.FZ_1120),FZ_1120.FZ,'.');
+plot(vec_samples_pl(idx_pl.FZ_220),FZ_220_pl.FZ,'.');
+plot(vec_samples_pl(idx_pl.FZ_440),FZ_440_pl.FZ,'.');
+plot(vec_samples_pl(idx_pl.FZ_700),FZ_700_pl.FZ,'.');
+plot(vec_samples_pl(idx_pl.FZ_900),FZ_900_pl.FZ,'.');
+plot(vec_samples_pl(idx_pl.FZ_1120),FZ_1120_pl.FZ,'.');
 title('Vertical force')
 xlabel('Samples [-]')
 ylabel('[N]')
-
-ax_list(3) = nexttile;
-plot(tyre_data.SL)
-hold on
-plot(vec_samples(idx.SL_0),   SL_0.SL,'.');
-title('Longitudinal slip')
-xlabel('Samples [-]')
-ylabel('[-]')
 
 
 
@@ -859,6 +858,8 @@ ylabel('$F_{y0}$ [N]')
 TDataDFz= GAMMA_0;
 % lateral slip
 
+
+
 % Fit the coeffs {pCx1, pDx1, pEx1, pEx4, pKx1, pHx1, pVx1}
 %FZ0 = mean(TData0.FZ);
 
@@ -930,7 +931,7 @@ tmp_ones = ones(size(SA_vec));
 
 
 FY0_fz_var_vec1 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
-%FY0_fz_var_vec2 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+FY0_fz_var_vec2 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_400.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec3 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec4 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec5 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
@@ -942,9 +943,10 @@ hold on
 %plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
 %plot(SL_vec,FX0_dfz_vec,'-','LineWidth',2)
 plot(SA_vec,FY0_fz_var_vec1,'-','LineWidth',2)
-%plot(SA_vec,FY0_fz_var_vec2,'-','LineWidth',2)
+plot(SA_vec,FY0_fz_var_vec2,'-','LineWidth',2)
 plot(SA_vec,FY0_fz_var_vec3,'-','LineWidth',2)
 plot(SA_vec,FY0_fz_var_vec4,'-','LineWidth',2)
+plot(SA_vec,FY0_fz_var_vec5,'-','LineWidth',2)
 
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
