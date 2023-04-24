@@ -4,7 +4,6 @@ function [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kapp
  % precode
 
   FZ0             = tyre_data.FZ0;
-  %Fz01            = tyre_data.Fz01;
   pCy1            = tyre_data.pCy1;
   pDy1            = tyre_data.pDy1;
   pDy2            = tyre_data.pDy2;
