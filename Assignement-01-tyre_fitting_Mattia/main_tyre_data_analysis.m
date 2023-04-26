@@ -950,32 +950,34 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
 
 
-% [alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_220_pl.FZ), tyre_coeffs);
-% Calfa_vec1_0 = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-% [alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_440_pl.FZ), tyre_coeffs);
-% Calfa_vec2_0 = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-% [alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_700_pl.FZ), tyre_coeffs);
-% Calfa_vec3_0 = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-% [alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_900_pl.FZ), tyre_coeffs);
-% Calfa_vec4_0 = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-% [alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_1120_pl.FZ), tyre_coeffs);
-% Calfa_vec5_0 = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-% 
+% [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_220.FZ), tyre_coeffs);
+% Calfa_vec1_0 = Kya;
+% [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_440.FZ), tyre_coeffs);
+% Calfa_vec2_0 = Kya;
+% [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_700.FZ), tyre_coeffs);
+% Calfa_vec3_0 = Kya;
+% [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_900.FZ), tyre_coeffs);
+% Calfa_vec4_0 = Kya;
+% [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_1120.FZ), tyre_coeffs);
+% Calfa_vec5_0 = Kya;
+% % 
 % Calfa_vec1 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs);
-% Calfa_vec2 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs);
-% Calfa_vec3 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs);
-% Calfa_vec4 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs);
+% Calfa_vec2 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_440.FZ)*tmp_ones,tyre_coeffs);
+% Calfa_vec3 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs);
+% Calfa_vec4 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs);
+% Calfa_vec5 = MF96_CorneringStiffness(SA_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs);
 % 
 % figure('Name','C_alpha')
 % subplot(2,1,1)
 % hold on
 % %plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
 % plot(mean(FZ_220.FZ),Calfa_vec1_0,'+','LineWidth',2)
+% plot(mean(FZ_440.FZ),Calfa_vec2_0,'+','LineWidth',2)
 % plot(mean(FZ_700.FZ),Calfa_vec3_0,'+','LineWidth',2)
 % plot(mean(FZ_900.FZ),Calfa_vec4_0,'+','LineWidth',2)
-% plot(mean(FZ_1120.FZ),Calfa_vec2_0,'+','LineWidth',2)
+% plot(mean(FZ_1120.FZ),Calfa_vec5_0,'+','LineWidth',2)
 % legend({'$Fz_{220}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$'})
-% 
+
 % subplot(2,1,2)
 % hold on
 % %plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
@@ -986,3 +988,100 @@ ylabel('$F_{y0}$ [N]')
 % legend({'$Fz_{220}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$'})
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Fit coefficient with variable camber
+
+% extract data with variable load
+[TDataGamma, ~] = intersect_table_data(SL_0, FZ_220 );
+
+% Fit the coeffs { pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4 }
+
+% Guess values for parameters to be optimised
+P0_gamma = [0, 0, 0, 0, 0, 0, 0]; 
+
+% NOTE: many local minima => limits on parameters are fundamentals
+% Limits for parameters to be optimised
+% 1< pCx1 < 2 
+% 0< pEx1 < 1 
+%lb = [0, 0,  0, 0,  0,  0,  0];
+%ub = [2, 1e6,1, 1,1e1,1e2,1e2];
+lb = [];
+ub = [];
+
+
+zeros_vec = zeros(size(TDataGamma.SA));
+ones_vec  = ones(size(TDataGamma.SA));
+
+ALPHA_vec = TDataGamma.SA;
+GAMMA_vec = TDataGamma.IA; 
+FY_vec    = TDataGamma.FY;
+FZ_vec    = TDataGamma.FZ;
+
+figure()
+plot(ALPHA_vec,FY_vec);
+
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
+% is an unconstrained minimization problem 
+[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec, ALPHA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs_pl),...
+                               P0_gamma,[],[],[],[],lb,ub);
+
+% Change tyre data with new optimal values                             
+tyre_coeffs_pl.pDy3 = P_varGamma(1); % 1
+tyre_coeffs_pl.pEy3 = P_varGamma(2); 
+tyre_coeffs_pl.pEy4 = P_varGamma(3);
+tyre_coeffs_pl.pHy3 = P_varGamma(4); 
+tyre_coeffs_pl.pKy3 = P_varGamma(5); 
+tyre_coeffs_pl.pVy3 = P_varGamma(6); 
+tyre_coeffs_pl.pVy4 = P_varGamma(7); 
+
+FY0_varGamma_vec = MF96_FY0_vec(zeros_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+
+figure('Name','Fy0 vs Gamma')
+plot(ALPHA_vec*to_deg,TDataGamma.FY,'o')
+hold on
+plot(ALPHA_vec*to_deg,FY0_varGamma_vec,'.')
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}$ [N]')
+% Calculate the residuals with the optimal solution found above
+res_Fy0_varGamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+% % R-squared is 
+% % 1-SSE/SST
+% % SSE/SST = res_Fx0_nom
+% 
+% % SSE is the sum of squared error,  SST is the sum of squared total
+% fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
+% 
+% 
+% [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs.FZ0, tyre_coeffs);
+% % 
+% fprintf('Bx      = %6.3f\n',Bx);
+% fprintf('Cx      = %6.3f\n',Cx);
+% fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
+% fprintf('Ex      = %6.3f\n',Ex);
+% fprintf('SVx     = %6.3f\n',SVx);
+% fprintf('kappa_x = %6.3f\n',kappa__x);
+% fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
+
+% % Longitudinal stiffness
+% Kx_vec = zeros(size(load_vec));
+% for i = 1:length(load_vec)
+%   [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, 0, load_vec(i), tyre_data);
+%   Kx_vec(i) = Bx*Cx*Dx/tyre_data.Fz0;
+% end
+% 
+% figure('Name','Kx vs Fz')
+% plot(load_vec,Kx_vec,'o-')
+
+%% Save tyre data structure to mat file
+%
+save(['tyre_' data_set,'.mat'],'tyre_coeffs_pl');
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
