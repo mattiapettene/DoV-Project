@@ -773,7 +773,7 @@ plot_selected_data(TData0_pl);
 
 %% FITTING - PURE LATERAL
 % initialise tyre data
-tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
+tyre_coeffs_pl = initialise_tyre_data(R0, Fz0);
 
 %% Fitting with Fz=Fz_nom= 220N and camber=0  k = 0 VX= 10
 % ------------------
@@ -801,7 +801,7 @@ plot(TData0_pl.SA,FY0_guess,'-')
 
 % Guess values for parameters to be optimised
 %    [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1 
-P0_pl = [  1.5,   2.43,   0.34,  -0.48e-2,   -0.29e2,   -0.10e1,   0.47e-1]; 
+P0_pl = [  1,   1,   1,  1,   1,   1,   1]; 
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -855,8 +855,7 @@ ylabel('$F_{y0}$ [N]')
 
 %% Fit coeefficient with variable load
 % extract data with variable load
-%[TDataDFz, ~] = intersect_table_data( SL_0, GAMMA_0 );
-TDataDFz= GAMMA_0;
+[TDataDFz, ~] = intersect_table_data( SL_0, GAMMA_0 );
 % lateral slip
 
 % Fit the coeffs {pCx1, pDx1, pEx1, pEx4, pKx1, pHx1, pVx1}
@@ -871,7 +870,7 @@ FY0_guess = MF96_FY0_vec(zeros_vec, TDataDFz.SA, zeros_vec, tyre_coeffs_pl.FZ0*o
 figure()
 plot(TDataDFz.SA,TDataDFz.FY,'.')
 hold on
-plot(TDataDFz.SA,FY0_guess,'-')
+plot(TDataDFz.SA,FY0_guess,'.')
 
 % Plot raw data and initial guess
 % figure()
@@ -882,7 +881,7 @@ plot(TDataDFz.SA,FY0_guess,'-')
 % Guess values for parameters to be optimised
 % Guess values for parameters to be optimised
 % [pDy2 pEy2 pHy2 pVy2] 
-P0_pl_dFz = [ -2 , 0 , -0.02 , -0.05 ]; 
+P0_pl_dFz = [ 0 , 0 , 0 , 0 ]; 
 
 
 % NOTE: many local minima => limits on parameters are fundamentals
@@ -890,8 +889,8 @@ P0_pl_dFz = [ -2 , 0 , -0.02 , -0.05 ];
 % 1< pCx1 < 2 
 % 0< pEx1 < 1 
 %    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
-lb = [ -6 , -70 , -0.5 , -1 ];
-ub = [  1 ,  1 ,  0.01 ,  0.004 ];
+lb = [];
+ub = [];
 
 
 ALPHA_vec = TDataDFz.SA;
@@ -899,7 +898,7 @@ FY_vec    = TDataDFz.FY;
 FZ_vec    = TDataDFz.FZ;
 
 % check guess
-%SA_vec = -12*to_rad:0.001:12*to_rad;
+SA_vec = -12*to_rad:0.001:12*to_rad;
 FY0_dfz_vec = MF96_FY0_vec(zeros(size(SA_vec)),  SA_vec, zeros(size(SA_vec)), ...
                            FZ_vec, tyre_coeffs_pl);
 % 
@@ -930,21 +929,22 @@ tmp_ones = ones(size(SA_vec));
 
 
 FY0_fz_var_vec1 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
-%FY0_fz_var_vec2 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+FY0_fz_var_vec2 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_440.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec3 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec4 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
 FY0_fz_var_vec5 = MF96_FY0_vec(tmp_zeros, SA_vec, tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
 
 
 figure('Name','Fy0(Fz0)')
-plot(TDataDFz.SA,TDataDFz.FY,'o')
+plot(TDataDFz.SA*to_deg,TDataDFz.FY,'o')
 hold on
 %plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
 %plot(SL_vec,FX0_dfz_vec,'-','LineWidth',2)
-plot(SA_vec,FY0_fz_var_vec1,'-','LineWidth',2)
-%plot(SA_vec,FY0_fz_var_vec2,'-','LineWidth',2)
-plot(SA_vec,FY0_fz_var_vec3,'-','LineWidth',2)
-plot(SA_vec,FY0_fz_var_vec4,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_var_vec1,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_var_vec2,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_var_vec3,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_var_vec4,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_var_vec5,'-','LineWidth',2)
 
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
@@ -986,82 +986,3 @@ ylabel('$F_{y0}$ [N]')
 % legend({'$Fz_{220}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$'})
 
 
-%% Fit coefficient with variable camber
-
-% extract data with variable load
-[TDataGamma, ~] = intersect_table_data(SA_0, FZ_220 );
-
-% Fit the coeffs { pDx3}
-
-% Guess values for parameters to be optimised
-P0 = [0]; 
-
-% NOTE: many local minima => limits on parameters are fundamentals
-% Limits for parameters to be optimised
-% 1< pCx1 < 2 
-% 0< pEx1 < 1 
-%lb = [0, 0,  0, 0,  0,  0,  0];
-%ub = [2, 1e6,1, 1,1e1,1e2,1e2];
-
-zeros_vec = zeros(size(TDataGamma.SL));
-ones_vec  = ones(size(TDataGamma.SL));
-
-KAPPA_vec = TDataGamma.SL;
-GAMMA_vec = TDataGamma.IA; 
-FX_vec    = TDataGamma.FX;
-FZ_vec    = TDataGamma.FZ;
-
-figure()
-plot(KAPPA_vec,FX_vec);
-
-
-% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
-% is an unconstrained minimization problem 
-[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs),...
-                               P0,[],[],[],[],[],[]);
-
-% Change tyre data with new optimal values                             
-tyre_coeffs.pDx3 = P_varGamma(1) ; % 1
-
-FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs.FZ0*ones_vec,tyre_coeffs);
-
-figure('Name','Fx0 vs Gamma')
-plot(KAPPA_vec,TDataGamma.FX,'o')
-hold on
-plot(KAPPA_vec,FX0_varGamma_vec,'-')
-xlabel('$\kappa$ [-]')
-ylabel('$F_{x0}$ [N]')
-% Calculate the residuals with the optimal solution found above
-res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs);
-
-% R-squared is 
-% 1-SSE/SST
-% SSE/SST = res_Fx0_nom
-
-% SSE is the sum of squared error,  SST is the sum of squared total
-fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
-
-
-[kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs.FZ0, tyre_coeffs);
-% 
-fprintf('Bx      = %6.3f\n',Bx);
-fprintf('Cx      = %6.3f\n',Cx);
-fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
-fprintf('Ex      = %6.3f\n',Ex);
-fprintf('SVx     = %6.3f\n',SVx);
-fprintf('kappa_x = %6.3f\n',kappa__x);
-fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
-
-% % Longitudinal stiffness
-% Kx_vec = zeros(size(load_vec));
-% for i = 1:length(load_vec)
-%   [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, 0, load_vec(i), tyre_data);
-%   Kx_vec(i) = Bx*Cx*Dx/tyre_data.Fz0;
-% end
-% 
-% figure('Name','Kx vs Fz')
-% plot(load_vec,Kx_vec,'o-')
-
-%% Save tyre data structure to mat file
-%
-save(['tyre_' data_set,'.mat'],'tyre_coeffs');
