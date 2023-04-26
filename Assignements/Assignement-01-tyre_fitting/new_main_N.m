@@ -6,6 +6,8 @@ clc;
 close all;
 clear;
 
+set(0,'DefaultFigureWindowStyle','docked');
+
 addpath('dataset/');
 addpath('tyre_lib/');
 
@@ -467,11 +469,11 @@ linkaxes(ax_list_4,'x')
 
 % Guess values for parameters to be optimised
 %   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-P0_pl_dgamma = [1, 1, 1, 1, 1, 1, 1]; 
+P0_pl_dgamma = [0.51e1,1.88,-0.42e1,-0.31e-1,0.13e1,-0.29e1,-0.28e1];
 
 % Limits for parameters to be optimised
-lb_dgamma = [];
-ub_dgamma = [];
+lb_dgamma = [5,1,-100,-100,0,-100,-100];
+ub_dgamma = [100,100,0,100,100,0,0];
 
 zeros_vec_dgamma = zeros(size(TDataGamma_pl.IA));
 ones_vec_dgamma  = ones(size(TDataGamma_pl.IA));
@@ -525,19 +527,20 @@ plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'.','MarkerSize',5) %'MarkerEdge
 plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
 plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','b',
 plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','r',
-plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',1,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',1,'MarkerSize',1)
-legend({'$\gamma_0 = 0 deg$','$\gamma_1 = 1 deg$','$\gamma_2 = 2 deg$','$\gamma_3 = 3 deg$','$\gamma_4 = 4 deg$', 'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
+plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1)
+plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1)
+plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1)
+plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1)
+plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1)
+legend({'$ \gamma_0 = 0 deg $','$ \gamma_1 = 1 deg $','$ \gamma_2 = 2 deg $','$ \gamma_3 = 3 deg$','$ \gamma_4 = 4 deg $', 'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [-]')
 ylabel('$F_{y0}$ [N]')
+%legend({'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
 
 
-% % Calculate the residuals with the optimal solution found above
-% res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FY_vec_dgamma, KAPPA_vec,GAMMA_vec_dgamma,tyre_coeffs.FZ0, tyre_coeffs);
-% 
+% Calculate the residuals with the optimal solution found above
+res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
 % % R-squared is 
 % % 1-SSE/SST
 % % SSE/SST = res_Fx0_nom
