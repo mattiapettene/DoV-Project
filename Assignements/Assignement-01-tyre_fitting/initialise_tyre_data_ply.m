@@ -1,4 +1,4 @@
-function ty_data = initialise_ty_data(R0, Fz0)
+function ty_data = initialise_tyre_data_ply(R0, Fz0)
 
 
 % Tyre structure data initialization
@@ -15,27 +15,27 @@ ty_data.pEx3            = 0; % pEx3
 ty_data.pEx4            = 0; % pEx4
 ty_data.pHx1            = 0; % pHx1
 ty_data.pHx2            = 0; % pHx2
-ty_data.pKx1            = 50; %1; % pKx1
+ty_data.pKx1            = 0; %1; % pKx1
 ty_data.pKx2            = 0; % pKx2
 ty_data.pKx3            = 0; % pKx3
 ty_data.pVx1            = 0; % pVx1
 ty_data.pVx2            = 0; % pVx2
-ty_data.Fz01            = 0; % Fz01
-ty_data.pCy1            = 0.154027309068454099e1; % pCy1
-ty_data.pDy1            = 0.243404156744140643e1; % pDy1
+%ty_data.Fz01            = 0; % Fz01
+ty_data.pCy1            = 0.15e1; % pCy1
+ty_data.pDy1            = 0.24e1; % pDy1
 ty_data.pDy2            = 0; %-0.274390567365253968e0; % pDy2
 ty_data.pDy3            = 0; %0.516349361588200040e1; % pDy3
-ty_data.pEy1            = 0.346228681636638058e0; % pEy1
+ty_data.pEy1            = 0.34; % pEy1
 ty_data.pEy2            = 0; %-0.278086233494964696e0; % pEy2
 ty_data.pEy3            = 0; %0.883205306970767268e0; % pEy3
 ty_data.pEy4            = 0; %-0.420062483943436593e1; % pEy4
-ty_data.pHy1            = -0.489082598162626780e-2; % pHy1
+ty_data.pHy1            = -0.48e-2; % pHy1
 ty_data.pHy2            = 0; %-0.117998967899827860e-2; % pHy2
 ty_data.pHy3            = 0; %-0.313517996563903723e-1; % pHy3
-ty_data.pKy1            = -0.296801903969104650e2; % pKy1
-ty_data.pKy2            = -0.101712562049631172e1; % pKy2
+ty_data.pKy1            = -0.29e2; % pKy1
+ty_data.pKy2            = -0.10e1; % pKy2
 ty_data.pKy3            = 0; %0.134159743861844283e1; % pKy3
-ty_data.pVy1            = 0.476749940408608130e-1; % pVy1
+ty_data.pVy1            = 0.47e-1; % pVy1
 ty_data.pVy2            = 0; %-0.401680086940341061e-1; % pVy2
 ty_data.pVy3            = 0; %-0.292370451981899437e1; % pVy3
 ty_data.pVy4            = 0; %-0.281666715709585791e1; % pVy4
