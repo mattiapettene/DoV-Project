@@ -701,12 +701,12 @@ GAMMA_4_comb  = tyre_data_comb( idx_comb.GAMMA_4, : );
 
 FZ_tol_comb = 100;
 idx_comb.FZ_220  = 220-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 220+FZ_tol_comb;
-idx_comb.FZ_440  = 440-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 440+FZ_tol_comb;
+%idx_comb.FZ_440  = 440-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 440+FZ_tol_comb;
 idx_comb.FZ_700  = 700-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 700+FZ_tol_comb;
 idx_comb.FZ_900  = 900-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 900+FZ_tol_comb;
 idx_comb.FZ_1120 = 1120-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 1120+FZ_tol_comb;
 FZ_220_comb  = tyre_data_comb( idx_comb.FZ_220, : );
-FZ_440_comb  = tyre_data_comb( idx_comb.FZ_440, : );
+%FZ_440_comb  = tyre_data_comb( idx_comb.FZ_440, : );
 FZ_700_comb  = tyre_data_comb( idx_comb.FZ_700, : );
 FZ_900_comb  = tyre_data_comb( idx_comb.FZ_900, : );
 FZ_1120_comb = tyre_data_comb( idx_comb.FZ_1120, : );
@@ -741,7 +741,7 @@ ax_list_6(2) = nexttile;
 plot(tyre_data_comb.FZ)
 hold on
 plot(vec_samples_comb(idx_comb.FZ_220),FZ_220_comb.FZ,'.');
-plot(vec_samples_comb(idx_comb.FZ_440),FZ_440_comb.FZ,'.');
+%plot(vec_samples_comb(idx_comb.FZ_440),FZ_440_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_700),FZ_700_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_900),FZ_900_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_1120),FZ_1120_comb.FZ,'.');
@@ -1000,7 +1000,7 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'F
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
 
-figure('Name','Gyk coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+figure('Name','Gyk coeffs as function of kappa','NumberTitle', 13 + last_fig_FY0)
 hold on
 plot(SL_vec,Gyk_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
 plot(SL_vec,Gyk_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
@@ -1018,3 +1018,181 @@ ylabel('$G_{xa}$ [-]')
 % legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
 % xlabel('$\alpha$ [rad]')
 % ylabel('$G_{xa}$ [-]')
+
+
+%% Conditions range for FY with variable load
+% choose the range with: variable slip angle, camber angle = 0
+
+[TData_y_comb_dFz, ~] = GAMMA_0_comb;
+
+
+figure('Name','Combined range for variable loads', 'NumberTitle', 14 + last_fig_FY0)
+plot_selected_data(TData_y_comb_dFz);
+
+%% Extract various load conditions
+% extract data with 0 camber and variable load
+
+smpl_range_y_comb_dFz = size(TData_y_comb_dFz);
+vec_samples_y_comb_dFz = 1:1:smpl_range_y_comb_dFz;
+
+% Extract points at constant side slip and plot
+ALPHA_tol_y_comb_dFz = 0.5*to_rad;
+idx_y_comb_dFz.ALPHA_0 = 0.0*to_rad-ALPHA_tol_y_comb_dFz < TData_y_comb_dFz.SA & TData_y_comb_dFz.SA < 0.0*to_rad+ALPHA_tol_y_comb_dFz;
+idx_y_comb_dFz.ALPHA_3 = 3.0*to_rad-ALPHA_tol_y_comb_dFz < TData_y_comb_dFz.SA & TData_y_comb_dFz.SA < 3.0*to_rad+ALPHA_tol_y_comb_dFz;
+idx_y_comb_dFz.ALPHA_6 = 6.0*to_rad-ALPHA_tol_y_comb_dFz < TData_y_comb_dFz.SA & TData_y_comb_dFz.SA < 6.0*to_rad+ALPHA_tol_y_comb_dFz;
+
+ALPHA_0_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.ALPHA_0, : );
+ALPHA_3_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.ALPHA_3, : );
+ALPHA_6_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.ALPHA_6, : );
+
+
+FZ_tol_y_comb_dFz = 100;
+idx_y_comb_dFz.FZ_220  = 220-FZ_tol_y_comb_dFz < TData_y_comb_dFz.FZ & TData_y_comb_dFz.FZ < 220+FZ_tol_y_comb_dFz;
+idx_y_comb_dFz.FZ_700  = 700-FZ_tol_y_comb_dFz < TData_y_comb_dFz.FZ & TData_y_comb_dFz.FZ < 700+FZ_tol_y_comb_dFz;
+idx_y_comb_dFz.FZ_900  = 900-FZ_tol_y_comb_dFz < TData_y_comb_dFz.FZ & TData_y_comb_dFz.FZ < 900+FZ_tol_y_comb_dFz;
+idx_y_comb_dFz.FZ_1120 = 1120-FZ_tol_y_comb_dFz < TData_y_comb_dFz.FZ & TData_y_comb_dFz.FZ < 1120+FZ_tol_y_comb_dFz;
+FZ_220_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.FZ_220, : );
+FZ_700_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.FZ_700, : );
+FZ_900_y_comb_dFz  = TData_y_comb_dFz( idx_y_comb_dFz.FZ_900, : );
+FZ_1120_y_comb_dFz = TData_y_comb_dFz( idx_y_comb_dFz.FZ_1120, : );
+
+% Plot
+figure('Name','Considered dataset for combined behaviour, Fx($\alpha$)', 'NumberTitle', 14 + last_fig_FY0)
+tiledlayout(3,1)
+ax_list_8(1) = nexttile;
+plot(TData_y_comb_dFz.SA*to_deg)
+hold on
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_0),ALPHA_0_y_comb_dFz.SA*to_deg,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_3),ALPHA_3_y_comb_dFz.SA*to_deg,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_6),ALPHA_6_y_comb_dFz.SA*to_deg,'.');
+title('Side slip angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+hold off
+
+ax_list_8(2) = nexttile;
+plot(TData_y_comb_dFz.FY)
+hold on
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_0),ALPHA_0_y_comb_dFz.FY,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_3),ALPHA_3_y_comb_dFz.FY,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.ALPHA_6),ALPHA_6_y_comb_dFz.FY,'.');
+title('Lateral force')
+xlabel('Samples [-]')
+ylabel('[N]')
+hold off
+
+ax_list_8(3) = nexttile;
+plot(TData_y_comb_dFz.FZ)
+hold on
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.FZ_220),FZ_220_y_comb_dFz.FZ,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.FZ_700),FZ_700_y_comb_dFz.FZ,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.FZ_900),FZ_900_y_comb_dFz.FZ,'.');
+plot(vec_samples_y_comb_dFz(idx_y_comb_dFz.FZ_1120),FZ_1120_y_comb_dFz.FZ,'.');
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+hold off
+linkaxes(ax_list_8,'x')
+
+% Fit the coeffs {rVy2}
+
+% Guess values for parameters to be optimised
+%   [rVy2]
+P0_y_comb_dFz = [0];
+
+% Limits for parameters to be optimised
+lb_y_comb_dFz = [ ];
+ub_y_comb_dFz = [ ];
+
+zeros_vec_y_comb_dFz = zeros(size(TData_y_comb_dFz.IA));
+ones_vec_y_comb_dFz  = ones(size(TData_y_comb_dFz.IA));
+
+KAPPA_vec_y_comb_dFz = TData_y_comb_dFz.SL;
+ALPHA_vec_y_comb_dFz = TData_y_comb_dFz.SA;
+FY_vec_comb_dFz    = TData_y_comb_dFz.FY;
+FZ_vec_comb_dFz    = TData_y_comb_dFz.FZ;
+
+
+figure('Name','Variable load Fy', 'NumberTitle', 15 + last_fig_FY0)
+plot(KAPPA_vec_y_comb_dFz,FY_vec_comb_dFz);
+
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
+[P_y_comb_dFz,fval,exitflag] = fmincon(@(P)resid_Fy_varFz(P,FY_vec_comb_dFz, KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz,FZ_vec_comb_dFz, tyre_coeffs_pl),...
+                               P0_y_comb_dFz,[],[],[],[],lb_y_comb_dFz,ub_y_comb_dFz);
+
+% Change tyre data with new optimal values                             
+    tyre_coeffs_pl.rVy2 = P_y_comb_dFz(1);  
+ 
+
+
+[FY_comb_dFz_vec,~] = MF96_FY_vec(KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz, tyre_coeffs_pl.FZ0*ones_vec_y_comb_dFz, tyre_coeffs_pl);
+
+figure('Name','Fx vs Alpha', 'NumberTitle', 16 + last_fig_FY0)
+plot(KAPPA_vec_y_comb_dFz,TData_y_comb_dFz.FY,'o')
+hold on
+plot(KAPPA_vec_y_comb_dFz,FY_comb_dFz_vec,'-')
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y} (Fz)$ [N]')
+
+tmp_zeros_comb_dFz = zeros(size(SL_vec));
+tmp_ones_comb_dFz = ones(size(SL_vec));
+
+[FY_dFz_var_vec1, Gxa_dFz_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_0_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_0_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
+[FY_dFz_var_vec2, Gxa_dFz_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_3_y_comb_dFz.FZ)*tmp_ones_comb_dFz,tyre_coeffs_pl);
+[FY_dFz_var_vec3, Gxa_dFz_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_6_y_comb_dFz.FZ)*tmp_ones_comb_dFz,tyre_coeffs_pl);
+
+% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+
+
+figure('Name','Last fig 23','NumberTitle', 17 + last_fig_FY0)
+hold on
+plot(ALPHA_0_y_comb_dFz.SL,ALPHA_0_y_comb_dFz.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
+plot(ALPHA_3_y_comb_dFz.SL,ALPHA_3_y_comb_dFz.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
+plot(ALPHA_6_y_comb_dFz.SL,ALPHA_6_y_comb_dFz.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+
+plot(SL_vec,FY_dFz_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dFz_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dFz_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fx($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y}$ [N]')
+
+[FY_dFz220_var_vec1, Gxa_dFz220_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_220_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
+[FY_dFz700_var_vec1, Gxa_dFz700_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_700_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
+[FY_dFz900_var_vec1, Gxa_dFz900_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_900_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
+[FY_dFz1120_var_vec1, Gxa_dFz1120_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_1120_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
+
+
+figure('Name','Fy, alpha = 6°, variable Fz','NumberTitle', 18 + last_fig_FY0)
+hold on
+plot(ALPHA_6_y_comb_dFz.SL,ALPHA_6_y_comb_dFz.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+plot(SL_vec,FY_dFz220_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dFz700_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dFz900_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dFz1120_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ Raw with \alpha_0 = 6 deg $','Fy(Fz=220N)','Fy(Fz=700N)', 'Fy(Fz=900N)','Fy(Fz=1120N)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y}$ [N]')
+
+
+% figure('Name','Gxa coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+% hold on
+% plot(SL_vec,Gxa_dFz_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,Gxa_dFz_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,Gxa_dFz_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, 'Location','eastoutside');
+% xlabel('$\kappa$ [-]')
+% ylabel('$G_{xa}$ [-]')
+% 
+% % To be done!
+% % figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
+% % hold on
+% % plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% % plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% % plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% % legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+% % xlabel('$\alpha$ [rad]')
+% % ylabel('$G_{xa}$ [-]')
