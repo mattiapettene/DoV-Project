@@ -225,7 +225,7 @@ plot_selected_data(TData0_pl);
 
 tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
 
-%% Pure conditions fitting: Fz0 = 220N, gamma = 0
+%% FY0 in pure conditions fitting: Fz0 = 220N, gamma = 0
 % Fit the coefficients {pCy1, pDy1, pEy1, pHy1, pKy1, pKy2, pVy1}
 
 %FZ0 = mean(TData0.FZ);
@@ -286,7 +286,7 @@ plot(SA_vec,FY0_fz_nom_vec,'.','LineWidth',2)
 xlabel('$\alpha$ [rad]')
 ylabel('$F_{y0}$ [N]')
 
-%% Fit coefficients with variable load
+%% Pure lateral force FY0 with variable load
 % extract data with variable load and camber angle equal to 0
 TDataDFz_pl = GAMMA_0_pl;
 
@@ -411,8 +411,8 @@ legend({'data', '$Fz_{220}$','$Fz_{440}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$
 xlabel('$\alpha$ [-]')
 ylabel('$F_{y0}$ [N]')
 
-%% Fit coefficient with variable camber
-% extract data with variable load
+%% Pure lateral force FY0 with variable camber
+% extract data with variable camber angle
 TDataGamma_pl = FZ_220_pl;
 
 smpl_range_pl_dgamma = size(TDataGamma_pl);
@@ -1020,8 +1020,8 @@ ylabel('$G_{xa}$ [-]')
 % ylabel('$G_{xa}$ [-]')
 
 
-%% Conditions range for FY with variable load
-% choose the range with: variable slip angle, camber angle = 0
+%% Combined lateral force FY with variable Fz
+% = variable slip angle, camber angle = 0
 
 [TData_y_comb_dFz, ~] = GAMMA_0_comb;
 
@@ -1029,8 +1029,8 @@ ylabel('$G_{xa}$ [-]')
 figure('Name','Combined range for variable loads', 'NumberTitle', 14 + last_fig_FY0)
 plot_selected_data(TData_y_comb_dFz);
 
-%% Extract various load conditions
-% extract data with 0 camber and variable load
+%Extract various load conditions
+% =data with 0 camber and variable load
 
 smpl_range_y_comb_dFz = size(TData_y_comb_dFz);
 vec_samples_y_comb_dFz = 1:1:smpl_range_y_comb_dFz;
@@ -1196,3 +1196,148 @@ ylabel('$F_{y}$ [N]')
 % % legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
 % % xlabel('$\alpha$ [rad]')
 % % ylabel('$G_{xa}$ [-]')
+
+%% Combined lateral force FY with variable camber
+% evaluate the difference at the same nominal load Fz = 220N
+
+% extract data with variable camber angle
+TData_y_comb_dgamma = FZ_220_comb;
+
+smpl_range_y_comb_dgamma = size(TData_y_comb_dgamma);
+vec_samples_y_comb_dgamma = 1:1:smpl_range_y_comb_dgamma;
+
+
+% Extract points at constant side slip and plot
+ALPHA_tol_y_comb_dgamma = 0.5*to_rad;
+idx_y_comb_dgamma.ALPHA_0 = 0.0*to_rad-ALPHA_tol_y_comb_dgamma < TData_y_comb_dgamma.SA & TData_y_comb_dgamma.SA < 0.0*to_rad+ALPHA_tol_y_comb_dgamma;
+idx_y_comb_dgamma.ALPHA_3 = 3.0*to_rad-ALPHA_tol_y_comb_dgamma < TData_y_comb_dgamma.SA & TData_y_comb_dgamma.SA < 3.0*to_rad+ALPHA_tol_y_comb_dgamma;
+idx_y_comb_dgamma.ALPHA_6 = 6.0*to_rad-ALPHA_tol_y_comb_dgamma < TData_y_comb_dgamma.SA & TData_y_comb_dgamma.SA < 6.0*to_rad+ALPHA_tol_y_comb_dgamma;
+
+ALPHA_0_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.ALPHA_0, : );
+ALPHA_3_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.ALPHA_3, : );
+ALPHA_6_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.ALPHA_6, : );
+
+% Extract points at constant camber and plot
+GAMMA_tol_y_comb_dgamma = 0.05*to_rad;
+idx_y_comb_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_y_comb_dgamma < TData_y_comb_dgamma.IA & TData_y_comb_dgamma.IA < 0.0*to_rad+GAMMA_tol_y_comb_dgamma;
+idx_y_comb_dgamma.GAMMA_1 = 2.0*to_rad-GAMMA_tol_y_comb_dgamma < TData_y_comb_dgamma.IA & TData_y_comb_dgamma.IA < 2.0*to_rad+GAMMA_tol_y_comb_dgamma;
+idx_y_comb_dgamma.GAMMA_2 = 4.0*to_rad-GAMMA_tol_y_comb_dgamma < TData_y_comb_dgamma.IA & TData_y_comb_dgamma.IA < 4.0*to_rad+GAMMA_tol_y_comb_dgamma;
+
+GAMMA_0_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.GAMMA_0, : );
+GAMMA_1_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.GAMMA_1, : );
+GAMMA_2_y_comb_dgamma  = TData_y_comb_dgamma( idx_y_comb_dgamma.GAMMA_2, : );
+
+% Plot
+figure('Name','Considered dataset for variable camber', 'NumberTitle', 19 + last_fig_FX0)
+tiledlayout(3,1)
+ax_list_9(1) = nexttile;
+plot(TData_y_comb_dgamma.IA*to_deg)
+hold on
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_0),GAMMA_0_y_comb_dgamma.IA*to_deg,'.');
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_1),GAMMA_1_y_comb_dgamma.IA*to_deg,'.');
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_2),GAMMA_2_y_comb_dgamma.IA*to_deg,'.');
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+hold off
+
+ax_list_9(2) = nexttile;
+plot(TData_y_comb_dgamma.FY)
+hold on
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_0),GAMMA_0_y_comb_dgamma.FY,'.');
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_1),GAMMA_1_y_comb_dgamma.FY,'.');
+plot(vec_samples_y_comb_dgamma(idx_y_comb_dgamma.GAMMA_2),GAMMA_2_y_comb_dgamma.FY,'.');
+title('Lateral force')
+xlabel('Samples [-]')
+ylabel('[N]')
+hold off
+
+ax_list_9(3) = nexttile;
+plot(TData_y_comb_dgamma.FZ)
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+linkaxes(ax_list_9,'x')
+
+% Fit the coeffs {rVy3}
+
+% Guess values for parameters to be optimised
+%   [rVy3]
+P0_y_comb_dgamma = [0];
+
+% Limits for parameters to be optimised
+lb_y_comb_dgamma = [ ];
+ub_y_comb_dgamma = [ ];
+
+zeros_vec_y_comb_dgamma = zeros(size(TData_y_comb_dgamma.IA));
+ones_vec_y_comb_dgamma  = ones(size(TData_y_comb_dgamma.IA));
+
+GAMMA_vec_y_comb_dgamma = TData_y_comb_dgamma.IA;
+ALPHA_vec_y_comb_dgamma = TData_y_comb_dgamma.SA; 
+KAPPA_vec_y_comb_dgamma = TData_y_comb_dgamma.SL; 
+FY_vec_y_comb_dgamma    = TData_y_comb_dgamma.FY;
+FZ_vec_y_comb_dgamma    = TData_y_comb_dgamma.FZ;
+
+
+
+figure('Name','Non so cosa sia', 'NumberTitle', 20 + last_fig_FX0)
+plot(KAPPA_vec_y_comb_dgamma,FY_vec_y_comb_dgamma);
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
+% is an unconstrained minimization problem 
+[P_y_comb_varGamma,fval,exitflag] = fmincon(@(P)resid_Fy_varGamma(P,FY_vec_y_comb_dgamma, KAPPA_vec_y_comb_dgamma, ALPHA_vec_y_comb_dgamma, GAMMA_vec_y_comb_dgamma,mean(FZ_vec_y_comb_dgamma)*ones_vec_y_comb_dgamma, tyre_coeffs_pl),...
+                               P0_y_comb_dgamma,[],[],[],[],lb_y_comb_dgamma,ub_y_comb_dgamma);
+
+% Change tyre data with new optimal values                             
+tyre_coeffs_pl.rVy3 = P_y_comb_varGamma(1);  
+
+
+[FY_comb_dgamma_vec,~] = MF96_FY_vec(KAPPA_vec_y_comb_dgamma, ALPHA_vec_y_comb_dFz, mean(GAMMA_0_y_comb_dgamma.IA)*ones_vec_y_comb_dFz, tyre_coeffs_pl.FZ0*ones_vec_y_comb_dFz, tyre_coeffs_pl);
+
+figure('Name','Fy vs Kappa', 'NumberTitle', 21 + last_fig_FY0)
+plot(KAPPA_vec_y_comb_dgamma,TData_y_comb_dgamma.FY,'o')
+hold on
+plot(KAPPA_vec_y_comb_dgamma,FY_comb_dgamma_vec,'-')
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y} (Gamma)$ [N]')
+
+tmp_zeros_comb_dgamma = zeros(size(SL_vec));
+tmp_ones_comb_dgamma = ones(size(SL_vec));
+
+[FY_dgamma0_var_vec1, Gxa_dgamma_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
+[FY_dgamma_var_vec2, Gxa_dgamma_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma,tyre_coeffs_pl);
+[FY_dgamma_var_vec3, Gxa_dgamma_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma,tyre_coeffs_pl);
+
+% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+
+
+figure('Name','Last fig 233333','NumberTitle', 22 + last_fig_FY0)
+hold on
+plot(ALPHA_0_y_comb_dgamma.SL,ALPHA_0_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
+plot(ALPHA_3_y_comb_dgamma.SL,ALPHA_3_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
+plot(ALPHA_6_y_comb_dgamma.SL,ALPHA_6_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+
+plot(SL_vec,FY_dgamma0_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dgamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dgamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y}$ [N]')
+
+[FY_dgamma0_var_vec1, Gxa_dgamma0_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
+[FY_dgamma1_var_vec1, Gxa_dgamma1_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_1_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
+[FY_dgamma2_var_vec1, Gxa_dgamma2_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_2_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
+
+
+figure('Name','Fy, alpha = 6°, variable Fz','NumberTitle', 23 + last_fig_FY0)
+hold on
+plot(ALPHA_6_y_comb_dgamma.SL,ALPHA_6_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+plot(SL_vec,FY_dgamma0_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dgamma1_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_dgamma2_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+
+legend({'$ Raw with \alpha_0 = 6 deg $','Fy($\gamma=0deg$)','Fy($\gamma=2deg$)', 'Fy($\gamma=4deg$)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{y}$ [N]')
