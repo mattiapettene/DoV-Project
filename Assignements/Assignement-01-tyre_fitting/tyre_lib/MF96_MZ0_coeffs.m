@@ -3,7 +3,7 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, SHt, SHf] = MF96_MZ0_coeff
 
  % precode
 
-  Fz0             = tyre_data.Fz0;
+  FZ0             = tyre_data.FZ0;       
   qBz1            = tyre_data.qBz1;
   qBz10           = tyre_data.qBz10;
   qBz2            = tyre_data.qBz2;
@@ -36,6 +36,8 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, SHt, SHf] = MF96_MZ0_coeff
   LMUY            = tyre_data.LMUY;
   LT              = tyre_data.LT;
   
+  [alpha__y, By, Cy, Dy, Ey, SVy, SHy, Kya, mu__y, R0] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
+
 
  % main code
 
@@ -46,9 +48,9 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, SHt, SHf] = MF96_MZ0_coeff
   SHt = qHz1 + qHz2 * dfz + (dfz * qHz4 + qHz3) * gamma__z;
   alpha__t = alpha + SHt;
   alpha__r = alpha + SHf;
-  Bt = (dfz ^ 2 * qBz3 + dfz * qBz2 + qBz1) * (1 + qBz4 * gamma__z + qBz5 * my_abs(gamma__z)) * LKY / LMUY;
+  Bt = (dfz ^ 2 * qBz3 + dfz * qBz2 + qBz1) * (1 + qBz4 * gamma__z + qBz5 * Sign(gamma__z)) * LKY / LMUY;
   Ct = qCz1;
-  Dt = Fz * (dfz * qDz2 + qDz1) * (qDz4 * gamma__z ^ 2 + qDz3 * gamma__z + 1) * R0 / Fz0 * LT;
+  Dt = Fz * (dfz * qDz2 + qDz1) * (qDz4 * gamma__z ^ 2 + qDz3 * gamma__z + 1) * R0 / FZ0 * LT;
   Et = (dfz ^ 2 * qEz3 + dfz * qEz2 + qEz1) * (0.1e1 + (qEz5 * gamma__z + qEz4) * atan((Bt * Ct * alpha__t)));
   Br = qBz9 * LKY / LMUY + qBz10 * By * Cy;
   Dr = Fz * (qDz6 + qDz7 * dfz + (dfz * qDz9 + qDz8) * gamma__z) * R0 * LMUY * LMR;
