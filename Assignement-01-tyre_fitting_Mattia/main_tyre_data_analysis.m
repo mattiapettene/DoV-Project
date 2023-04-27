@@ -992,13 +992,34 @@ ylabel('$F_{y0}$ [N]')
 
 %% Fit coefficient with variable camber
 
+
+SA_tol = 0.5*to_rad;
+idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
+idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
+idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
+SA_0_LAT     = tyre_data( idx.SA_0, : );
+
 % extract data with variable load
-[TDataGamma, ~] = intersect_table_data(SL_0, FZ_220 );
+[TDataGamma, ~] = intersect_table_data(SL_0, FZ_220);
+
+% Extract points at constant camber and plot
+GAMMA_tol_pl_dgamma = 0.05*to_rad;
+idx_pl_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 0.0*to_rad+GAMMA_tol_pl_dgamma;
+idx_pl_dgamma.GAMMA_1 = 1.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 1.0*to_rad+GAMMA_tol_pl_dgamma;
+idx_pl_dgamma.GAMMA_2 = 2.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 2.0*to_rad+GAMMA_tol_pl_dgamma;
+idx_pl_dgamma.GAMMA_3 = 3.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 3.0*to_rad+GAMMA_tol_pl_dgamma;
+idx_pl_dgamma.GAMMA_4 = 4.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 4.0*to_rad+GAMMA_tol_pl_dgamma;
+
+GAMMA_0_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_0, : );
+GAMMA_1_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_1, : );
+GAMMA_2_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_2, : );
+GAMMA_3_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_3, : );
+GAMMA_4_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_4, : );
+
 
 % Fit the coeffs { pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4 }
-
 % Guess values for parameters to be optimised
-P0_gamma = [0, 0, 0, 0, 0, 0, 0]; 
+P0_gamma = [0.51e1, 1.88, -0.42e1, -2.04, 0.13e1, -0.29e1, -0.28e1];
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -1006,12 +1027,17 @@ P0_gamma = [0, 0, 0, 0, 0, 0, 0];
 % 0< pEx1 < 1 
 %lb = [0, 0,  0, 0,  0,  0,  0];
 %ub = [2, 1e6,1, 1,1e1,1e2,1e2];
-lb = [];
-ub = [];
+lb = [5,1,-100,-2.5,0,-100,-100];
+ub = [100,100,0,-0.1,100,0,0];
 
+%NB -> cambiato pHy3 con -2.043155252823728 uscito dall'analisi con side
+%slip = 0 intersecato con FZ_220. Pesa molto l'upper bound al quale cerca
+%di avvicinarsi il più possibile, più è grande in modulo, più si allargano
+%tra loro le curve al centro. alternativa allo 0.1 è 0.15 dove si allargano
+%leggermente di più. agli estremi rimangono pressochè uguali e attaccate
 
-zeros_vec = zeros(size(TDataGamma.SA));
-ones_vec  = ones(size(TDataGamma.SA));
+zeros_vec = zeros(size(TDataGamma.IA));
+ones_vec  = ones(size(TDataGamma.IA));
 
 ALPHA_vec = TDataGamma.SA;
 GAMMA_vec = TDataGamma.IA; 
@@ -1036,14 +1062,39 @@ tyre_coeffs_pl.pKy3 = P_varGamma(5);
 tyre_coeffs_pl.pVy3 = P_varGamma(6); 
 tyre_coeffs_pl.pVy4 = P_varGamma(7); 
 
-FY0_varGamma_vec = MF96_FY0_vec(zeros_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+% FY0_varGamma_vec = MF96_FY0_vec(zeros_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+% 
+% figure('Name','Fy0 vs Gamma')
+% plot(ALPHA_vec*to_deg,TDataGamma.FY,'o')
+% hold on
+% plot(ALPHA_vec*to_deg,FY0_varGamma_vec,'.')
+% xlabel('$\alpha$ [deg]')
+% ylabel('$F_{y0}$ [N]')
 
-figure('Name','Fy0 vs Gamma')
-plot(ALPHA_vec*to_deg,TDataGamma.FY,'o')
+FY0_gamma_var_vec1 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_0_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_pl);
+FY0_gamma_var_vec2 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_1_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_pl);
+FY0_gamma_var_vec3 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_2_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_pl);
+FY0_gamma_var_vec4 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_3_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_pl);
+FY0_gamma_var_vec5 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_4_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_pl);
+
+
+figure()
 hold on
-plot(ALPHA_vec*to_deg,FY0_varGamma_vec,'.')
+plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
+plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
+plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
+plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
+plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
+plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
+legend({'$ \gamma_0 = 0 deg $','$ \gamma_1 = 1 deg $','$ \gamma_2 = 2 deg $','$ \gamma_3 = 3 deg$','$ \gamma_4 = 4 deg $', 'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
+
+
 % Calculate the residuals with the optimal solution found above
 res_Fy0_varGamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
@@ -1081,7 +1132,45 @@ save(['tyre_' data_set,'.mat'],'tyre_coeffs_pl');
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Select tyre dataset - PURE SELF ALIGNING MOMENT
+%dataset path
+data_set_path = 'dataset/';
+% dataset selection and loading
+
+data_set = 'Hoosier_B1464run23'; % pure lateral forces
+%data_set = 'Hoosier_B1464run30';  % braking/traction (pure log. force) + combined
+
+% tyre geometric data:
+% Hoosier 20.5x7.0 - 13 R25B
+% 13 diameter in inches
+% 7.0 section width in inches
+% tread width in inches
+diameter = 13*2.56; %
+Fz0 = 220;   % [N] nominal load is given
+R0  = diameter/2/100; % [m] get from nominal load R0 (m) *** TO BE CHANGED ***
+
+
+fprintf('Loading dataset ...')
+switch data_set
+  case 'Hoosier_B1464run23'
+  load ([data_set_path, 'Hoosier_B1464run23.mat']); % pure lateral
+  cut_start = 27760;
+  cut_end   = 54500;
+  case 'Hoosier_B1464run30'
+  load ([data_set_path, 'Hoosier_B1464run30.mat']); % pure longitudinal
+  cut_start = 19028;
+  cut_end   = 37643;
+  otherwise 
+  error('Not found dataset: `%s`\n', data_set) ;
+  
+end
+
+% select dataset portion
+smpl_range = cut_start:cut_end;
+
+fprintf('completed!\n')
