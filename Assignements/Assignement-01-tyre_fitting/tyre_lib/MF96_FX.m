@@ -1,5 +1,5 @@
 % Combined force Fx
-function [fx] = MF96_FX(kappa, alpha, phi, Fz, tyre_data)
+function [fx, Gxa] = MF96_FX(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 

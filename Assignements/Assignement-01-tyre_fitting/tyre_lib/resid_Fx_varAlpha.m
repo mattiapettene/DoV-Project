@@ -19,7 +19,7 @@ function res = resid_Fx_varAlpha(P,FX,KAPPA,ALPHA,GAMMA,FZ,tyre_data)
     % Longitudinal Force Equations
     res = 0;
     for i=1:length(ALPHA)
-       fx_fit  = MF96_FX(KAPPA(i), ALPHA(i), GAMMA(i), FZ(i), tmp_tyre_data);
+       [fx_fit,~]  = MF96_FX(KAPPA(i), ALPHA(i), GAMMA(i), FZ(i), tmp_tyre_data);
        res = res+(fx_fit-FX(i))^2;
     end
     

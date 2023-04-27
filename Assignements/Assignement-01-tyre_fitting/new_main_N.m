@@ -844,7 +844,7 @@ linkaxes(ax_list_7,'x')
 
 % Guess values for parameters to be optimised
 %   [rBx1, rBx2, rCx1, rHx1]
-P0_x_dgamma = [-10,1,10,2];
+P0_x_dalpha = [-10,1,10,2];
 
 % Limits for parameters to be optimised
 lb_x_dalpha = [ ];
@@ -864,7 +864,7 @@ plot(KAPPA_vec_x_dalpha,FX_vec_dalpha);
 
 % LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
 [P_x_dalpha,fval,exitflag] = fmincon(@(P)resid_Fx_varAlpha(P,FX_vec_dalpha, KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha,tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl),...
-                               P0_x_dgamma,[],[],[],[],lb_x_dalpha,ub_x_dalpha);
+                               P0_x_dalpha,[],[],[],[],lb_x_dalpha,ub_x_dalpha);
 
 % Change tyre data with new optimal values                             
     tyre_coeffs_pl.rBx1 = P_x_dalpha(1);  
@@ -873,9 +873,9 @@ plot(KAPPA_vec_x_dalpha,FX_vec_dalpha);
     tyre_coeffs_pl.rHx1 = P_x_dalpha(4); 
 
 
-FX_dgamma_vec = MF96_FX_vec(KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha, tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl);
+[FX_dgamma_vec,~] = MF96_FX_vec(KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha, tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl);
 
-figure('Name','Fx vs Alpha', 'NumberTitle', 12 + last_fig_FX0)
+figure('Name','Fx vs Alpha', 'NumberTitle', 6 + last_fig_FY0)
 plot(KAPPA_vec_x_dalpha,TData_x_dalpha.FX,'o')
 hold on
 plot(KAPPA_vec_x_dalpha,FX_dgamma_vec,'-')
@@ -885,12 +885,16 @@ ylabel('$F_{x} (\alpha)$ [N]')
 tmp_zeros_dalpha = zeros(size(SL_vec));
 tmp_ones_dalpha = ones(size(SL_vec));
 
-FX_alpha_var_vec1 = MF96_FX_vec(SL_vec, mean(ALPHA_0_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_0_dalpha.FZ)*tmp_ones_dalpha, tyre_coeffs_pl);
-FX_alpha_var_vec2 = MF96_FX_vec(SL_vec, mean(ALPHA_3_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_3_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
-FX_alpha_var_vec3 = MF96_FX_vec(SL_vec, mean(ALPHA_6_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_6_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
+[FX_alpha_var_vec1, Gxa_alpha_var_vec1] = MF96_FX_vec(SL_vec, mean(ALPHA_0_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_0_dalpha.FZ)*tmp_ones_dalpha, tyre_coeffs_pl);
+[FX_alpha_var_vec2, Gxa_alpha_var_vec2] = MF96_FX_vec(SL_vec, mean(ALPHA_3_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_3_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
+[FX_alpha_var_vec3, Gxa_alpha_var_vec3] = MF96_FX_vec(SL_vec, mean(ALPHA_6_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_6_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
+
+% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
 
-figure('Name','Last fig','NumberTitle', 13 + last_fig_FX0)
+figure('Name','Last fig 2','NumberTitle', 7 + last_fig_FY0)
 hold on
 plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5) %'MarkerEdgeColor','y',
 plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5) %'MarkerEdgeColor','c',
@@ -903,3 +907,114 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'F
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
 
+figure('Name','Gxa coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+hold on
+plot(SL_vec,Gxa_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,Gxa_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,Gxa_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$G_{xa}$ [-]')
+
+% To be done!
+% figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
+% hold on
+% plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+% xlabel('$\alpha$ [rad]')
+% ylabel('$G_{xa}$ [-]')
+
+%% Combined lateral force FY in pure conditions
+% with camber equal to 0 and vertical load equal to 220N
+
+
+% Fit the coeffs {rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6}
+
+% Guess values for parameters to be optimised
+%   [ rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6 ]
+P0_y_dalpha = [14, 13, -0.5, 0.98, 0.03, -0.23, 3.8, -0.1, 28.4  ];
+
+% Limits for parameters to be optimised
+lb_y_dalpha = [ ];
+ub_y_dalpha = [ ];
+
+zeros_vec_y_dalpha = zeros(size(TData_x_dalpha.IA));
+ones_vec_y_dalpha  = ones(size(TData_x_dalpha.IA));
+
+KAPPA_vec_y_dalpha = TData_x_dalpha.SL;
+ALPHA_vec_y_dalpha = TData_x_dalpha.SA;
+FY_vec_dalpha    = TData_x_dalpha.FY;
+
+figure('Name','Non so cosa sia combined ma di y', 'NumberTitle', 10 + last_fig_FY0)
+plot(KAPPA_vec_y_dalpha,FY_vec_dalpha);
+
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
+[P_y_dalpha,fval,exitflag] = fmincon(@(P)resid_Fy_varAlpha(P,FY_vec_dalpha, KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha,tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl),...
+                               P0_y_dalpha,[],[],[],[],lb_y_dalpha,ub_y_dalpha);
+
+% Change tyre data with new optimal values                             
+    tyre_coeffs_pl.rBy1 = P_y_dalpha(1);  
+    tyre_coeffs_pl.rBy2 = P_y_dalpha(2); 
+    tyre_coeffs_pl.rBy3 = P_y_dalpha(3); 
+    tyre_coeffs_pl.rCy1 = P_y_dalpha(4);
+    tyre_coeffs_pl.rHy1 = P_y_dalpha(5);
+    tyre_coeffs_pl.rVy1 = P_y_dalpha(6);
+    tyre_coeffs_pl.rVy4 = P_y_dalpha(7);
+    tyre_coeffs_pl.rVy5 = P_y_dalpha(8);
+    tyre_coeffs_pl.rVy6 = P_y_dalpha(9); 
+
+
+[FY_dalpha_vec,~] = MF96_FY_vec(KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha, tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl);
+
+figure('Name','Fy vs Alpha', 'NumberTitle', 11 + last_fig_FY0)
+plot(KAPPA_vec_y_dalpha,TData_x_dalpha.FY,'o')
+hold on
+plot(KAPPA_vec_y_dalpha,FY_dalpha_vec,'-')
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x} (\alpha)$ [N]')
+
+tmp_zeros_dalpha = zeros(size(SL_vec));
+tmp_ones_dalpha = ones(size(SL_vec));
+
+[FY_alpha_var_vec1, Gyk_alpha_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_0_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_0_dalpha.FZ)*tmp_ones_dalpha, tyre_coeffs_pl);
+[FY_alpha_var_vec2, Gyk_alpha_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_3_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
+[FY_alpha_var_vec3, Gyk_alpha_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_6_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
+
+% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+
+figure('Name','Last fig 3','NumberTitle', 12 + last_fig_FY0)
+hold on
+plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
+plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
+plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+
+plot(SL_vec,FY_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x}$ [N]')
+
+figure('Name','Gyk coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+hold on
+plot(SL_vec,Gyk_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,Gyk_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,Gyk_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$G_{xa}$ [-]')
+
+% To be done!
+% figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
+% hold on
+% plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+% xlabel('$\alpha$ [rad]')
+% ylabel('$G_{xa}$ [-]')
