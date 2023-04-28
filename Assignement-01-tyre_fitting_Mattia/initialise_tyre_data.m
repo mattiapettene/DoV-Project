@@ -99,5 +99,8 @@ ty_data.LVY             = 1; % LVY
 ty_data.LVYK            = 1; % LVYK
 ty_data.LXA             = 1; % LXA
 ty_data.LYK             = 1; % LYK
+ty_data.LKY             = 1; % LKY
+ty_data.LMR             = 1; % LMR
+ty_data.LT              = 1; % LT
 
 end
