@@ -1,12 +1,19 @@
-%% Assignment 1 - Tyre fitting
+%% -Assignment 1 - Tyre fitting-
 % Team 6: Consalvi Natale - Pettene Mattia - Zumerle Matteo
 
-%% Initialization
+%% --Initialization
+% define geometric data of tyre, import the path
+
 clc;
 close all;
 clear;
 
+set(0,'defaulttextinterpreter','latex')
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
 set(0,'DefaultFigureWindowStyle','docked');
+set(0,'defaultAxesFontSize',  16)
+set(0,'DefaultLegendFontSize',16)
 
 addpath('dataset/');
 addpath('tyre_lib/');
@@ -20,16 +27,21 @@ R0  = diameter/2/100; % [m] get from nominal load R0 (m)
 to_rad = pi/180;
 to_deg = 180/pi;
 
-% Last figure of the pure longitudinal part (to add this new main to the
-% other)
-last_fig_FX0 = 0;
-
 data_set_path = 'dataset/';
 
-% FROM PREV PART
+%% --Pure longitudinal force FX0: Biral file
 SL_vec = -0.3:0.001:0.3;
 
-%% Loading of dataset - first cutting process
+% Last figure of the pure longitudinal part
+last_fig_FX0 = 0;
+
+
+%% --Initialization phase for tyre coefficients
+
+tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
+
+
+%% --Pure lateral force FY0: dataset import
 
 data_set = 'Hoosier_B1464run23'; % pure lateral forces
 
@@ -54,9 +66,9 @@ smpl_range_pl = cut_start_pl:cut_end_pl;
 
 fprintf('\ncompleted!')
 
-%% Plot of the raw data
+%% ---Dataset for pure lateral: plot
 
-figure ('Name','Raw dataset', 'NumberTitle',1+ last_fig_FX0)
+figure ('Name','FY0: entire raw dataset', 'NumberTitle', 1 + last_fig_FX0)
 tiledlayout(6,1)
 
 ax_list(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
@@ -117,12 +129,12 @@ xlabel('Samples [-]')
 ylabel('[degC]')
 
 linkaxes(ax_list,'x')
-%% Selection of different ranges and plotting
-% for camber angle and vertical load
+%% ---Higher pressure dataset for pure lateral force: table selection and plot
+% consider the high pressure region of original dataset (more stable one)
 
 vec_samples_pl = 1:1:length(smpl_range_pl);
 
-tyre_data_pl = table(); % create empty table
+tyre_data_pl = table();
 % store raw data in table
 tyre_data_pl.SL =  SL(smpl_range_pl);
 tyre_data_pl.SA = -SA(smpl_range_pl)*to_rad;    % SAE -> Adapted SAE
@@ -133,6 +145,15 @@ tyre_data_pl.MZ =  MZ(smpl_range_pl);
 tyre_data_pl.IA =  IA(smpl_range_pl)*to_rad;
 
 % Extract points at constant camber angle
+
+% Test data done at: 
+%  - 0 deg
+%  - 1 deg
+%  - 2 deg
+%  - 3 deg
+%  - 4 deg
+% in the following order: (0 2 4 1 3)*2
+
 GAMMA_tol_pl = 0.05*to_rad;
 idx_pl.GAMMA_0 = 0.0*to_rad-GAMMA_tol_pl < tyre_data_pl.IA & tyre_data_pl.IA < 0.0*to_rad+GAMMA_tol_pl;
 idx_pl.GAMMA_1 = 1.0*to_rad-GAMMA_tol_pl < tyre_data_pl.IA & tyre_data_pl.IA < 1.0*to_rad+GAMMA_tol_pl;
@@ -147,11 +168,14 @@ GAMMA_3_pl  = tyre_data_pl( idx_pl.GAMMA_3, : );
 GAMMA_4_pl  = tyre_data_pl( idx_pl.GAMMA_4, : );
 
 % Extract points at constant vertical load
+
 % Test data done at: 
 %  - 50lbf  ( 50*0.453592*9.81 =  223N )
+%  - 100lbf (100*0.453592*9.81 =  445N )
 %  - 150lbf (150*0.453592*9.81 =  667N )
 %  - 200lbf (200*0.453592*9.81 =  890N )
 %  - 250lbf (250*0.453592*9.81 = 1120N )
+% in the following order: (200 150 50 250 100)*2
 
 FZ_tol_pl = 100;
 idx_pl.FZ_220  = 220-FZ_tol_pl < tyre_data_pl.FZ & tyre_data_pl.FZ < 220+FZ_tol_pl;
@@ -166,7 +190,7 @@ FZ_900_pl  = tyre_data_pl( idx_pl.FZ_900, : );
 FZ_1120_pl = tyre_data_pl( idx_pl.FZ_1120, : );
 
 % Plot
-figure('Name','Ranges selection', 'NumberTitle', 2 + last_fig_FX0)
+figure('Name','FY0: higher pressure dataset with regions', 'NumberTitle', 2 + last_fig_FX0)
 tiledlayout(2,1)
 
 ax_list_2(1) = nexttile;
@@ -194,80 +218,54 @@ xlabel('Samples [-]')
 ylabel('[N]')
 hold off
 linkaxes(ax_list_2,'x')
-%% Pure conditions range and plotting
+
+%% ---FY0: fitting in pure conditions (gamma = 0, Fz = 220N)
 % choose the range with: longitudinal slip = 0, camber angle = 0, vertical
-% load = Fz0 = 220N (obv within the higher pressure dataset)
+% load = Fz = 220N (obv within the higher pressure dataset)
 
 [TData0_pl, ~] = intersect_table_data( GAMMA_0_pl, FZ_220_pl );
 
-% % Plot
-% figure('Name','Pure conditions range', 'NumberTitle', 3 + last_fig_FX0)
-% tiledlayout(2,1)
-% 
-% ax_list(1) = nexttile;
-% plot(TData0_pl.IA*to_deg)
-% hold on
-% title('Camber angle')
-% xlabel('Samples [-]')
-% ylabel('[deg]')
-% 
-% ax_list(2) = nexttile;
-% plot(TData0_pl.FZ)
-% hold on
-% title('Vertical force')
-% xlabel('Samples [-]')
-% ylabel('[N]')
-
-figure('Name','Pure conditions range', 'NumberTitle', 3 + last_fig_FX0)
+figure('Name','FY0: pure conditions range', 'NumberTitle', 3 + last_fig_FX0)
 plot_selected_data(TData0_pl);
 
-%% Initialization phase for fitting the pure conditions
-
-tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
-
-%% FY0 in pure conditions fitting: Fz0 = 220N, gamma = 0
 % Fit the coefficients {pCy1, pDy1, pEy1, pHy1, pKy1, pKy2, pVy1}
-
-%FZ0 = mean(TData0.FZ);
 
 zeros_vec_pl = zeros(size(TData0_pl.SA));
 ones_vec_pl  = ones(size(TData0_pl.SA));
 
+% Initial guess (import from initialization of tyre_coeffs)
 FY0_guess = MF96_FY0_vec(zeros_vec_pl, TData0_pl.SA , zeros_vec_pl, tyre_coeffs_pl.FZ0*ones_vec_pl, tyre_coeffs_pl);
 
 % Check lateral pure force guess
-figure('Name','FY0 guess', 'NumberTitle', 4 + last_fig_FX0)
-plot(TData0_pl.SA,TData0_pl.FY,'.')
+figure('Name','FY0: guess', 'NumberTitle', 4 + last_fig_FX0)
+plot(TData0_pl.SA*to_deg,TData0_pl.FY,'.')
 hold on
-plot(TData0_pl.SA,FY0_guess,'.')
+plot(TData0_pl.SA*to_deg,FY0_guess,'.')
 hold off
+legend({'Raw data','Guess FY0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}$ [N]')
 
 % Guess values for parameters to be optimised
 %       [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1]
 P0_pl = [ 1, 1,	1,	1,	1,	1,	1 ]; 
-%P0_pl = [ 0.643600000000000,	-4.96800000000000,	1.04000000000000,	0.00430000000000000,	-150.090000000000,	-4.48100000000000,	-0.103700000000000 ]; 
 
 % Limits for parameters to be optimised
 lb_pl = [ ];
 ub_pl = [ ];
 
-
 ALPHA_vec = TData0_pl.SA;
 FY_vec    = TData0_pl.FY;
 
-% check guess
+% Vector for plotting: Side slip vector from -12.5° to 12.5°
 SA_vec = (-12.5*to_rad):0.001:(12.5*to_rad);
-FY0_fz_nom_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , zeros(size(SA_vec)), ...
-                              mean(TData0_pl.FZ).*ones(size(SA_vec)),tyre_coeffs_pl);
 
-
-% Minimize the residual varying X. It is an unconstrained minimization problem 
-
+% Minimization of the residual
 [P_fz_nom_pl,fval,exitflag] = fmincon(@(P)resid_pure_Fy(P,FY_vec, ALPHA_vec,0,mean(TData0_pl.FZ), tyre_coeffs_pl),...
                                P0_pl,[],[],[],[],lb_pl,ub_pl);
 
-% Update tyre data with new optimal values                             
-tyre_coeffs_pl.pCy1 = P_fz_nom_pl(1) ; % 1
+% Update tyre data with new optimal values                            
+tyre_coeffs_pl.pCy1 = P_fz_nom_pl(1) ;
 tyre_coeffs_pl.pDy1 = P_fz_nom_pl(2) ;  
 tyre_coeffs_pl.pEy1 = P_fz_nom_pl(3) ;
 tyre_coeffs_pl.pHy1 = P_fz_nom_pl(4) ;
@@ -275,18 +273,23 @@ tyre_coeffs_pl.pKy1 = P_fz_nom_pl(5) ;
 tyre_coeffs_pl.pKy2 = P_fz_nom_pl(6) ;
 tyre_coeffs_pl.pVy1 = P_fz_nom_pl(7) ;
 
+res_FY0 = resid_pure_Fy(P_fz_nom_pl , FY_vec, SA_vec, 0 , mean(TData0_pl.FZ), tyre_coeffs_pl);
+
+
+% Plot of the optimized solution
 FY0_fz_nom_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , zeros(size(SA_vec)), ...
                               mean(TData0_pl.FZ).*ones(size(SA_vec)),tyre_coeffs_pl);
 
 % Result of the fitting FY0 in the pure conditions
-figure('Name','Fy0(Fz0)','NumberTitle', 5 + last_fig_FX0)
-plot(TData0_pl.SA,TData0_pl.FY,'o')
+figure('Name','FY0: fitted in pure conditions','NumberTitle', 5 + last_fig_FX0)
+plot(TData0_pl.SA*to_deg,TData0_pl.FY,'o')
 hold on
-plot(SA_vec,FY0_fz_nom_vec,'.','LineWidth',2)
-xlabel('$\alpha$ [rad]')
+plot(SA_vec*to_deg,FY0_fz_nom_vec,'-','LineWidth',2)
+legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
 
-%% Pure lateral force FY0 with variable load
+%% ---FY0(Fz): fitting with variable Fz
 % extract data with variable load and camber angle equal to 0
 TDataDFz_pl = GAMMA_0_pl;
 
@@ -297,12 +300,6 @@ smpl_range_pl_dFz = size(TDataDFz_pl);
 vec_samples_pl_dFz = 1:1:smpl_range_pl_dFz;
 
 % Extract points at constant vertical load
-% Test data done at: 
-%  - 50lbf  ( 50*0.453592*9.81 =  223N )
-%  - 150lbf (150*0.453592*9.81 =  667N )
-%  - 200lbf (200*0.453592*9.81 =  890N )
-%  - 250lbf (250*0.453592*9.81 = 1120N )
-
 FZ_tol_pl_dFz = 100;
 idx_pl_dFz.FZ_220  = 220-FZ_tol_pl_dFz < TDataDFz_pl.FZ & TDataDFz_pl.FZ < 220+FZ_tol_pl_dFz;
 idx_pl_dFz.FZ_440  = 440-FZ_tol_pl_dFz < TDataDFz_pl.FZ & TDataDFz_pl.FZ < 440+FZ_tol_pl_dFz;
@@ -316,7 +313,7 @@ FZ_900_pl_dFz  = TDataDFz_pl( idx_pl_dFz.FZ_900, : );
 FZ_1120_pl_dFz = TDataDFz_pl( idx_pl_dFz.FZ_1120, : );
 
 % Plot
-figure('Name','Considered dataset', 'NumberTitle', 6 + last_fig_FX0)
+figure('Name','FY0(Fz): considered dataset', 'NumberTitle', 6 + last_fig_FX0)
 tiledlayout(2,1)
 
 ax_list_3(1) = nexttile;
@@ -342,43 +339,34 @@ linkaxes(ax_list_3,'x')
 zeros_vec_pl = zeros(size(TDataDFz_pl.SA));
 ones_vec_pl  = ones(size(TDataDFz_pl.SA));
 
-% FY0_guess_dFz = MF96_FY0_vec(zeros_vec_pl , TDataDFz_pl.SA, zeros_vec_pl, tyre_coeffs_pl.FZ0*ones_vec_pl, tyre_coeffs_pl);
-% 
-% % check guess 
-% figure('Name','Check guess for variable Fz with SA DATA', 'NumberTitle', 7 + last_fig_FX0)
-% plot(TDataDFz_pl.SA,TDataDFz_pl.FY,'.')
-% hold on
-% plot(TDataDFz_pl.SA,FY0_guess_dFz,'.')
-
-
 % Guess values for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
-P0_pl_dFz =[ 0,0,0,0 ];   
+P0_pl_dFz =[ 0, 0, 0, 0 ];   
 
 % Limits for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
 lb_dFz = [ ];
 ub_dFz = [ ];
 
-
 ALPHA_vec_dFz = TDataDFz_pl.SA;
 FY_vec_dFz    = TDataDFz_pl.FY;
 FZ_vec_dFz    = TDataDFz_pl.FZ;
 
-% check guess
-
+% check guess for variable load
 FY0_dfz_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
                               mean(FZ_220_pl_dFz.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
-figure('Name','Check guess for variable Fz (based on pure conditions)', 'NumberTitle', 8 + last_fig_FX0)
-plot(ALPHA_vec_dFz,FY_vec_dFz,'.')
+figure('Name','FY0(Fz): guess', 'NumberTitle', 7 + last_fig_FX0)
+plot(ALPHA_vec_dFz*to_deg,FY_vec_dFz,'.')
 hold on
-plot(SA_vec,FY0_dfz_vec,'.')
+plot(SA_vec*to_deg,FY0_dfz_vec,'.')
+legend({'Raw data variable load','Guess FY0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}(Fz)$ [N]')
 
 % Resitual minimization
 [P_dfz_pl,fval,exitflag] = fmincon(@(P_pl)resid_pure_Fy_varFz(P_pl,FY_vec_dFz, ALPHA_vec_dFz,0,FZ_vec_dFz, tyre_coeffs_pl),...
                                P0_pl_dFz,[],[],[],[],lb_dFz,ub_dFz);
-disp(exitflag)
 
 % Change tyre data with new optimal values                             
 tyre_coeffs_pl.pDy2 = P_dfz_pl(1);
@@ -386,8 +374,7 @@ tyre_coeffs_pl.pEy2 = P_dfz_pl(2);
 tyre_coeffs_pl.pHy2 = P_dfz_pl(3);
 tyre_coeffs_pl.pVy2 = P_dfz_pl(4);
 
-
-res_FY0_dfz_vec = resid_pure_Fy_varFz(P_dfz_pl , FY_vec_dFz,SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
+res_FY0_dfz = resid_pure_Fy_varFz(P_dfz_pl , FY_vec_dFz,SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
 
 tmp_zeros_dFz = zeros(size(SA_vec));
 tmp_ones_dFz = ones(size(SA_vec));
@@ -399,7 +386,7 @@ FY0_fz_var_vec4 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_900
 FY0_fz_var_vec5 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 
 
-figure('Name','Fy0(Fz)','NumberTitle', 9 + last_fig_FX0)
+figure('Name','FY0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FX0)
 plot(TDataDFz_pl.SA*to_deg,TDataDFz_pl.FY,'o')
 hold on
 plot(SA_vec*to_deg,FY0_fz_var_vec1,'.','LineWidth',2)
@@ -407,18 +394,18 @@ plot(SA_vec*to_deg,FY0_fz_var_vec2,'.','LineWidth',2)
 plot(SA_vec*to_deg,FY0_fz_var_vec3,'.','LineWidth',2)
 plot(SA_vec*to_deg,FY0_fz_var_vec4,'.','LineWidth',2)
 plot(SA_vec*to_deg,FY0_fz_var_vec5,'.','LineWidth',2)
-legend({'data', '$Fz_{220}$','$Fz_{440}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$'}, 'Location','eastoutside');
-xlabel('$\alpha$ [-]')
-ylabel('$F_{y0}$ [N]')
+legend({'Raw data', '$Fy(Fz_{220})$','$Fy(Fz_{440})$','$Fy(Fz_{700})$','$Fy(Fz_{900})$','$Fy(Fz_{1120})$'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}(Fz)$ [N]')
 
-%% Pure lateral force FY0 with variable camber
-% extract data with variable camber angle
+%% ---FY0(gamma): fitting with variable camber(gamma)
+% extract data with the same vertical load (Fz = 220N) 
 TDataGamma_pl = FZ_220_pl;
 
 smpl_range_pl_dgamma = size(TDataGamma_pl);
 vec_samples_pl_dgamma = 1:1:smpl_range_pl_dgamma;
 
-% Extract points at constant camber and plot
+% Extract points at constant camber
 GAMMA_tol_pl_dgamma = 0.05*to_rad;
 idx_pl_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma_pl.IA & TDataGamma_pl.IA < 0.0*to_rad+GAMMA_tol_pl_dgamma;
 idx_pl_dgamma.GAMMA_1 = 1.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma_pl.IA & TDataGamma_pl.IA < 1.0*to_rad+GAMMA_tol_pl_dgamma;
@@ -433,7 +420,7 @@ GAMMA_3_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_3, : );
 GAMMA_4_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_4, : );
 
 % Plot
-figure('Name','Considered dataset for variable camber', 'NumberTitle', 10 + last_fig_FX0)
+figure('Name','FY0(gamma): considered dataset', 'NumberTitle', 9 + last_fig_FX0)
 tiledlayout(3,1)
 ax_list_4(1) = nexttile;
 plot(TDataGamma_pl.IA*to_deg)
@@ -472,11 +459,11 @@ linkaxes(ax_list_4,'x')
 
 % Guess values for parameters to be optimised
 %   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-P0_pl_dgamma = [0.51e1,1.88,-0.42e1,-0.31e-1,0.13e1,-0.29e1,-0.28e1];
+P0_pl_dgamma = [ 0.51e1 , 1.88 , -0.42e1 , -2.04 , 0.13e1 , -0.29e1 , -0.28e1 ];
 
 % Limits for parameters to be optimised
-lb_dgamma = [5,1,-100,-100,0,-100,-100];
-ub_dgamma = [100,100,0,100,100,0,0];
+lb_dgamma = [5,1,-100,-2.5,0,-100,-100];
+ub_dgamma = [100,100,0,-0.1,100,0,0];
 
 zeros_vec_dgamma = zeros(size(TDataGamma_pl.IA));
 ones_vec_dgamma  = ones(size(TDataGamma_pl.IA));
@@ -486,9 +473,15 @@ GAMMA_vec_dgamma = TDataGamma_pl.IA;
 FY_vec_dgamma    = TDataGamma_pl.FY;
 FZ_vec_dgamma    = TDataGamma_pl.FZ;
 
-figure('Name','Non so cosa sia', 'NumberTitle', 11 + last_fig_FX0)
-plot(ALPHA_vec_dgamma,FY_vec_dgamma);
+FY0_varGamma_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , GAMMA_vec_dgamma, tyre_coeffs_pl.FZ0*ones(size(SA_vec)),tyre_coeffs_pl);
 
+figure('Name','FY0(gamma): guess', 'NumberTitle', 10 + last_fig_FX0)
+plot(ALPHA_vec_dgamma,TDataGamma_pl.FY,'o')
+hold on
+plot(SA_vec,FY0_varGamma_vec,'.','MarkerSize',5)
+legend({'Raw data variable camber','Guess FY0(gamma)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}(\gamma)$ [N]')
 
 % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
 % is an unconstrained minimization problem 
@@ -504,15 +497,6 @@ tyre_coeffs_pl.pKy3 = P_varGamma(5);
 tyre_coeffs_pl.pVy3 = P_varGamma(6); 
 tyre_coeffs_pl.pVy4 = P_varGamma(7); 
 
-FY0_varGamma_vec = MF96_FY0_vec(zeros_vec_dgamma, ALPHA_vec_dgamma , GAMMA_vec_dgamma, tyre_coeffs_pl.FZ0*ones_vec_dgamma,tyre_coeffs_pl);
-
-figure('Name','Fx0 vs Gamma', 'NumberTitle', 12 + last_fig_FX0)
-plot(ALPHA_vec_dgamma,TDataGamma_pl.FY,'o')
-hold on
-plot(ALPHA_vec_dgamma,FY0_varGamma_vec,'-')
-xlabel('$\kappa$ [-]')
-ylabel('$F_{x0}$ [N]')
-
 tmp_zeros_dgamma = zeros(size(SA_vec));
 tmp_ones_dgamma = ones(size(SA_vec));
 
@@ -523,23 +507,21 @@ FY0_gamma_var_vec4 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_3_dgamma.
 FY0_gamma_var_vec5 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_4_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
 
 
-figure('Name','Last fig','NumberTitle', 13 + last_fig_FX0)
+figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 11 + last_fig_FX0)
 hold on
-plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
-plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
-plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
-plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','b',
-plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','r',
-plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1)
-plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1)
-legend({'$ \gamma_0 = 0 deg $','$ \gamma_1 = 1 deg $','$ \gamma_2 = 2 deg $','$ \gamma_3 = 3 deg$','$ \gamma_4 = 4 deg $', 'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
-xlabel('$\alpha$ [-]')
-ylabel('$F_{y0}$ [N]')
-%legend({'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
-
+plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
+plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
+plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
+plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
+plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
+plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
+legend({'Raw data with $\gamma = 0 deg $','Raw data with $\gamma = 1 deg $','Raw data with $\gamma = 2 deg $','Raw data with $\gamma = 3 deg $','Raw data with $\gamma = 4 deg $', 'Fy($\gamma = 0 deg$)','Fy($\gamma = 1 deg$)','Fy($\gamma = 2 deg$)','Fy($\gamma = 3 deg$)','Fy($\gamma = 4 deg$)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}(\gamma)$ [N]')
 
 % Calculate the residuals with the optimal solution found above
 res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
@@ -572,7 +554,7 @@ res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dga
 % figure('Name','Kx vs Fz')
 % plot(load_vec,Kx_vec,'o-')
 
-%% Combined behaviour
+%% --Combined longitudinal force FX: dataset import
 
 last_fig_FY0 = 13 + last_fig_FX0;
 
@@ -600,9 +582,9 @@ smpl_range_comb = cut_start_comb:cut_end_comb;
 
 fprintf('\ncompleted!')
 
-%% Plot of the raw data
+%% ---Dataset for combined behaviour: plot
 
-figure ('Name','Raw dataset combined behaviour', 'NumberTitle',1+ last_fig_FY0)
+figure ('Name','CombFXFY: entire raw dataset', 'NumberTitle',1+ last_fig_FY0)
 tiledlayout(6,1)
 
 ax_list_5(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
@@ -663,8 +645,8 @@ xlabel('Samples [-]')
 ylabel('[degC]')
 
 linkaxes(ax_list_5,'x')
-%% Selection of different ranges and plotting
-% for camber angle and vertical load
+%% ---Higher pressure dataset for combined behaviour: table selection and plot
+% for different camber angle, vertical load and side slip angle
 
 vec_samples_comb = 1:1:length(smpl_range_comb);
 
@@ -701,12 +683,10 @@ GAMMA_4_comb  = tyre_data_comb( idx_comb.GAMMA_4, : );
 
 FZ_tol_comb = 100;
 idx_comb.FZ_220  = 220-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 220+FZ_tol_comb;
-%idx_comb.FZ_440  = 440-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 440+FZ_tol_comb;
 idx_comb.FZ_700  = 700-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 700+FZ_tol_comb;
 idx_comb.FZ_900  = 900-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 900+FZ_tol_comb;
 idx_comb.FZ_1120 = 1120-FZ_tol_comb < tyre_data_comb.FZ & tyre_data_comb.FZ < 1120+FZ_tol_comb;
 FZ_220_comb  = tyre_data_comb( idx_comb.FZ_220, : );
-%FZ_440_comb  = tyre_data_comb( idx_comb.FZ_440, : );
 FZ_700_comb  = tyre_data_comb( idx_comb.FZ_700, : );
 FZ_900_comb  = tyre_data_comb( idx_comb.FZ_900, : );
 FZ_1120_comb = tyre_data_comb( idx_comb.FZ_1120, : );
@@ -722,7 +702,7 @@ SA_3_comb     = tyre_data_comb( idx_comb.SA_3, : );
 SA_6_comb     = tyre_data_comb( idx_comb.SA_6, : );
 
 % Plot
-figure('Name','Ranges selection for combined behaviour', 'NumberTitle', 2 + last_fig_FY0)
+figure('Name','CombFXFY: higher pressure dataset with regions', 'NumberTitle', 2 + last_fig_FY0)
 tiledlayout(3,1)
 
 ax_list_6(1) = nexttile;
@@ -762,35 +742,16 @@ ylabel('[deg]')
 hold off
 linkaxes(ax_list_6,'x')
 
-%% Conditions range and plotting for Fx
-% choose the range with: variable slip angle, camber angle = 0, vertical
-% load = Fz0 = 220N (obv within the higher pressure dataset)
+%% ---FX: fitting in pure conditions (variable alpha, gamma = 0, Fz = 220N)
+% choose the range with: variable side slip angle, camber angle = 0, vertical
+% load = 220N (obv within the higher pressure dataset)
 
 [TData_x_dalpha, ~] = intersect_table_data( GAMMA_0_comb, FZ_220_comb );
 
-% % Plot
-% figure('Name','Pure conditions range', 'NumberTitle', 3 + last_fig_FX0)
-% tiledlayout(2,1)
-% 
-% ax_list(1) = nexttile;
-% plot(TData0_pl.IA*to_deg)
-% hold on
-% title('Camber angle')
-% xlabel('Samples [-]')
-% ylabel('[deg]')
-% 
-% ax_list(2) = nexttile;
-% plot(TData0_pl.FZ)
-% hold on
-% title('Vertical force')
-% xlabel('Samples [-]')
-% ylabel('[N]')
-
-figure('Name','Combined range', 'NumberTitle', 3 + last_fig_FY0)
+figure('Name','FX: dataset in pure conditions range', 'NumberTitle', 3 + last_fig_FY0)
 plot_selected_data(TData_x_dalpha);
 
-%% Fit coefficient with variable slip angle
-% extract data with variable load
+% extract data with variable side slip
 
 smpl_range_x_dalpha = size(TData_x_dalpha);
 vec_samples_x_dalpha = 1:1:smpl_range_x_dalpha;
@@ -804,13 +765,10 @@ idx_x_dalpha.ALPHA_6 = 6.0*to_rad-ALPHA_tol_x_dalpha < TData_x_dalpha.SA & TData
 ALPHA_0_dalpha  = TData_x_dalpha( idx_x_dalpha.ALPHA_0, : );
 ALPHA_3_dalpha  = TData_x_dalpha( idx_x_dalpha.ALPHA_3, : );
 ALPHA_6_dalpha  = TData_x_dalpha( idx_x_dalpha.ALPHA_6, : );
-% ALPHA_0_dalpha  = TData_x_dalpha( 1:539, : );
-% ALPHA_3_dalpha  = TData_x_dalpha( 540:1073, : );
-% ALPHA_6_dalpha  = TData_x_dalpha( 1074:1617, : );
 
 % Plot
-figure('Name','Considered dataset for combined behaviour, Fx($\alpha$)', 'NumberTitle', 4 + last_fig_FY0)
-tiledlayout(3,1)
+figure('Name','FX: Considered ranges for pure conditions', 'NumberTitle', 4 + last_fig_FY0)
+tiledlayout(4,1)
 ax_list_7(1) = nexttile;
 plot(TData_x_dalpha.SA*to_deg)
 hold on
@@ -840,15 +798,23 @@ xlabel('Samples [-]')
 ylabel('[N]')
 linkaxes(ax_list_7,'x')
 
+ax_list_7(4) = nexttile;
+plot(TData_x_dalpha.IA)
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+linkaxes(ax_list_7,'x')
+
+
 % Fit the coeffs {rBx1, rBx2, rCx1, rHx1}
 
 % Guess values for parameters to be optimised
 %   [rBx1, rBx2, rCx1, rHx1]
-P0_x_dalpha = [-10,1,10,2];
+P0_x_dalpha = [ -5 , 1 , 10 , 0 ];
 
 % Limits for parameters to be optimised
-lb_x_dalpha = [ ];
-ub_x_dalpha = [ ];
+lb_x_dalpha = [ -10, -10, -10, 0 ];
+ub_x_dalpha = [ 20, 20, 20, 0];
 
 zeros_vec_x_dalpha = zeros(size(TData_x_dalpha.IA));
 ones_vec_x_dalpha  = ones(size(TData_x_dalpha.IA));
@@ -858,11 +824,8 @@ ALPHA_vec_x_dalpha = TData_x_dalpha.SA;
 FX_vec_dalpha    = TData_x_dalpha.FX;
 FZ_vec_dalpha    = TData_x_dalpha.FZ;
 
-figure('Name','Non so cosa sia combined', 'NumberTitle', 5 + last_fig_FY0)
-plot(KAPPA_vec_x_dalpha,FX_vec_dalpha);
 
-
-% LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
+% Minimize the residual:
 [P_x_dalpha,fval,exitflag] = fmincon(@(P)resid_Fx_varAlpha(P,FX_vec_dalpha, KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha,tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl),...
                                P0_x_dalpha,[],[],[],[],lb_x_dalpha,ub_x_dalpha);
 
@@ -873,15 +836,6 @@ plot(KAPPA_vec_x_dalpha,FX_vec_dalpha);
     tyre_coeffs_pl.rHx1 = P_x_dalpha(4); 
 
 
-[FX_dgamma_vec,~] = MF96_FX_vec(KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha, tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl);
-
-figure('Name','Fx vs Alpha', 'NumberTitle', 6 + last_fig_FY0)
-plot(KAPPA_vec_x_dalpha,TData_x_dalpha.FX,'o')
-hold on
-plot(KAPPA_vec_x_dalpha,FX_dgamma_vec,'-')
-xlabel('$\kappa$ [-]')
-ylabel('$F_{x} (\alpha)$ [N]')
-
 tmp_zeros_dalpha = zeros(size(SL_vec));
 tmp_ones_dalpha = ones(size(SL_vec));
 
@@ -889,25 +843,25 @@ tmp_ones_dalpha = ones(size(SL_vec));
 [FX_alpha_var_vec2, Gxa_alpha_var_vec2] = MF96_FX_vec(SL_vec, mean(ALPHA_3_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_3_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
 [FX_alpha_var_vec3, Gxa_alpha_var_vec3] = MF96_FX_vec(SL_vec, mean(ALPHA_6_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_6_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
 
-% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
-% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
-% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+[~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+[~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+[~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.3*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
 
-figure('Name','Last fig 2','NumberTitle', 7 + last_fig_FY0)
+figure('Name','FX(kappa): fitted in pure conditions','NumberTitle', 5 + last_fig_FY0)
 hold on
-plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5) %'MarkerEdgeColor','y',
-plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5) %'MarkerEdgeColor','c',
-plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FX,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FX,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
 
-plot(SL_vec,FX_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
-plot(SL_vec,FX_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
-plot(SL_vec,FX_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
-legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fx($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
+plot(SL_vec,FX_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#0072BD')
+plot(SL_vec,FX_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#D95319')
+plot(SL_vec,FX_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#EDB120')
+legend({'Raw with $\alpha_0 = 0 deg $','Raw with $\alpha_3 = 3 deg $','Raw with $ \alpha_6 = 6 deg $', 'Fx($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
 
-figure('Name','Gxa coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+figure('Name','Gxa(kappa) as function of kappa','NumberTitle', 6 + last_fig_FY0)
 hold on
 plot(SL_vec,Gxa_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
 plot(SL_vec,Gxa_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
@@ -916,25 +870,29 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, '
 xlabel('$\kappa$ [-]')
 ylabel('$G_{xa}$ [-]')
 
-% To be done!
-% figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
-% hold on
-% plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
-% plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
-% plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
-% legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
-% xlabel('$\alpha$ [rad]')
-% ylabel('$G_{xa}$ [-]')
+figure('Name','Gxa(alpha) as function of alpha','NumberTitle', 7 + last_fig_FY0)
+hold on
+plot(SA_vec*to_deg,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SA_vec*to_deg,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SA_vec*to_deg,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$G_{xa}$ [-]')
 
-%% Combined lateral force FY in pure conditions
-% with camber equal to 0 and vertical load equal to 220N
+%% --Combined longitudinal force FY: same dataset (combined)
 
+% For figure number:
+last_fig_FX = 7 + last_fig_FY0;
+
+%% ---FY: fitting in pure conditions (variable alpha, gamma = 0, Fz = 220N)
+% choose the range with: variable side slip angle, camber angle = 0, vertical
+% load = 220N (obv within the higher pressure dataset)
 
 % Fit the coeffs {rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6}
 
 % Guess values for parameters to be optimised
 %   [ rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6 ]
-P0_y_dalpha = [14, 13, -0.5, 0.98, 0.03, -0.23, 3.8, -0.1, 28.4  ];
+P0_y_dalpha = [ 14 , 13, -0.5 , 0.98 , 0.03 , -0.23 , 3.8 , -0.1 , 28.4  ];
 
 % Limits for parameters to be optimised
 lb_y_dalpha = [ ];
@@ -947,11 +905,8 @@ KAPPA_vec_y_dalpha = TData_x_dalpha.SL;
 ALPHA_vec_y_dalpha = TData_x_dalpha.SA;
 FY_vec_dalpha    = TData_x_dalpha.FY;
 
-figure('Name','Non so cosa sia combined ma di y', 'NumberTitle', 10 + last_fig_FY0)
-plot(KAPPA_vec_y_dalpha,FY_vec_dalpha);
 
-
-% LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
+% Minimize the residual:
 [P_y_dalpha,fval,exitflag] = fmincon(@(P)resid_Fy_varAlpha(P,FY_vec_dalpha, KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha,tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl),...
                                P0_y_dalpha,[],[],[],[],lb_y_dalpha,ub_y_dalpha);
 
@@ -967,15 +922,6 @@ plot(KAPPA_vec_y_dalpha,FY_vec_dalpha);
     tyre_coeffs_pl.rVy6 = P_y_dalpha(9); 
 
 
-[FY_dalpha_vec,~] = MF96_FY_vec(KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha, tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl);
-
-figure('Name','Fy vs Alpha', 'NumberTitle', 11 + last_fig_FY0)
-plot(KAPPA_vec_y_dalpha,TData_x_dalpha.FY,'o')
-hold on
-plot(KAPPA_vec_y_dalpha,FY_dalpha_vec,'-')
-xlabel('$\kappa$ [-]')
-ylabel('$F_{x} (\alpha)$ [N]')
-
 tmp_zeros_dalpha = zeros(size(SL_vec));
 tmp_ones_dalpha = ones(size(SL_vec));
 
@@ -983,24 +929,24 @@ tmp_ones_dalpha = ones(size(SL_vec));
 [FY_alpha_var_vec2, Gyk_alpha_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_3_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
 [FY_alpha_var_vec3, Gyk_alpha_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_dalpha.SA)*tmp_ones_dalpha , tmp_zeros_dalpha, mean(ALPHA_6_dalpha.FZ)*tmp_ones_dalpha,tyre_coeffs_pl);
 
-% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
-% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
-% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+[~, Gyk_gamma_var_vec1] = MF96_FY_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+[~, Gyk_gamma_var_vec2] = MF96_FY_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+[~, Gyk_gamma_var_vec3] = MF96_FY_vec(0.3*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
-figure('Name','Last fig 3','NumberTitle', 12 + last_fig_FY0)
+figure('Name','FY(kappa): fitted in pure conditions','NumberTitle', 1 + last_fig_FX)
 hold on
-plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
-plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
-plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FY,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FY,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FY,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
 
-plot(SL_vec,FY_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
-plot(SL_vec,FY_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
-plot(SL_vec,FY_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+plot(SL_vec,FY_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#0072BD')
+plot(SL_vec,FY_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#D95319')
+plot(SL_vec,FY_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#EDB120')
 legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
 
-figure('Name','Gyk coeffs as function of kappa','NumberTitle', 13 + last_fig_FY0)
+figure('Name','Gyk(kappa) as function of kappa','NumberTitle', 2 + last_fig_FX)
 hold on
 plot(SL_vec,Gyk_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
 plot(SL_vec,Gyk_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
@@ -1010,23 +956,23 @@ xlabel('$\kappa$ [-]')
 ylabel('$G_{xa}$ [-]')
 
 % To be done!
-% figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
-% hold on
-% plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
-% plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
-% plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
-% legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
-% xlabel('$\alpha$ [rad]')
-% ylabel('$G_{xa}$ [-]')
+figure('Name','Gyk(alpha) as function of alpha','NumberTitle', 3 + last_fig_FX)
+hold on
+plot(SA_vec*to_deg,Gyk_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+plot(SA_vec*to_deg,Gyk_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+plot(SA_vec*to_deg,Gyk_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$G_{xa}$ [-]')
 
 
-%% Combined lateral force FY with variable Fz
-% = variable slip angle, camber angle = 0
+%% ---FY(Fz): fitting with variable Fz
+% Consider the 4 cases of different vertical load and camber angle = 0, obv
+% variable alpha
 
-[TData_y_comb_dFz, ~] = GAMMA_0_comb;
+TData_y_comb_dFz = GAMMA_0_comb;
 
-
-figure('Name','Combined range for variable loads', 'NumberTitle', 14 + last_fig_FY0)
+figure('Name','FY(Fz): considered dataset', 'NumberTitle', 4 + last_fig_FX)
 plot_selected_data(TData_y_comb_dFz);
 
 %Extract various load conditions
@@ -1331,7 +1277,7 @@ ylabel('$F_{y}$ [N]')
 [FY_dgamma2_var_vec1, Gxa_dgamma2_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_2_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 
 
-figure('Name','Fy, alpha = 6°, variable Fz','NumberTitle', 23 + last_fig_FY0)
+figure('Name','Fy, alpha = 6°, variable camber','NumberTitle', 23 + last_fig_FY0)
 hold on
 plot(ALPHA_6_y_comb_dgamma.SL,ALPHA_6_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
 plot(SL_vec,FY_dgamma0_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
