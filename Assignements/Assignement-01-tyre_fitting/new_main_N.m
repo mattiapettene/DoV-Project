@@ -29,18 +29,395 @@ to_deg = 180/pi;
 
 data_set_path = 'dataset/';
 
-%% --Pure longitudinal force FX0: Biral file
-
-
-
 %% --Initialization phase for tyre coefficients
-SL_vec = -0.3:0.001:0.3;
-
-% Last figure of the pure longitudinal part
-last_fig_FX0 = 0;
-
 tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
 
+
+%% --Pure longitudinal force FX0: dataset import
+
+data_set = 'Hoosier_B1464run30'; % pure lateral forces
+
+fprintf('Loading dataset: ')
+
+switch data_set
+  case 'Hoosier_B1464run30'
+      fprintf('for pure longitudinal force analysis.')
+      load ([data_set_path, data_set]); % pure lateral
+
+  otherwise 
+  error('Not found dataset: `%s`\n', data_set) ;
+  
+end
+
+% select dataset portion (at the higher pressure)
+  cut_start = 19028;
+  cut_end   = 37643;
+
+
+smpl_range = cut_start:cut_end;
+
+fprintf('\ncompleted!')
+
+%% ---Dataset for pure longitudinal: plot
+
+figure ('Name','FX0: entire raw dataset', 'NumberTitle', 1)
+tiledlayout(6,1)
+
+ax_list_x(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
+plot(-FZ)
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+
+ax_list_x(2) = nexttile; y_range = [min(min(IA),0) round(max(IA)*1.1)];
+plot(IA)
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_x(3) = nexttile; y_range = [min(min(SA),0) round(max(SA)*1.1)];
+plot(SA)
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Side slip')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_x(4) = nexttile; y_range = [min(min(SL),0) round(max(SL)*1.1)];
+plot(SL)
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Longitudinal slip')
+xlabel('Samples [-]')
+ylabel('[-]')
+
+ax_list_x(5) = nexttile; y_range = [min(min(P),0) round(max(P)*1.1)];
+plot(P)
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Tyre pressure')
+xlabel('Samples [-]')
+ylabel('[psi]')
+
+ax_list_x(6) = nexttile;  y_range = [min(min(TSTC),0) round(max(TSTC)*1.1)];
+plot(TSTC,'DisplayName','Center')
+hold on
+plot(TSTI,'DisplayName','Internal')
+plot(TSTO,'DisplayName','Outboard')
+hold on
+plot([cut_start cut_start],y_range,'--r')
+plot([cut_end cut_end],y_range,'--r')
+title('Tyre temperatures')
+xlabel('Samples [-]')
+ylabel('[degC]')
+
+linkaxes(ax_list_x,'x')
+
+%% ---Higher pressure dataset for pure longitudunal force: table selection and plot
+% consider the high pressure region of original dataset (more stable one)
+
+vec_samples = 1:1:length(smpl_range);
+tyre_data = table();
+% store raw data in table
+tyre_data.SL =  SL(smpl_range);
+tyre_data.SA =  SA(smpl_range)*to_rad;
+tyre_data.FZ = -FZ(smpl_range);
+tyre_data.FX =  FX(smpl_range);
+tyre_data.FY =  FY(smpl_range);
+tyre_data.MZ =  MZ(smpl_range);
+tyre_data.IA =  IA(smpl_range)*to_rad;
+
+% Extract points at constant inclination angle
+GAMMA_tol = 0.05*to_rad;
+idx.GAMMA_0 = 0.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 0.0*to_rad+GAMMA_tol;
+idx.GAMMA_1 = 1.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 1.0*to_rad+GAMMA_tol;
+idx.GAMMA_2 = 2.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 2.0*to_rad+GAMMA_tol;
+idx.GAMMA_3 = 3.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 3.0*to_rad+GAMMA_tol;
+idx.GAMMA_4 = 4.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 4.0*to_rad+GAMMA_tol;
+idx.GAMMA_5 = 5.0*to_rad-GAMMA_tol < tyre_data.IA & tyre_data.IA < 5.0*to_rad+GAMMA_tol;
+GAMMA_0  = tyre_data( idx.GAMMA_0, : );
+GAMMA_1  = tyre_data( idx.GAMMA_1, : );
+GAMMA_2  = tyre_data( idx.GAMMA_2, : );
+GAMMA_3  = tyre_data( idx.GAMMA_3, : );
+GAMMA_4  = tyre_data( idx.GAMMA_4, : );
+GAMMA_5  = tyre_data( idx.GAMMA_5, : );
+
+% Extract points at constant vertical load
+% Test data done at: 
+%  - 50lbf  ( 50*0.453592*9.81 =  223N )
+%  - 150lbf (150*0.453592*9.81 =  667N )
+%  - 200lbf (200*0.453592*9.81 =  890N )
+%  - 250lbf (250*0.453592*9.81 = 1120N )
+
+FZ_tol = 100;
+idx.FZ_220  = 220-FZ_tol < tyre_data.FZ & tyre_data.FZ < 220+FZ_tol;
+idx.FZ_440  = 440-FZ_tol < tyre_data.FZ & tyre_data.FZ < 440+FZ_tol;
+idx.FZ_700  = 700-FZ_tol < tyre_data.FZ & tyre_data.FZ < 700+FZ_tol;
+idx.FZ_900  = 900-FZ_tol < tyre_data.FZ & tyre_data.FZ < 900+FZ_tol;
+idx.FZ_1120 = 1120-FZ_tol < tyre_data.FZ & tyre_data.FZ < 1120+FZ_tol;
+FZ_220  = tyre_data( idx.FZ_220, : );
+FZ_440  = tyre_data( idx.FZ_440, : );
+FZ_700  = tyre_data( idx.FZ_700, : );
+FZ_900  = tyre_data( idx.FZ_900, : );
+FZ_1120 = tyre_data( idx.FZ_1120, : );
+
+% The slip angle is varied continuously between -4 and +12° and then
+% between -12° and +4° for the pure slip case
+
+% The slip angle is varied step wise for longitudinal slip tests
+% 0° , - 3° , -6 °
+SA_tol = 0.5*to_rad;
+idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
+idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
+idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
+SA_0     = tyre_data( idx.SA_0, : );
+SA_3neg  = tyre_data( idx.SA_3neg, : );
+SA_6neg  = tyre_data( idx.SA_6neg, : );
+
+figure('Name','FX0: higher pressure dataset with regions', 'NumberTitle', 2)
+tiledlayout(3,1)
+
+ax_list_2_x(1) = nexttile;
+plot(tyre_data.IA*to_deg)
+hold on
+plot(vec_samples(idx.GAMMA_0),GAMMA_0.IA*to_deg,'.');
+plot(vec_samples(idx.GAMMA_1),GAMMA_1.IA*to_deg,'.');
+plot(vec_samples(idx.GAMMA_2),GAMMA_2.IA*to_deg,'.');
+plot(vec_samples(idx.GAMMA_3),GAMMA_3.IA*to_deg,'.');
+plot(vec_samples(idx.GAMMA_4),GAMMA_4.IA*to_deg,'.');
+plot(vec_samples(idx.GAMMA_5),GAMMA_5.IA*to_deg,'.');
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_2_x(2) = nexttile;
+plot(tyre_data.FZ)
+hold on
+plot(vec_samples(idx.FZ_220),FZ_220.FZ,'.');
+plot(vec_samples(idx.FZ_440),FZ_440.FZ,'.');
+plot(vec_samples(idx.FZ_700),FZ_700.FZ,'.');
+plot(vec_samples(idx.FZ_900),FZ_900.FZ,'.');
+plot(vec_samples(idx.FZ_1120),FZ_1120.FZ,'.');
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+
+
+ax_list_2_x(3) = nexttile;
+plot(tyre_data.SA*to_deg)
+hold on
+plot(vec_samples(idx.SA_0),   SA_0.SA*to_deg,'.');
+plot(vec_samples(idx.SA_3neg),SA_3neg.SA*to_deg,'.');
+plot(vec_samples(idx.SA_6neg),SA_6neg.SA*to_deg,'.');
+title('Side slip')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+%% ---FX0: fitting in pure conditions (gamma = 0, Fz = 220N)
+% choose the range with: side slip = 0, camber angle = 0, vertical
+% load = Fz = 220N (obv within the higher pressure dataset)
+
+[TData0, ~] = intersect_table_data( SA_0, GAMMA_0, FZ_220 );
+
+figure('Name','FY0: pure conditions range', 'NumberTitle', 3)
+plot_selected_data(TData0);
+
+% Fit the coeffs {pCx1, pDx1, pEx1, pEx4, pKx1, pHx1, pVx1}
+
+FZ0 = mean(TData0.FZ);
+
+zeros_vec = zeros(size(TData0.SL));
+ones_vec  = ones(size(TData0.SL));
+
+% Initial guess (import from initialization of tyre_coeffs)
+FX0_guess = MF96_FX0_vec(TData0.SL,zeros_vec , zeros_vec, tyre_coeffs_pl.FZ0*ones_vec, tyre_coeffs_pl);
+
+% Check pure longitudinal force guess
+figure('Name','FX0: guess', 'NumberTitle', 4)
+plot(TData0.SL,TData0.FX,'.')
+hold on
+plot(TData0.SL,FX0_guess,'.')
+hold off
+legend({'Raw data','Guess FX0'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x0}$ [N]')
+
+% Guess values for parameters to be optimised
+%    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
+P0 = [  1,   2,   1,  0,   0,   1,   0]; 
+
+% Limits for parameters to be optimised
+%    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
+lb = [1,   0.1,   0,   0,  -10,    0,   -10];
+ub = [2,    4,   1,   1,   10,   100,  10];
+
+
+KAPPA_vec = TData0.SL;
+FX_vec    = TData0.FX;
+
+% Vector for plotting: Side slip vector from -12.5° to 12.5°
+SL_vec = -0.3:0.001:0.3;
+
+% Minimization of the residual
+[P_fz_nom,fval,exitflag] = fmincon(@(P)resid_pure_Fx(P,FX_vec, KAPPA_vec,0,FZ0, tyre_coeffs_pl),...
+                               P0,[],[],[],[],lb,ub);
+
+% Update tyre data with new optimal values                             
+tyre_coeffs_pl.pCx1 = P_fz_nom(1) ;
+tyre_coeffs_pl.pDx1 = P_fz_nom(2) ;  
+tyre_coeffs_pl.pEx1 = P_fz_nom(3) ;
+tyre_coeffs_pl.pEx4 = P_fz_nom(4) ;
+tyre_coeffs_pl.pHx1 = P_fz_nom(5) ; 
+tyre_coeffs_pl.pKx1 = P_fz_nom(6) ;
+tyre_coeffs_pl.pVx1 = P_fz_nom(7) ;
+
+res_FX0 = resid_pure_Fx(P_fz_nom , FX_vec(1), SL_vec(1), 0 , mean(TData0.FZ), tyre_coeffs_pl);
+
+
+% Plot of the optimized solution
+FX0_fz_nom_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
+                              FZ0.*ones(size(SL_vec)),tyre_coeffs_pl);
+
+% Result of the fitting FY0 in the pure conditions
+figure('Name','FX0: fitted in pure conditions','NumberTitle', 5)
+plot(TData0.SL,TData0.FX,'o')
+hold on
+plot(SL_vec,FX0_fz_nom_vec,'-','LineWidth',2)
+legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x0}$ [N]')
+
+%% ---FY0(Fz): fitting with variable Fz
+% extract data with variable load, side slip equal to 0, camber angle equal to 0
+[TDataDFz, ~] = intersect_table_data( SA_0, GAMMA_0 );
+
+zeros_vec = zeros(size(TDataDFz.SL));
+ones_vec  = ones(size(TDataDFz.SL));
+
+% Guess values for parameters to be optimised
+%    [pDx2 pEx2 pEx3 pHx2  pKx2  pKx3  pVx2] 
+P0_dFz = [  0,   0,   0,  0,   0,   0,   0]; 
+
+% Limits for parameters to be optimised
+lb = [];
+ub = [];
+
+KAPPA_vec = TDataDFz.SL;
+FX_vec    = TDataDFz.FX;
+FZ_vec    = TDataDFz.FZ;
+
+% check guess
+FX0_dfz_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
+                           TDataDFz.FZ,tyre_coeffs_pl);
+
+figure('Name','FX0(Fz): guess', 'NumberTitle', 6)
+plot(KAPPA_vec,FX_vec,'.')
+hold on
+plot(SL_vec,FX0_dfz_vec,'.')
+legend({'Raw data variable load','Guess FX0'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x0}(Fz)$ [N]')
+
+% Residual minimization
+[P_dfz,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varFz(P,FX_vec, KAPPA_vec,0,FZ_vec, tyre_coeffs_pl),...
+                               P0_dFz,[],[],[],[],lb,ub);
+
+% Change tyre data with new optimal values                             
+tyre_coeffs_pl.pDx2 = P_dfz(1) ;
+tyre_coeffs_pl.pEx2 = P_dfz(2) ;  
+tyre_coeffs_pl.pEx3 = P_dfz(3) ;
+tyre_coeffs_pl.pHx2 = P_dfz(4) ;
+tyre_coeffs_pl.pKx2 = P_dfz(5) ; 
+tyre_coeffs_pl.pKx3 = P_dfz(6) ;
+tyre_coeffs_pl.pVx2 = P_dfz(7) ; 
+
+res_FX0_dfz_vec = resid_pure_Fx_varFz(P_dfz,FX_vec,SL_vec,0 , FZ_vec,tyre_coeffs_pl);
+
+tmp_zeros = zeros(size(SL_vec));
+tmp_ones = ones(size(SL_vec));
+
+FX0_fz_var_vec1 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec2 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec3 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec4 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
+
+figure('Name','Fx0(Fz0)')
+plot(TDataDFz.SL,TDataDFz.FX,'o')
+hold on
+%plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
+%plot(SL_vec,FX0_dfz_vec,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2)
+
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x0}$ [N]')
+
+
+figure('Name','FX0(Fz): fitted with variable Fz','NumberTitle', 7)
+hold on
+plot(TDataDFz.SL,TDataDFz.FX,'o')
+hold on
+plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2)
+plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2)
+hold off
+legend({'Raw data', '$Fx(Fz_{220})$','$Fx(Fz_{700})$','$Fx(Fz_{900})$','$Fx(Fz_{1120})$'}, 'Location','eastoutside');
+xlabel('$\kappa$ [.]')
+ylabel('$F_{x0}(Fz)$ [N]')
+
+%% ---FX0(gamma): fitting with variable camber(gamma)
+% extract data with the same vertical load (Fz = 220N)
+[TDataGamma, ~] = intersect_table_data( SA_0, FZ_220 );
+
+% Fit the coeffs { pDx3}
+
+% Guess values for parameters to be optimised
+P0_dgamma = [0]; 
+
+% Limits for parameters to be optimised
+lb = [];
+ub = [];
+
+zeros_vec = zeros(size(TDataGamma.SL));
+ones_vec  = ones(size(TDataGamma.SL));
+
+KAPPA_vec = TDataGamma.SL;
+GAMMA_vec = TDataGamma.IA; 
+FX_vec    = TDataGamma.FX;
+FZ_vec    = TDataGamma.FZ;
+
+[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0_dgamma,[],[],[],[],lb,ub);
+
+% Change tyre data with new optimal values                             
+tyre_coeffs_pl.pDx3 = P_varGamma(1) ; % 1
+
+FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+
+figure('Name','FX0(Gamma): fitted with variable camber','NumberTitle', 8)
+plot(KAPPA_vec,TDataGamma.FX,'o')
+hold on
+plot(KAPPA_vec,FX0_varGamma_vec,'-')
+xlabel('$\kappa$ [-]')
+ylabel('$F_{x0}$ [N]')
+
+% Calculate the residuals with the optimal solution found above
+res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+%% -------------last figure FX0-------------
+last_fig_FX0 = 8;
 
 %% --Pure lateral force FY0: dataset import
 
@@ -130,6 +507,7 @@ xlabel('Samples [-]')
 ylabel('[degC]')
 
 linkaxes(ax_list,'x')
+
 %% ---Higher pressure dataset for pure lateral force: table selection and plot
 % consider the high pressure region of original dataset (more stable one)
 
@@ -388,14 +766,19 @@ FY0_fz_var_vec5 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_112
 
 
 figure('Name','FY0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FX0)
-plot(TDataDFz_pl.SA*to_deg,TDataDFz_pl.FY,'o')
 hold on
-plot(SA_vec*to_deg,FY0_fz_var_vec1,'.','LineWidth',2)
-plot(SA_vec*to_deg,FY0_fz_var_vec2,'.','LineWidth',2)
-plot(SA_vec*to_deg,FY0_fz_var_vec3,'.','LineWidth',2)
-plot(SA_vec*to_deg,FY0_fz_var_vec4,'.','LineWidth',2)
-plot(SA_vec*to_deg,FY0_fz_var_vec5,'.','LineWidth',2)
-legend({'Raw data', '$Fy(Fz_{220})$','$Fy(Fz_{440})$','$Fy(Fz_{700})$','$Fy(Fz_{900})$','$Fy(Fz_{1120})$'}, 'Location','eastoutside');
+plot(FZ_220_pl_dFz.SA*to_deg,FZ_220_pl_dFz.FY,'o', 'Color', [1 0.4 0.4])
+plot(FZ_440_pl_dFz.SA*to_deg,FZ_440_pl_dFz.FY,'o', 'Color', [0.6 0.8 1])
+plot(FZ_700_pl_dFz.SA*to_deg,FZ_700_pl_dFz.FY,'o', 'Color', [0.5 1 0.5])
+plot(FZ_900_pl_dFz.SA*to_deg,FZ_900_pl_dFz.FY,'o', 'Color', [0.8 0.6 1])
+plot(FZ_1120_pl_dFz.SA*to_deg,FZ_1120_pl_dFz.FY,'o', 'Color', [0.6 1 1])
+plot(SA_vec*to_deg,FY0_fz_var_vec1,'.','LineWidth',2, 'Color', 'r')
+plot(SA_vec*to_deg,FY0_fz_var_vec2,'.','LineWidth',2, 'Color', 'b')
+plot(SA_vec*to_deg,FY0_fz_var_vec3,'.','LineWidth',2, 'Color', 'g')
+plot(SA_vec*to_deg,FY0_fz_var_vec4,'.','LineWidth',2, 'Color', 'm')
+plot(SA_vec*to_deg,FY0_fz_var_vec5,'.','LineWidth',2, 'Color', 'c')
+hold off
+legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fy(Fz_{220})$','$Fy(Fz_{440})$','$Fy(Fz_{700})$','$Fy(Fz_{900})$','$Fy(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(Fz)$ [N]')
 
