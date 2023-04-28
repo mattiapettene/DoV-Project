@@ -1360,7 +1360,7 @@ plot_selected_data(TData0_mz);
 
 %% FITTING - PURE ALIGNING MOMENT
 % initialise tyre data
-tyre_coeffs_mz = initialise_tyre_data(R0, Fz0);
+tyre_coeffs_mz = initialise_tyre_data_ply(R0, Fz0);
 
 %% Fitting with Fz=Fz_nom= 220N and camber=0  k = 0 VX= 10
 % ------------------
@@ -1386,7 +1386,8 @@ plot(TData0_mz.SA,MZ0_guess,'.')
 
 % Guess values for parameters to be optimised
 %    {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
-P0_mz = [  1,   1,   1,   1,   1,   1,   1,   1,  1 ]; 
+P0_mz = [  1,   1,   1,   1,   1,   1,   1,   1,   1 ];  % nostri buoni
+% P0_mz = [  0,   1.5,   1,   1,   1.5,  0,   0,   0,   0 ];    % prove
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -1468,34 +1469,11 @@ plot(TDataDFz_mz.SA,MZ0_guess,'.')
 
 % Guess values for parameters to be optimised
 % [qBz2, qBz3, qDz2, qDz7, qEz2, qEz3, qHz2]
-P0_mz_dFz = [ 0,  0,  0,  0,  0,  0,   0 ]; 
-%P0_mz_dFz = [ -0.47,  -0.61,  -0.55,  0.17,  -0.17,  -0.33,   -0.33 ]; 
 
-% pacejkaParam.qBz1 = 0.735347522395674424e1;
-% pacejkaParam.qBz2 = -0.471595003290210268e1;
-% pacejkaParam.qBz3 = -0.617019496981862137e1;
-% pacejkaParam.qBz4 = -0.281057344706274137e0;
-% pacejkaParam.qBz5 = -0.281558360232466165e0;
-% pacejkaParam.qBz9 = 0.0e0;
-% pacejkaParam.qBz10 = 0.0e0;
-% pacejkaParam.qCz1 = 0.167097884314218659e1;
-% pacejkaParam.qDz1 = 0.197223329858039587e0;
-% pacejkaParam.qDz2 = -0.549111816154102678e-1;
-% pacejkaParam.qDz3 = -0.331843325657877664e1;
-% pacejkaParam.qDz4 = 0.425363302221465247e2;
-% pacejkaParam.qDz6 = 0.307532725022004920e-2;
-% pacejkaParam.qDz7 = 0.171847774709159469e-1;
-% pacejkaParam.qDz8 = -0.182587609907207016e1;
-% pacejkaParam.qDz9 = -0.796929452914325709e0;
-% pacejkaParam.qEz1 = 0.515207229031359293e0;
-% pacejkaParam.qEz2 = -0.169617162475272587e1;
-% pacejkaParam.qEz3 = -0.339063846665825697e1;
-% pacejkaParam.qEz4 = 0.164755141111870729e0;
-% pacejkaParam.qEz5 = -0.968793770573581625e1;
-% pacejkaParam.qHz1 = -0.106709285011951892e-1;
-% pacejkaParam.qHz2 = -0.337395160043653126e-2;
-% pacejkaParam.qHz3 = 0.720767969228802485e0;
-% pacejkaParam.qHz4 = 0.934620620316319178e-1;
+P0_mz_dFz = [ 0,  0,  0,  0,  0,  0,   0 ]; 
+
+%P0_mz_dFz = [-0.70,	0.053, 0.008, -0.0087, 0.0012,-1.314e-4, 0.0968];
+%P0_mz_dFz = [ -0.47e1,  -0.61e1,  -0.55e-1,  0.17e-1,  -0.17e1,  -0.33e1,   -0.33e-2 ]; 
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -1537,6 +1515,7 @@ tyre_coeffs_mz.qDz7 = P_dfz_mz(4);
 tyre_coeffs_mz.qEz2 = P_dfz_mz(5);
 tyre_coeffs_mz.qEz3 = P_dfz_mz(6);
 tyre_coeffs_mz.qHz2 = P_dfz_mz(7);
+
 
 res_MZ0_dfz_vec = resid_pure_Mz_varFz(P_dfz_mz, mz_vec, SA_vec, 0 , FZ_vec, tyre_coeffs_mz);
 
@@ -1605,150 +1584,148 @@ ylabel('$M_{z0}$ [N]')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Fit coefficient with variable camber
+
+
+SA_tol = 0.5*to_rad;
+idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
+idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
+idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
+SA_0_LAT     = tyre_data( idx.SA_0, : );
+
+% extract data with variable load
+[TDataGamma_mz, ~] = intersect_table_data(SL_0, FZ_220);
+
+% Extract points at constant camber and plot
+GAMMA_tol_mz_dgamma = 0.05*to_rad;
+idx_pl_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 0.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_pl_dgamma.GAMMA_1 = 1.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 1.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_pl_dgamma.GAMMA_2 = 2.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 2.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_pl_dgamma.GAMMA_3 = 3.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 3.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_pl_dgamma.GAMMA_4 = 4.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 4.0*to_rad+GAMMA_tol_mz_dgamma;
+
+GAMMA_0_dgamma  = TDataGamma_mz( idx_pl_dgamma.GAMMA_0, : );
+GAMMA_1_dgamma  = TDataGamma_mz( idx_pl_dgamma.GAMMA_1, : );
+GAMMA_2_dgamma  = TDataGamma_mz( idx_pl_dgamma.GAMMA_2, : );
+GAMMA_3_dgamma  = TDataGamma_mz( idx_pl_dgamma.GAMMA_3, : );
+GAMMA_4_dgamma  = TDataGamma_mz( idx_pl_dgamma.GAMMA_4, : );
+
+
+% Fit the coeffs { qBz4, qBz5, qDz3, qDz4, qEz5, qDz8, qDz9, qHz3, qHz4 }
+% Guess values for parameters to be optimised
+P0_gamma_mz = [1, 0, 0, 0, 0, 0, 0, 0, 0];
+
+% NOTE: many local minima => limits on parameters are fundamentals
+% Limits for parameters to be optimised
+% 1< pCx1 < 2 
+% 0< pEx1 < 1 
+%lb = [0, 0,  0, 0,  0,  0,  0];
+%ub = [2, 1e6,1, 1,1e1,1e2,1e2];
+lb = [-100, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1];
+ub = [100, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+
+
+zeros_vec = zeros(size(TDataGamma_mz.IA));
+ones_vec  = ones(size(TDataGamma_mz.IA));
+
+ALPHA_vec = TDataGamma_mz.SA;
+GAMMA_vec = TDataGamma_mz.IA; 
+MZ_vec    = TDataGamma_mz.MZ;
+FZ_vec    = TDataGamma_mz.FZ;
+
+figure()
+plot(ALPHA_vec, MZ_vec);
+
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
+% is an unconstrained minimization problem 
+[P_varGamma_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz_varGamma(P,MZ_vec, ALPHA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs_mz),...
+                               P0_gamma_mz,[],[],[],[],lb,ub);
+
+% Change tyre data with new optimal values       
+
+tyre_coeffs_mz.qBz4 = P_varGamma_mz(1); 
+tyre_coeffs_mz.qBz5 = P_varGamma_mz(2);
+tyre_coeffs_mz.qDz3 = P_varGamma_mz(3);
+tyre_coeffs_mz.qDz4 = P_varGamma_mz(4);
+tyre_coeffs_mz.qEz5 = P_varGamma_mz(5);
+tyre_coeffs_mz.qDz8 = P_varGamma_mz(6);
+tyre_coeffs_mz.qDz9 = P_varGamma_mz(7);
+tyre_coeffs_mz.qHz3 = P_varGamma_mz(8);
+tyre_coeffs_mz.qHz4 = P_varGamma_mz(9);
+
+% FY0_varGamma_vec = MF96_FY0_vec(zeros_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_mz.FZ0*ones_vec,tyre_coeffs_mz);
 % 
-% %% Fit coefficient with variable camber
-% 
-% 
-% SA_tol = 0.5*to_rad;
-% idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
-% idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
-% idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
-% SA_0_LAT     = tyre_data( idx.SA_0, : );
-% 
-% % extract data with variable load
-% [TDataGamma, ~] = intersect_table_data(SL_0, FZ_220);
-% 
-% % Extract points at constant camber and plot
-% GAMMA_tol_pl_dgamma = 0.05*to_rad;
-% idx_pl_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 0.0*to_rad+GAMMA_tol_pl_dgamma;
-% idx_pl_dgamma.GAMMA_1 = 1.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 1.0*to_rad+GAMMA_tol_pl_dgamma;
-% idx_pl_dgamma.GAMMA_2 = 2.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 2.0*to_rad+GAMMA_tol_pl_dgamma;
-% idx_pl_dgamma.GAMMA_3 = 3.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 3.0*to_rad+GAMMA_tol_pl_dgamma;
-% idx_pl_dgamma.GAMMA_4 = 4.0*to_rad-GAMMA_tol_pl_dgamma < TDataGamma.IA & TDataGamma.IA < 4.0*to_rad+GAMMA_tol_pl_dgamma;
-% 
-% GAMMA_0_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_0, : );
-% GAMMA_1_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_1, : );
-% GAMMA_2_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_2, : );
-% GAMMA_3_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_3, : );
-% GAMMA_4_dgamma  = TDataGamma( idx_pl_dgamma.GAMMA_4, : );
-% 
-% 
-% % Fit the coeffs { pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4 }
-% % Guess values for parameters to be optimised
-% P0_gamma = [0.51e1, 1.88, -0.42e1, -2.04, 0.13e1, -0.29e1, -0.28e1];
-% 
-% % NOTE: many local minima => limits on parameters are fundamentals
-% % Limits for parameters to be optimised
-% % 1< pCx1 < 2 
-% % 0< pEx1 < 1 
-% %lb = [0, 0,  0, 0,  0,  0,  0];
-% %ub = [2, 1e6,1, 1,1e1,1e2,1e2];
-% lb = [5,1,-100,-2.5,0,-100,-100];
-% ub = [100,100,0,-0.1,100,0,0];
-% 
-% %NB -> cambiato pHy3 con -2.043155252823728 uscito dall'analisi con side
-% %slip = 0 intersecato con FZ_220. Pesa molto l'upper bound al quale cerca
-% %di avvicinarsi il più possibile, più è grande in modulo, più si allargano
-% %tra loro le curve al centro. alternativa allo 0.1 è 0.15 dove si allargano
-% %leggermente di più. agli estremi rimangono pressochè uguali e attaccate
-% 
-% zeros_vec = zeros(size(TDataGamma.IA));
-% ones_vec  = ones(size(TDataGamma.IA));
-% 
-% ALPHA_vec = TDataGamma.SA;
-% GAMMA_vec = TDataGamma.IA; 
-% FY_vec    = TDataGamma.FY;
-% FZ_vec    = TDataGamma.FZ;
-% 
-% figure()
-% plot(ALPHA_vec,FY_vec);
-% 
-% 
-% % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
-% % is an unconstrained minimization problem 
-% [P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec, ALPHA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs_mz),...
-%                                P0_gamma,[],[],[],[],lb,ub);
-% 
-% % Change tyre data with new optimal values                             
-% tyre_coeffs_mz.pDy3 = P_varGamma(1); % 1
-% tyre_coeffs_mz.pEy3 = P_varGamma(2); 
-% tyre_coeffs_mz.pEy4 = P_varGamma(3);
-% tyre_coeffs_mz.pHy3 = P_varGamma(4); 
-% tyre_coeffs_mz.pKy3 = P_varGamma(5); 
-% tyre_coeffs_mz.pVy3 = P_varGamma(6); 
-% tyre_coeffs_mz.pVy4 = P_varGamma(7); 
-% 
-% % FY0_varGamma_vec = MF96_FY0_vec(zeros_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_mz.FZ0*ones_vec,tyre_coeffs_mz);
-% % 
-% % figure('Name','Fy0 vs Gamma')
-% % plot(ALPHA_vec*to_deg,TDataGamma.FY,'o')
-% % hold on
-% % plot(ALPHA_vec*to_deg,FY0_varGamma_vec,'.')
-% % xlabel('$\alpha$ [deg]')
-% % ylabel('$F_{y0}$ [N]')
-% 
-% FY0_gamma_var_vec1 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_0_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
-% FY0_gamma_var_vec2 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_1_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
-% FY0_gamma_var_vec3 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_2_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
-% FY0_gamma_var_vec4 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_3_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
-% FY0_gamma_var_vec5 = MF96_FY0_vec(zeros_vec, SA_vec ,mean(GAMMA_4_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
-% 
-% 
-% figure()
+% figure('Name','Fy0 vs Gamma')
+% plot(ALPHA_vec*to_deg,TDataGamma.FY,'o')
 % hold on
-% plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
-% plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
-% plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
-% plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
-% plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
-% plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
-% plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
-% plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
-% plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
-% plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
-% legend({'$ \gamma_0 = 0 deg $','$ \gamma_1 = 1 deg $','$ \gamma_2 = 2 deg $','$ \gamma_3 = 3 deg$','$ \gamma_4 = 4 deg $', 'Fy($\gamma_0$)','Fy($\gamma_1$)','Fy($\gamma_2$)','Fy($\gamma_3$)','Fy($\gamma_4$)'}, 'Location','eastoutside');
+% plot(ALPHA_vec*to_deg,FY0_varGamma_vec,'.')
 % xlabel('$\alpha$ [deg]')
 % ylabel('$F_{y0}$ [N]')
+
+MZ0_gamma_var_vec1 = MF96_MZ0_vec(zeros_vec, SA_vec ,mean(GAMMA_0_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
+MZ0_gamma_var_vec2 = MF96_MZ0_vec(zeros_vec, SA_vec ,mean(GAMMA_1_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
+MZ0_gamma_var_vec3 = MF96_MZ0_vec(zeros_vec, SA_vec ,mean(GAMMA_2_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
+MZ0_gamma_var_vec4 = MF96_MZ0_vec(zeros_vec, SA_vec ,mean(GAMMA_3_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
+MZ0_gamma_var_vec5 = MF96_MZ0_vec(zeros_vec, SA_vec ,mean(GAMMA_4_dgamma.IA)*ones_vec, mean(TDataGamma.FZ)*ones_vec,tyre_coeffs_mz);
+
+
+figure()
+hold on
+plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.MZ,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.MZ,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.MZ,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.MZ,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
+plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.MZ,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(SA_vec*to_deg,MZ0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
+legend({'$ \gamma_0 = 0 deg $','$ \gamma_1 = 1 deg $','$ \gamma_2 = 2 deg $','$ \gamma_3 = 3 deg$','$ \gamma_4 = 4 deg $', 'Mz($\gamma_0$)','Mz($\gamma_1$)','Mz($\gamma_2$)','Mz($\gamma_3$)','Mz($\gamma_4$)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}$ [N]')
+
+
+% Calculate the residuals with the optimal solution found above
+res_Mz0_varGamma  = resid_pure_Mz_varGamma(P_varGamma_mz,MZ_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_mz.FZ0, tyre_coeffs_mz);
+
+% % R-squared is 
+% % 1-SSE/SST
+% % SSE/SST = res_Fx0_nom
+% 
+% % SSE is the sum of squared error,  SST is the sum of squared total
+% fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
 % 
 % 
-% % Calculate the residuals with the optimal solution found above
-% res_Fy0_varGamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec, ALPHA_vec, GAMMA_vec, tyre_coeffs_mz.FZ0, tyre_coeffs_mz);
-% 
-% % % R-squared is 
-% % % 1-SSE/SST
-% % % SSE/SST = res_Fx0_nom
+% [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs.FZ0, tyre_coeffs);
 % % 
-% % % SSE is the sum of squared error,  SST is the sum of squared total
-% % fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
-% % 
-% % 
-% % [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs.FZ0, tyre_coeffs);
-% % % 
-% % fprintf('Bx      = %6.3f\n',Bx);
-% % fprintf('Cx      = %6.3f\n',Cx);
-% % fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
-% % fprintf('Ex      = %6.3f\n',Ex);
-% % fprintf('SVx     = %6.3f\n',SVx);
-% % fprintf('kappa_x = %6.3f\n',kappa__x);
-% % fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
+% fprintf('Bx      = %6.3f\n',Bx);
+% fprintf('Cx      = %6.3f\n',Cx);
+% fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
+% fprintf('Ex      = %6.3f\n',Ex);
+% fprintf('SVx     = %6.3f\n',SVx);
+% fprintf('kappa_x = %6.3f\n',kappa__x);
+% fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
+
+% % Longitudinal stiffness
+% Kx_vec = zeros(size(load_vec));
+% for i = 1:length(load_vec)
+%   [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, 0, load_vec(i), tyre_data);
+%   Kx_vec(i) = Bx*Cx*Dx/tyre_data.Fz0;
+% end
 % 
-% % % Longitudinal stiffness
-% % Kx_vec = zeros(size(load_vec));
-% % for i = 1:length(load_vec)
-% %   [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, 0, load_vec(i), tyre_data);
-% %   Kx_vec(i) = Bx*Cx*Dx/tyre_data.Fz0;
-% % end
-% % 
-% % figure('Name','Kx vs Fz')
-% % plot(load_vec,Kx_vec,'o-')
-% 
-% %% Save tyre data structure to mat file
-% %
-% save(['tyre_' data_set,'.mat'],'tyre_coeffs_mz');
-% 
-% 
-% 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
+% figure('Name','Kx vs Fz')
+% plot(load_vec,Kx_vec,'o-')
+
+%% Save tyre data structure to mat file
+%
+save(['tyre_' data_set,'.mat'],'tyre_coeffs_mz');
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
