@@ -58,6 +58,7 @@ smpl_range = cut_start:cut_end;
 
 fprintf('\ncompleted!')
 
+
 %% ---Dataset for pure longitudinal: plot
 
 figure ('Name','FX0: entire raw dataset', 'NumberTitle', 1)
@@ -160,12 +161,10 @@ GAMMA_5  = tyre_data( idx.GAMMA_5, : );
 
 FZ_tol = 100;
 idx.FZ_220  = 220-FZ_tol < tyre_data.FZ & tyre_data.FZ < 220+FZ_tol;
-idx.FZ_440  = 440-FZ_tol < tyre_data.FZ & tyre_data.FZ < 440+FZ_tol;
 idx.FZ_700  = 700-FZ_tol < tyre_data.FZ & tyre_data.FZ < 700+FZ_tol;
 idx.FZ_900  = 900-FZ_tol < tyre_data.FZ & tyre_data.FZ < 900+FZ_tol;
 idx.FZ_1120 = 1120-FZ_tol < tyre_data.FZ & tyre_data.FZ < 1120+FZ_tol;
 FZ_220  = tyre_data( idx.FZ_220, : );
-FZ_440  = tyre_data( idx.FZ_440, : );
 FZ_700  = tyre_data( idx.FZ_700, : );
 FZ_900  = tyre_data( idx.FZ_900, : );
 FZ_1120 = tyre_data( idx.FZ_1120, : );
@@ -203,7 +202,6 @@ ax_list_2_x(2) = nexttile;
 plot(tyre_data.FZ)
 hold on
 plot(vec_samples(idx.FZ_220),FZ_220.FZ,'.');
-plot(vec_samples(idx.FZ_440),FZ_440.FZ,'.');
 plot(vec_samples(idx.FZ_700),FZ_700.FZ,'.');
 plot(vec_samples(idx.FZ_900),FZ_900.FZ,'.');
 plot(vec_samples(idx.FZ_1120),FZ_1120.FZ,'.');
@@ -228,7 +226,7 @@ ylabel('[deg]')
 
 [TData0, ~] = intersect_table_data( SA_0, GAMMA_0, FZ_220 );
 
-figure('Name','FY0: pure conditions range', 'NumberTitle', 3)
+figure('Name','FX0: pure conditions range', 'NumberTitle', 3)
 plot_selected_data(TData0);
 
 % Fit the coeffs {pCx1, pDx1, pEx1, pEx4, pKx1, pHx1, pVx1}
@@ -296,9 +294,20 @@ legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
 
-%% ---FY0(Fz): fitting with variable Fz
+%% ---FX0(Fz): fitting with variable Fz
 % extract data with variable load, side slip equal to 0, camber angle equal to 0
 [TDataDFz, ~] = intersect_table_data( SA_0, GAMMA_0 );
+
+% extract subsets with the same vertical load
+idx.FZ_220_dFz  = 220-FZ_tol < TDataDFz.FZ & TDataDFz.FZ < 220+FZ_tol;
+idx.FZ_440_dFz  = 440-FZ_tol < TDataDFz.FZ & TDataDFz.FZ < 440+FZ_tol;
+idx.FZ_700_dFz  = 700-FZ_tol < TDataDFz.FZ & TDataDFz.FZ < 700+FZ_tol;
+idx.FZ_900_dFz  = 900-FZ_tol < TDataDFz.FZ & TDataDFz.FZ < 900+FZ_tol;
+idx.FZ_1120_dFz = 1120-FZ_tol < TDataDFz.FZ & TDataDFz.FZ < 1120+FZ_tol;
+FZ_220_dFz  = TDataDFz( idx.FZ_220_dFz, : );
+FZ_700_dFz  = TDataDFz( idx.FZ_700_dFz, : );
+FZ_900_dFz  = TDataDFz( idx.FZ_900_dFz, : );
+FZ_1120_dFz = TDataDFz( idx.FZ_1120_dFz, : );
 
 zeros_vec = zeros(size(TDataDFz.SL));
 ones_vec  = ones(size(TDataDFz.SL));
@@ -317,7 +326,7 @@ FZ_vec    = TDataDFz.FZ;
 
 % check guess
 FX0_dfz_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
-                           TDataDFz.FZ,tyre_coeffs_pl);
+                           tyre_coeffs_pl.FZ0*ones(size(SL_vec)),tyre_coeffs_pl);
 
 figure('Name','FX0(Fz): guess', 'NumberTitle', 6)
 plot(KAPPA_vec,FX_vec,'.')
@@ -350,30 +359,19 @@ FX0_fz_var_vec2 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_
 FX0_fz_var_vec3 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
 FX0_fz_var_vec4 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
 
-figure('Name','Fx0(Fz0)')
-plot(TDataDFz.SL,TDataDFz.FX,'o')
-hold on
-%plot(TDataSub.KAPPA,FX0_fz_nom_vec,'-')
-%plot(SL_vec,FX0_dfz_vec,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2)
-
-xlabel('$\kappa$ [-]')
-ylabel('$F_{x0}$ [N]')
-
 
 figure('Name','FX0(Fz): fitted with variable Fz','NumberTitle', 7)
 hold on
-plot(TDataDFz.SL,TDataDFz.FX,'o')
-hold on
-plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2)
-plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2)
+plot(FZ_220_dFz.SL,FZ_220_dFz.FX,'.','Color',[0.8500 0.3250 0.0980])
+plot(FZ_700_dFz.SL,FZ_700_dFz.FX,'.','Color',[0.6350 0.0780 0.1840])
+plot(FZ_900_dFz.SL,FZ_900_dFz.FX,'.','Color',[0.4940 0.1840 0.5560])
+plot(FZ_1120_dFz.SL,FZ_1120_dFz.FX,'.','Color',[0.3010 0.7450 0.9330])
+plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2,'Color',[1 0.7 0.34])
+plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2,'Color','r')
+plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2,'Color','m')
+plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2,'Color','c')
 hold off
-legend({'Raw data', '$Fx(Fz_{220})$','$Fx(Fz_{700})$','$Fx(Fz_{900})$','$Fx(Fz_{1120})$'}, 'Location','eastoutside');
+legend({'Raw with $Fz=220N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fx(Fz_{220})$','$Fx(Fz_{700})$','$Fx(Fz_{900})$','$Fx(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\kappa$ [.]')
 ylabel('$F_{x0}(Fz)$ [N]')
 
@@ -416,7 +414,7 @@ ylabel('$F_{x0}$ [N]')
 % Calculate the residuals with the optimal solution found above
 res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
-%% -------------last figure FX0-------------
+%% ---------------last figure FX0---------------
 last_fig_FX0 = 8;
 
 %% --Pure lateral force FY0: dataset import
@@ -938,9 +936,10 @@ res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dga
 % figure('Name','Kx vs Fz')
 % plot(load_vec,Kx_vec,'o-')
 
-%% --Combined longitudinal force FX: dataset import
+%% ---------------last figure FX---------------
+last_fig_FY0 = 11 + last_fig_FX0;
 
-last_fig_FY0 = 13 + last_fig_FX0;
+%% --Combined longitudinal force FX: dataset import
 
 % Change dataset: load and select the region analysis
 data_set = 'Hoosier_B1464run30'; % combined behaviour
@@ -1194,11 +1193,11 @@ linkaxes(ax_list_7,'x')
 
 % Guess values for parameters to be optimised
 %   [rBx1, rBx2, rCx1, rHx1]
-P0_x_dalpha = [ -5 , 1 , 10 , 0 ];
+P0_x_dalpha = [ -11 , -11 , 1 , 0 ];
 
 % Limits for parameters to be optimised
-lb_x_dalpha = [ -10, -10, -10, 0 ];
-ub_x_dalpha = [ 20, 20, 20, 0];
+lb_x_dalpha = [ -17, -16.5, -0.5, -0.015 ];
+ub_x_dalpha = [ 20, 20, 10, 0.015];
 
 zeros_vec_x_dalpha = zeros(size(TData_x_dalpha.IA));
 ones_vec_x_dalpha  = ones(size(TData_x_dalpha.IA));
@@ -1263,10 +1262,13 @@ legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eas
 xlabel('$\alpha$ [deg]')
 ylabel('$G_{xa}$ [-]')
 
-%% --Combined longitudinal force FY: same dataset (combined)
 
+%% ---------------last figure FY0---------------
 % For figure number:
 last_fig_FX = 7 + last_fig_FY0;
+
+%% --Combined longitudinal force FY: same dataset (combined)
+
 
 %% ---FY: fitting in pure conditions (variable alpha, gamma = 0, Fz = 220N)
 % choose the range with: variable side slip angle, camber angle = 0, vertical
@@ -1337,7 +1339,7 @@ plot(SL_vec,Gyk_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
 plot(SL_vec,Gyk_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
 legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
-ylabel('$G_{xa}$ [-]')
+ylabel('$G_{yk}$ [-]')
 
 % To be done!
 figure('Name','Gyk(alpha) as function of alpha','NumberTitle', 3 + last_fig_FX)
@@ -1347,7 +1349,7 @@ plot(SA_vec*to_deg,Gyk_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
 plot(SA_vec*to_deg,Gyk_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
 legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
-ylabel('$G_{xa}$ [-]')
+ylabel('$G_{yk}$ [-]')
 
 
 %% ---FY(Fz): fitting with variable Fz
@@ -1518,7 +1520,7 @@ ylabel('$F_{y}$ [N]')
 [FY_dFz900_alpha3_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_900_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
 [FY_dFz1120_alpha3_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_1120_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
 
-figure('Name','Fy(Fz) with alpha = 3 deg','NumberTitle', 8 + last_fig_FX)
+figure('Name','FY(Fz) with alpha = 3 deg','NumberTitle', 8 + last_fig_FX)
 hold on
 plot(alpha3_FZ_220_y_comb_dFz.SL,alpha3_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79]) %'MarkerEdgeColor','m',
 plot(alpha3_FZ_700_y_comb_dFz.SL,alpha3_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.85 0.64]) %'MarkerEdgeColor','m',
@@ -1537,7 +1539,7 @@ ylabel('$F_{y}(Fz)$ [N]')
 [FY_dFz900_alpha6_vec1, Gxa_dFz900_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_900_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
 [FY_dFz1120_alpha6_vec1, Gxa_dFz1120_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(FZ_1120_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
 
-figure('Name','Fy(Fz) with alpha = 6 deg','NumberTitle', 9 + last_fig_FX)
+figure('Name','FY(Fz) with alpha = 6 deg','NumberTitle', 9 + last_fig_FX)
 hold on
 plot(alpha6_FZ_220_y_comb_dFz.SL,alpha6_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79]) %'MarkerEdgeColor','m',
 plot(alpha6_FZ_700_y_comb_dFz.SL,alpha6_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.85 0.64]) %'MarkerEdgeColor','m',
@@ -1707,7 +1709,7 @@ tmp_ones_comb_dgamma = ones(size(SL_vec));
 [FY_dgamma1_alpha3_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_1_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_3_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 [FY_dgamma2_alpha3_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_2_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_3_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 
-figure('Name','Fy(gamma) with alpha = 3deg','NumberTitle', 11 + last_fig_FX)
+figure('Name','FY(gamma) with alpha = 3deg','NumberTitle', 11 + last_fig_FX)
 hold on
 plot(alpha3_gamma0_y_comb_dgamma.SL,alpha3_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79])
 plot(alpha3_gamma2_y_comb_dgamma.SL,alpha3_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 1 0.4])
@@ -1723,7 +1725,7 @@ ylabel('$F_{y}(\gamma)$ [N]')
 [FY_dgamma1_alpha6_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_1_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_6_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 [FY_dgamma2_alpha6_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_2_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_6_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 
-figure('Name','Fy(gamma) with alpha = 6deg','NumberTitle', 12 + last_fig_FX)
+figure('Name','FY(gamma) with alpha = 6deg','NumberTitle', 12 + last_fig_FX)
 hold on
 plot(alpha6_gamma0_y_comb_dgamma.SL,alpha6_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79])
 plot(alpha6_gamma2_y_comb_dgamma.SL,alpha6_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 1 0.4])
