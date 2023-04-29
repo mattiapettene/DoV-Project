@@ -37,7 +37,7 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(kappa, a
   LMUY            = tyre_data.LMUY;
   LT              = tyre_data.LT;
   
-  [By, Cy, SVy, Kya, SHy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
+  [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
 
  % main code
 
