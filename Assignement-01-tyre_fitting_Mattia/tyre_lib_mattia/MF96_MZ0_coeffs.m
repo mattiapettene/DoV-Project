@@ -1,5 +1,5 @@
 % Coefficients for Magic Formula self aligning moment
-function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(kappa, alpha, phi, Fz, tyre_data)
+function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, SHt, SHf] = MF96_MZ0_coeffs(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 
