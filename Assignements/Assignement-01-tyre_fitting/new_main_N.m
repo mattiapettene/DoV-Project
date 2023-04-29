@@ -237,7 +237,7 @@ zeros_vec = zeros(size(TData0.SL));
 ones_vec  = ones(size(TData0.SL));
 
 % Initial guess (import from initialization of tyre_coeffs)
-FX0_guess = MF96_FX0_vec(TData0.SL,zeros_vec , zeros_vec, tyre_coeffs_pl.FZ0*ones_vec, tyre_coeffs_pl);
+[FX0_guess,~] = MF96_FX0_vec(TData0.SL,zeros_vec , zeros_vec, tyre_coeffs_pl.FZ0*ones_vec, tyre_coeffs_pl);
 
 % Check pure longitudinal force guess
 figure('Name','FX0: guess', 'NumberTitle', 4)
@@ -282,7 +282,7 @@ res_FX0 = resid_pure_Fx(P_fz_nom , FX_vec(1), SL_vec(1), 0 , mean(TData0.FZ), ty
 
 
 % Plot of the optimized solution
-FX0_fz_nom_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
+[FX0_fz_nom_vec,~] = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
                               FZ0.*ones(size(SL_vec)),tyre_coeffs_pl);
 
 % Result of the fitting FY0 in the pure conditions
@@ -325,7 +325,7 @@ FX_vec    = TDataDFz.FX;
 FZ_vec    = TDataDFz.FZ;
 
 % check guess
-FX0_dfz_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
+[FX0_dfz_vec,~] = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
                            tyre_coeffs_pl.FZ0*ones(size(SL_vec)),tyre_coeffs_pl);
 
 figure('Name','FX0(Fz): guess', 'NumberTitle', 6)
@@ -354,10 +354,10 @@ res_FX0_dfz_vec = resid_pure_Fx_varFz(P_dfz,FX_vec,SL_vec,0 , FZ_vec,tyre_coeffs
 tmp_zeros = zeros(size(SL_vec));
 tmp_ones = ones(size(SL_vec));
 
-FX0_fz_var_vec1 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
-FX0_fz_var_vec2 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
-FX0_fz_var_vec3 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
-FX0_fz_var_vec4 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
+[FX0_fz_var_vec1, Kxk_fz_var_vec1] = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
+[FX0_fz_var_vec2, Kxk_fz_var_vec2] = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+[FX0_fz_var_vec3, Kxk_fz_var_vec3] = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
+[FX0_fz_var_vec4, Kxk_fz_var_vec4] = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
 
 
 figure('Name','FX0(Fz): fitted with variable Fz','NumberTitle', 7)
@@ -374,6 +374,33 @@ hold off
 legend({'Raw with $Fz=220N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fx(Fz_{220})$','$Fx(Fz_{700})$','$Fx(Fz_{900})$','$Fx(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\kappa$ [.]')
 ylabel('$F_{x0}(Fz)$ [N]')
+
+figure('Name','Kxk(Fz): cornering stiffness as function of Fz','NumberTitle', 8)
+hold on
+plot(mean(FZ_220_dFz.FZ),Kxk_fz_var_vec1(1),'+')
+plot(mean(FZ_700_dFz.FZ),Kxk_fz_var_vec2(1),'+')
+plot(mean(FZ_900_dFz.FZ),Kxk_fz_var_vec3(1),'+')
+plot(mean(FZ_1120_dFz.FZ),Kxk_fz_var_vec4(1),'+')
+hold off
+legend({'Kxk($Fz_{220}$)','Kxk($Fz_{700}$)','Kxk($Fz_{900}$)','Kxk($Fz_{1120}$)'}, 'Location','eastoutside');
+xlabel('$Fz$ [N]')
+ylabel('$K_{kx}(Fz)$ [-]')
+
+Calfa_vec1_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec2_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec3_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec4_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
+
+figure('Name','Kxk(kappa): cornering stiffness as function of kappa','NumberTitle', 9)
+hold on
+plot(SL_vec,Calfa_vec1_x,'-','LineWidth',2)
+plot(SL_vec,Calfa_vec2_x,'-','LineWidth',2)
+plot(SL_vec,Calfa_vec3_x,'-','LineWidth',2)
+plot(SL_vec,Calfa_vec4_x,'-','LineWidth',2)
+hold off
+legend({'Kxk($Fz_{220}$)','Kxk($Fz_{700}$)','Kxk($Fz_{900}$)','Kxk($Fz_{1120}$)'}, 'Location','eastoutside');
+xlabel('$\kappa$ [-]')
+ylabel('$K_{kx}(Fz)$ [-]')
 
 %% ---FX0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N)
@@ -402,9 +429,9 @@ FZ_vec    = TDataGamma.FZ;
 % Change tyre data with new optimal values                             
 tyre_coeffs_pl.pDx3 = P_varGamma(1) ; % 1
 
-FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+[FX0_varGamma_vec,~] = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
 
-figure('Name','FX0(Gamma): fitted with variable camber','NumberTitle', 8)
+figure('Name','FX0(Gamma): fitted with variable camber','NumberTitle', 10)
 plot(KAPPA_vec,TDataGamma.FX,'o')
 hold on
 plot(KAPPA_vec,FX0_varGamma_vec,'-')
@@ -415,7 +442,7 @@ ylabel('$F_{x0}$ [N]')
 res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 %% ---------------last figure FX0---------------
-last_fig_FX0 = 8;
+last_fig_FX0 = 10;
 
 %% --Pure lateral force FY0: dataset import
 
@@ -611,7 +638,7 @@ zeros_vec_pl = zeros(size(TData0_pl.SA));
 ones_vec_pl  = ones(size(TData0_pl.SA));
 
 % Initial guess (import from initialization of tyre_coeffs)
-FY0_guess = MF96_FY0_vec(zeros_vec_pl, TData0_pl.SA , zeros_vec_pl, tyre_coeffs_pl.FZ0*ones_vec_pl, tyre_coeffs_pl);
+[FY0_guess,~] = MF96_FY0_vec(zeros_vec_pl, TData0_pl.SA , zeros_vec_pl, tyre_coeffs_pl.FZ0*ones_vec_pl, tyre_coeffs_pl);
 
 % Check lateral pure force guess
 figure('Name','FY0: guess', 'NumberTitle', 4 + last_fig_FX0)
@@ -654,7 +681,7 @@ res_FY0 = resid_pure_Fy(P_fz_nom_pl , FY_vec, SA_vec, 0 , mean(TData0_pl.FZ), ty
 
 
 % Plot of the optimized solution
-FY0_fz_nom_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , zeros(size(SA_vec)), ...
+[FY0_fz_nom_vec,~] = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , zeros(size(SA_vec)), ...
                               mean(TData0_pl.FZ).*ones(size(SA_vec)),tyre_coeffs_pl);
 
 % Result of the fitting FY0 in the pure conditions
@@ -730,7 +757,7 @@ FY_vec_dFz    = TDataDFz_pl.FY;
 FZ_vec_dFz    = TDataDFz_pl.FZ;
 
 % check guess for variable load
-FY0_dfz_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
+[FY0_dfz_vec,~] = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
                               mean(FZ_220_pl_dFz.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
 figure('Name','FY0(Fz): guess', 'NumberTitle', 7 + last_fig_FX0)
@@ -756,11 +783,11 @@ res_FY0_dfz = resid_pure_Fy_varFz(P_dfz_pl , FY_vec_dFz,SA_vec, 0 , FZ_vec_dFz, 
 tmp_zeros_dFz = zeros(size(SA_vec));
 tmp_ones_dFz = ones(size(SA_vec));
 
-FY0_fz_var_vec1 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-FY0_fz_var_vec2 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-FY0_fz_var_vec3 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_700_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-FY0_fz_var_vec4 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-FY0_fz_var_vec5 = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec1, Kya_fz_var_vec1] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec2, Kya_fz_var_vec2] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec3, Kya_fz_var_vec3] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_700_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec4, Kya_fz_var_vec4] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec5, Kya_fz_var_vec5] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 
 
 figure('Name','FY0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FX0)
@@ -779,6 +806,37 @@ hold off
 legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fy(Fz_{220})$','$Fy(Fz_{440})$','$Fy(Fz_{700})$','$Fy(Fz_{900})$','$Fy(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(Fz)$ [N]')
+
+% Stiffness
+figure('Name','Kya(Fz): cornering stiffness as function of Fz','NumberTitle', 9 + last_fig_FX0)
+hold on
+plot(mean(FZ_220_pl_dFz.FZ),Kya_fz_var_vec1(1),'+','MarkerSize',10)
+plot(mean(FZ_440_pl_dFz.FZ),Kya_fz_var_vec2(1),'+','MarkerSize',10)
+plot(mean(FZ_700_pl_dFz.FZ),Kya_fz_var_vec3(1),'+','MarkerSize',10)
+plot(mean(FZ_900_pl_dFz.FZ),Kya_fz_var_vec4(1),'+','MarkerSize',10)
+plot(mean(FZ_1120_pl_dFz.FZ),Kya_fz_var_vec5(1),'+','MarkerSize',10)
+hold off
+legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
+xlabel('$Fz$ [N]')
+ylabel('$K_{ya}(Fz)$')
+
+Calfa_vec1_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+Calfa_vec2_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+Calfa_vec3_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_700_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+Calfa_vec4_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+Calfa_vec5_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+
+figure('Name','Kya(alpha): cornering stiffness as function of alpha','NumberTitle', 10 + last_fig_FX0)
+hold on
+plot(SA_vec*to_deg,Calfa_vec1_y,'-','LineWidth',2)
+plot(SA_vec*to_deg,Calfa_vec2_y,'-','LineWidth',2)
+plot(SA_vec*to_deg,Calfa_vec3_y,'-','LineWidth',2)
+plot(SA_vec*to_deg,Calfa_vec4_y,'-','LineWidth',2)
+plot(SA_vec*to_deg,Calfa_vec5_y,'-','LineWidth',2)
+hold off
+legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$K_{kx}(Fz)$ [-]')
 
 %% ---FY0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
@@ -802,7 +860,7 @@ GAMMA_3_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_3, : );
 GAMMA_4_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_4, : );
 
 % Plot
-figure('Name','FY0(gamma): considered dataset', 'NumberTitle', 9 + last_fig_FX0)
+figure('Name','FY0(gamma): considered dataset', 'NumberTitle', 11 + last_fig_FX0)
 tiledlayout(3,1)
 ax_list_4(1) = nexttile;
 plot(TDataGamma_pl.IA*to_deg)
@@ -855,9 +913,9 @@ GAMMA_vec_dgamma = TDataGamma_pl.IA;
 FY_vec_dgamma    = TDataGamma_pl.FY;
 FZ_vec_dgamma    = TDataGamma_pl.FZ;
 
-FY0_varGamma_vec = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , GAMMA_vec_dgamma, tyre_coeffs_pl.FZ0*ones(size(SA_vec)),tyre_coeffs_pl);
+[FY0_varGamma_vec,~] = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , GAMMA_vec_dgamma, tyre_coeffs_pl.FZ0*ones(size(SA_vec)),tyre_coeffs_pl);
 
-figure('Name','FY0(gamma): guess', 'NumberTitle', 10 + last_fig_FX0)
+figure('Name','FY0(gamma): guess', 'NumberTitle', 12 + last_fig_FX0)
 plot(ALPHA_vec_dgamma,TDataGamma_pl.FY,'o')
 hold on
 plot(SA_vec,FY0_varGamma_vec,'.','MarkerSize',5)
@@ -881,14 +939,14 @@ tyre_coeffs_pl.pVy4 = P_varGamma(7);
 tmp_zeros_dgamma = zeros(size(SA_vec));
 tmp_ones_dgamma = ones(size(SA_vec));
 
-FY0_gamma_var_vec1 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_0_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
-FY0_gamma_var_vec2 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_1_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
-FY0_gamma_var_vec3 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_2_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
-FY0_gamma_var_vec4 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_3_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
-FY0_gamma_var_vec5 = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_4_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
+[FY0_gamma_var_vec1,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_0_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
+[FY0_gamma_var_vec2,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_1_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
+[FY0_gamma_var_vec3,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_2_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
+[FY0_gamma_var_vec4,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_3_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
+[FY0_gamma_var_vec5,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_4_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
 
 
-figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 11 + last_fig_FX0)
+figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 13 + last_fig_FX0)
 hold on
 plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
 plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
@@ -936,7 +994,7 @@ res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dga
 % plot(load_vec,Kx_vec,'o-')
 
 %% ---------------last figure FY0---------------
-last_fig_FY0 = 11 + last_fig_FX0;
+last_fig_FY0 = 13 + last_fig_FX0;
 
 %% --Pure self aligning moment MZO: same dataset (lateral)
 cut_start_mz = 27760;
@@ -947,7 +1005,7 @@ smpl_range_mz = cut_start_mz:cut_end_mz;
 
 %% ---Dataset for pure self-aligning moment MZ0: plot
 
-figure ('Name','MZO: entire raw dataset', 'NumberTitle', 1 + last_fig_FY0)
+figure ('Name','MZ0: entire raw dataset', 'NumberTitle', 1 + last_fig_FY0)
 tiledlayout(6,1)
 
 ax_list_mz(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
@@ -1272,7 +1330,7 @@ legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with
 xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}(Fz)$ [Nm]')
 
-%% ---FY0(gamma): fitting with variable camber(gamma)
+%% ---MZ0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
 TDataGamma_mz = FZ_220_mz;
 
