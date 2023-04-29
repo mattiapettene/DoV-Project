@@ -130,11 +130,11 @@ vec_samples = 1:1:length(smpl_range);
 tyre_data = table();
 % store raw data in table
 tyre_data.SL =  SL(smpl_range);
-tyre_data.SA =  SA(smpl_range)*to_rad;
+tyre_data.SA = -SA(smpl_range)*to_rad;
 tyre_data.FZ = -FZ(smpl_range);
 tyre_data.FX =  FX(smpl_range);
-tyre_data.FY =  FY(smpl_range);
-tyre_data.MZ =  MZ(smpl_range);
+tyre_data.FY = -FY(smpl_range);
+tyre_data.MZ = -MZ(smpl_range);
 tyre_data.IA =  IA(smpl_range)*to_rad;
 
 % Extract points at constant inclination angle
@@ -176,8 +176,8 @@ FZ_1120 = tyre_data( idx.FZ_1120, : );
 % 0° , - 3° , -6 °
 SA_tol = 0.5*to_rad;
 idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
-idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
-idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
+idx.SA_3neg = 3*to_rad-SA_tol < tyre_data.SA & tyre_data.SA < 3*to_rad+SA_tol;
+idx.SA_6neg = 6*to_rad-SA_tol < tyre_data.SA & tyre_data.SA < 6*to_rad+SA_tol;
 SA_0     = tyre_data( idx.SA_0, : );
 SA_3neg  = tyre_data( idx.SA_3neg, : );
 SA_6neg  = tyre_data( idx.SA_6neg, : );
@@ -544,8 +544,8 @@ tyre_data_pl.SL =  SL(smpl_range_pl);
 tyre_data_pl.SA = -SA(smpl_range_pl)*to_rad;    % SAE -> Adapted SAE
 tyre_data_pl.FZ = -FZ(smpl_range_pl);           % SAE -> Adapted SAE
 tyre_data_pl.FX =  FX(smpl_range_pl);
-tyre_data_pl.FY =  FY(smpl_range_pl);   
-tyre_data_pl.MZ =  MZ(smpl_range_pl);
+tyre_data_pl.FY = -FY(smpl_range_pl);   
+tyre_data_pl.MZ = -MZ(smpl_range_pl);
 tyre_data_pl.IA =  IA(smpl_range_pl)*to_rad;
 
 % Extract points at constant camber angle
@@ -651,12 +651,12 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
 
 % Guess values for parameters to be optimised
-%       [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1]
-P0_pl = [ 1, 1,	1,	1,	1,	1,	1 ]; 
+%       [pCy1  pDy1  pEy1   pHy1    pKy1    pKy2   pVy1]
+P0_pl = [ 1.3, 0.9,   0, -0.0018, -15.34,  1.7, -0.006 ]; 
 
 % Limits for parameters to be optimised
-lb_pl = [ ];
-ub_pl = [ ];
+lb_pl = [  ];
+ub_pl = [  ];
 
 ALPHA_vec = TData0_pl.SA;
 FY_vec    = TData0_pl.FY;
@@ -745,7 +745,7 @@ ones_vec_pl  = ones(size(TDataDFz_pl.SA));
 
 % Guess values for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
-P0_pl_dFz =[ 0, 0, 0, 0 ];   
+P0_pl_dFz =[ -0.05, 0, 0.005, 0.03  ];   
 
 % Limits for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
@@ -836,7 +836,7 @@ plot(SA_vec*to_deg,Calfa_vec5_y,'-','LineWidth',2)
 hold off
 legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
-ylabel('$K_{kx}(Fz)$ [-]')
+ylabel('$K_{ya}(Fz)$ [-]')
 
 %% ---FY0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
@@ -898,12 +898,12 @@ linkaxes(ax_list_4,'x')
 % Fit the coeffs {pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4}
 
 % Guess values for parameters to be optimised
-%   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-P0_pl_dgamma = [ 0.51e1 , 1.88 , -0.42e1 , -2.04 , 0.13e1 , -0.29e1 , -0.28e1 ];
+%              [pDy3,  pEy3, pEy4, pHy3, pKy3, pVy3, pVy4 ]
+P0_pl_dgamma = [   0, 0.098,   -7,  0.3,  0.4, -0.1, -0.4 ];
 
 % Limits for parameters to be optimised
-lb_dgamma = [5,1,-100,-2.5,0,-100,-100];
-ub_dgamma = [100,100,0,-0.1,100,0,0];
+lb_dgamma = [ ];
+ub_dgamma = [ ];
 
 zeros_vec_dgamma = zeros(size(TDataGamma_pl.IA));
 ones_vec_dgamma  = ones(size(TDataGamma_pl.IA));
