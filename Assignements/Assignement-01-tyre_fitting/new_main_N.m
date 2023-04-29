@@ -865,8 +865,7 @@ legend({'Raw data variable camber','Guess FY0(gamma)'}, 'Location','eastoutside'
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
 
-% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
-% is an unconstrained minimization problem 
+% Residual minimization
 [P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
                                P0_pl_dgamma,[],[],[],[],lb_dgamma,ub_dgamma);
 
@@ -936,8 +935,438 @@ res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dga
 % figure('Name','Kx vs Fz')
 % plot(load_vec,Kx_vec,'o-')
 
-%% ---------------last figure FX---------------
+%% ---------------last figure FY0---------------
 last_fig_FY0 = 11 + last_fig_FX0;
+
+%% --Pure self aligning moment MZO: same dataset (lateral)
+cut_start_mz = 27760;
+cut_end_mz = 54500;
+
+% select dataset portion
+smpl_range_mz = cut_start_mz:cut_end_mz;
+
+%% ---Dataset for pure self-aligning moment MZ0: plot
+
+figure ('Name','MZO: entire raw dataset', 'NumberTitle', 1 + last_fig_FY0)
+tiledlayout(6,1)
+
+ax_list_mz(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
+plot(-FZ)
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+
+ax_list_mz(2) = nexttile; y_range = [min(min(IA),0) round(max(IA)*1.1)];
+plot(IA)
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_mz(3) = nexttile; y_range = [min(min(SA),0) round(max(SA)*1.1)];
+plot(SA)
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Side slip')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_mz(4) = nexttile; y_range = [min(min(MZ),0) round(max(MZ)*1.1)];
+plot(MZ)
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Aligning moment')
+xlabel('Samples [-]')
+ylabel('[Nm]')
+
+ax_list_mz(5) = nexttile; y_range = [min(min(P),0) round(max(P)*1.1)];
+plot(P)
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Tyre pressure')
+xlabel('Samples [-]')
+ylabel('[Pa]')
+
+ax_list_mz(6) = nexttile;  y_range = [min(min(TSTC),0) round(max(TSTC)*1.1)];
+plot(TSTC,'DisplayName','Center')
+hold on
+plot(TSTI,'DisplayName','Internal')
+plot(TSTO,'DisplayName','Outboard')
+hold on
+plot([cut_start_mz cut_start_mz],y_range,'--r')
+plot([cut_end_mz cut_end_mz],y_range,'--r')
+title('Tyre temperatures')
+xlabel('Samples [-]')
+ylabel('[degC]')
+
+linkaxes(ax_list_mz,'x')
+
+%% ---Higher pressure dataset for pure self-aligning moment: table selection and plot
+% consider the high pressure region of original dataset (more stable one)
+
+vec_samples_mz = 1:1:length(smpl_range_mz);
+tyre_data_mz = table(); % create empty table
+% store raw data in table
+tyre_data_mz.SL =  SL(smpl_range_mz);
+tyre_data_mz.SA = -SA(smpl_range_mz)*to_rad;
+tyre_data_mz.FZ = -FZ(smpl_range_mz); 
+tyre_data_mz.FX =  FX(smpl_range_mz);
+tyre_data_mz.FY =  FY(smpl_range_mz);
+tyre_data_mz.MZ =  MZ(smpl_range_mz);
+tyre_data_mz.IA =  IA(smpl_range_mz)*to_rad;
+
+% Extract points at constant camber angle
+
+% Test data done at: 
+%  - 0 deg
+%  - 1 deg
+%  - 2 deg
+%  - 3 deg
+%  - 4 deg
+% in the following order: (0 2 4 1 3)*2
+
+GAMMA_tol_mz = 0.05*to_rad;
+idx_mz.GAMMA_0 = 0.0*to_rad-GAMMA_tol_mz < tyre_data_mz.IA & tyre_data_mz.IA < 0.0*to_rad+GAMMA_tol_mz;
+idx_mz.GAMMA_1 = 1.0*to_rad-GAMMA_tol_mz < tyre_data_mz.IA & tyre_data_mz.IA < 1.0*to_rad+GAMMA_tol_mz;
+idx_mz.GAMMA_2 = 2.0*to_rad-GAMMA_tol_mz < tyre_data_mz.IA & tyre_data_mz.IA < 2.0*to_rad+GAMMA_tol_mz;
+idx_mz.GAMMA_3 = 3.0*to_rad-GAMMA_tol_mz < tyre_data_mz.IA & tyre_data_mz.IA < 3.0*to_rad+GAMMA_tol_mz;
+idx_mz.GAMMA_4 = 4.0*to_rad-GAMMA_tol_mz < tyre_data_mz.IA & tyre_data_mz.IA < 4.0*to_rad+GAMMA_tol_mz;
+GAMMA_0_mz  = tyre_data_mz( idx_mz.GAMMA_0, : );
+GAMMA_1_mz  = tyre_data_mz( idx_mz.GAMMA_1, : );
+GAMMA_2_mz  = tyre_data_mz( idx_mz.GAMMA_2, : );
+GAMMA_3_mz  = tyre_data_mz( idx_mz.GAMMA_3, : );
+GAMMA_4_mz  = tyre_data_mz( idx_mz.GAMMA_4, : );
+
+% Extract points at constant vertical load
+% Test data done at: 
+%  - 50lbf  ( 50*0.453592*9.81 =  223N )
+%  - 150lbf (150*0.453592*9.81 =  667N )
+%  - 200lbf (200*0.453592*9.81 =  890N )
+%  - 250lbf (250*0.453592*9.81 = 1120N )
+
+FZ_tol_mz = 100;
+idx_mz.FZ_220  = 220-FZ_tol_mz < tyre_data_mz.FZ & tyre_data_mz.FZ < 220+FZ_tol_mz;
+idx_mz.FZ_440  = 440-FZ_tol_mz < tyre_data_mz.FZ & tyre_data_mz.FZ < 440+FZ_tol_mz;
+idx_mz.FZ_700  = 700-FZ_tol_mz < tyre_data_mz.FZ & tyre_data_mz.FZ < 700+FZ_tol_mz;
+idx_mz.FZ_900  = 900-FZ_tol_mz < tyre_data_mz.FZ & tyre_data_mz.FZ < 900+FZ_tol_mz;
+idx_mz.FZ_1120 = 1120-FZ_tol_mz < tyre_data_mz.FZ & tyre_data_mz.FZ < 1120+FZ_tol_mz;
+FZ_220_mz  = tyre_data_mz( idx_mz.FZ_220, : );
+FZ_440_mz  = tyre_data_mz( idx_mz.FZ_440, : );
+FZ_700_mz  = tyre_data_mz( idx_mz.FZ_700, : );
+FZ_900_mz  = tyre_data_mz( idx_mz.FZ_900, : );
+FZ_1120_mz = tyre_data_mz( idx_mz.FZ_1120, : );
+
+% Plot
+figure('Name','MZ0: higher pressure dataset with regions', 'NumberTitle', 2 + last_fig_FY0)
+tiledlayout(2,1)
+
+ax_list_mz_2(1) = nexttile;
+plot(tyre_data_mz.IA*to_deg)
+hold on
+plot(vec_samples_mz(idx_mz.GAMMA_0),GAMMA_0_mz.IA*to_deg,'.');
+plot(vec_samples_mz(idx_mz.GAMMA_1),GAMMA_1_mz.IA*to_deg,'.');
+plot(vec_samples_mz(idx_mz.GAMMA_2),GAMMA_2_mz.IA*to_deg,'.');
+plot(vec_samples_mz(idx_mz.GAMMA_3),GAMMA_3_mz.IA*to_deg,'.');
+plot(vec_samples_mz(idx_mz.GAMMA_4),GAMMA_4_mz.IA*to_deg,'.');
+title('Camber angle')
+xlabel('Samples [-]')
+ylabel('[deg]')
+
+ax_list_mz_2(2) = nexttile;
+plot(tyre_data_mz.FZ)
+hold on
+plot(vec_samples_mz(idx_mz.FZ_220),FZ_220_mz.FZ,'.');
+plot(vec_samples_mz(idx_mz.FZ_440),FZ_440_mz.FZ,'.');
+plot(vec_samples_mz(idx_mz.FZ_700),FZ_700_mz.FZ,'.');
+plot(vec_samples_mz(idx_mz.FZ_900),FZ_900_mz.FZ,'.');
+plot(vec_samples_mz(idx_mz.FZ_1120),FZ_1120_mz.FZ,'.');
+title('Vertical force')
+xlabel('Samples [-]')
+ylabel('[N]')
+
+linkaxes(ax_list_mz_2,'x')
+
+%% ---MZ0: fitting in pure conditions (gamma = 0, Fz = 220N)
+% choose the range with: longitudinal slip = 0, camber angle = 0, vertical
+% load = Fz = 220N (obv within the higher pressure dataset)
+
+[TData0_mz, ~] = intersect_table_data( GAMMA_0_mz, FZ_220_mz );
+
+figure('Name','MZ0: pure conditions range', 'NumberTitle', 3 + last_fig_FX0)
+plot_selected_data(TData0_mz);
+
+% Fit the coefficients {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
+
+zeros_vec_mz = zeros(size(TData0_mz.MZ));
+ones_vec_mz  = ones(size(TData0_mz.MZ));
+
+% Initial guess (import from initialization of tyre_coeffs)
+MZ0_guess = MF96_MZ0_vec(zeros_vec_mz, TData0_mz.SA, zeros_vec_mz, tyre_coeffs_pl.FZ0*ones_vec_mz, tyre_coeffs_pl);
+
+
+% Check lateral pure force guess
+figure('Name','MZ0: guess', 'NumberTitle', 4 + last_fig_FY0)
+plot(TData0_mz.SA*to_deg,TData0_mz.MZ,'.')
+hold on
+plot(TData0_mz.SA*to_deg,MZ0_guess,'.')
+hold off
+legend({'Raw data','Guess MZ0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}$ [Nm]')
+
+% Guess values for parameters to be optimised
+%    {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
+P0_mz = [  1,   1,   1,   1,   1,   1,   1,   1,   1 ];
+
+% Limits for parameters to be optimised
+lb_mz_dgamma = [ ];
+ub_mz_dgamma = [ ];
+
+
+ALPHA_vec_mz = TData0_mz.SA;
+MZ_vec_mz    = TData0_mz.MZ;
+
+
+% Residual minimization
+[P_fz_nom_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz(P, MZ_vec_mz, ALPHA_vec_mz, 0, mean(TData0_mz.FZ), tyre_coeffs_pl),...
+                               P0_mz,[],[],[],[],lb_mz_dgamma,ub_mz_dgamma);
+
+% Update tyre data with new optimal values                             
+tyre_coeffs_pl.qBz1 = P_fz_nom_mz(1); 
+tyre_coeffs_pl.qBz9 = P_fz_nom_mz(2);
+tyre_coeffs_pl.qBz10 = P_fz_nom_mz(3);
+tyre_coeffs_pl.qCz1 = P_fz_nom_mz(4);
+tyre_coeffs_pl.qDz1 = P_fz_nom_mz(5);
+tyre_coeffs_pl.qDz6 = P_fz_nom_mz(6);
+tyre_coeffs_pl.qEz1 = P_fz_nom_mz(7);
+tyre_coeffs_pl.qEz4 = P_fz_nom_mz(8);
+tyre_coeffs_pl.qHz1 = P_fz_nom_mz(9);
+
+% Plot of the optimized solution
+MZ0_fz_nom_vec = MF96_MZ0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
+                              mean(TData0_mz.FZ).*ones(size(SA_vec)),tyre_coeffs_pl);
+
+
+% Result of the fitting MZ0 in the pure conditions
+figure('Name','MZ0: fitted in pure conditions','NumberTitle', 5 + last_fig_FY0)
+plot(TData0_mz.SA*to_deg,TData0_mz.MZ,'o')
+hold on
+plot(SA_vec*to_deg,MZ0_fz_nom_vec,'-','LineWidth',2)
+legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}$ [Nm]')
+
+%% ---MZ0(Fz): fitting with variable Fz
+% extract data with variable load and camber angle equal to 0
+
+TDataDFz_mz = GAMMA_0_mz;
+
+smpl_range_mz_dFz = size(TDataDFz_mz);
+
+% Extract points at constant vertical load
+FZ_tol_mz_dFz = 100;
+idx_mz_dFz.FZ_220  = 220-FZ_tol_mz_dFz < TDataDFz_mz.FZ & TDataDFz_mz.FZ < 220+FZ_tol_mz_dFz;
+idx_mz_dFz.FZ_440  = 440-FZ_tol_mz_dFz < TDataDFz_mz.FZ & TDataDFz_mz.FZ < 440+FZ_tol_mz_dFz;
+idx_mz_dFz.FZ_700  = 700-FZ_tol_mz_dFz < TDataDFz_mz.FZ & TDataDFz_mz.FZ < 700+FZ_tol_mz_dFz;
+idx_mz_dFz.FZ_900  = 900-FZ_tol_mz_dFz < TDataDFz_mz.FZ & TDataDFz_mz.FZ < 900+FZ_tol_mz_dFz;
+idx_mz_dFz.FZ_1120 = 1120-FZ_tol_mz_dFz < TDataDFz_mz.FZ & TDataDFz_mz.FZ < 1120+FZ_tol_mz_dFz;
+FZ_220_mz_dFz  = TDataDFz_mz( idx_mz_dFz.FZ_220, : );
+FZ_440_mz_dFz  = TDataDFz_mz( idx_mz_dFz.FZ_440, : );
+FZ_700_mz_dFz  = TDataDFz_mz( idx_mz_dFz.FZ_700, : );
+FZ_900_mz_dFz  = TDataDFz_mz( idx_mz_dFz.FZ_900, : );
+FZ_1120_mz_dFz = TDataDFz_mz( idx_mz_dFz.FZ_1120, : );
+
+
+% Fit the coeffs {qBz2, qBz3, qDz2, qDz7, qEz2, qEz3, qHz2}
+
+zeros_vec_mz = zeros(size(TDataDFz_mz.SA));
+ones_vec_mz  = ones(size(TDataDFz_mz.SA));
+
+
+% Guess values for parameters to be optimised
+% [qBz2, qBz3, qDz2, qDz7, qEz2, qEz3, qHz2]
+P0_mz_dFz = [ 0,  0,  0,  0,  0,  0,   0 ]; 
+
+% Limits for parameters to be optimised
+lb_mz_dFz = [];
+ub_mz_dFz = [];
+
+
+ALPHA_vec_mz_dFz = TDataDFz_mz.SA;
+Mz_vec_dFz    = TDataDFz_mz.MZ;
+FZ_vec_dFz    = TDataDFz_mz.FZ;
+
+% check guess
+MZ0_dfz_vec = MF96_MZ0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
+                           FZ_vec_dFz, tyre_coeffs_pl);
+
+figure('Name','MZ0(Fz): guess', 'NumberTitle', 7 + last_fig_FY0)
+plot(ALPHA_vec_mz_dFz*to_deg,Mz_vec_dFz,'.')
+hold on
+plot(SA_vec*to_deg,MZ0_dfz_vec,'.')
+legend({'Raw data variable load','Guess MZ0'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}(Fz)$ [Nm]')
+
+% Residual minimization
+[P_dfz_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz_varFz(P, Mz_vec_dFz, ALPHA_vec_mz_dFz, 0, FZ_vec_dFz, tyre_coeffs_pl),...
+                               P0_mz_dFz,[],[],[],[],lb_mz_dFz,ub_mz_dFz);
+
+% Change tyre data with new optimal values                             
+tyre_coeffs_pl.qBz2 = P_dfz_mz(1); 
+tyre_coeffs_pl.qBz3 = P_dfz_mz(2);
+tyre_coeffs_pl.qDz2 = P_dfz_mz(3);
+tyre_coeffs_pl.qDz7 = P_dfz_mz(4);
+tyre_coeffs_pl.qEz2 = P_dfz_mz(5);
+tyre_coeffs_pl.qEz3 = P_dfz_mz(6);
+tyre_coeffs_pl.qHz2 = P_dfz_mz(7);
+
+
+res_MZ0_dfz_vec = resid_pure_Mz_varFz(P_dfz_mz, Mz_vec_dFz, SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
+
+tmp_zeros_mz_dFz = zeros(size(SA_vec));
+tmp_ones_mz_dFz = ones(size(SA_vec));
+
+MZ0_fz_var_vec1 = MF96_MZ0_vec(tmp_zeros_mz_dFz, SA_vec, tmp_zeros_mz_dFz, mean(FZ_220_mz.FZ)*tmp_ones_mz_dFz,tyre_coeffs_pl);
+MZ0_fz_var_vec2 = MF96_MZ0_vec(tmp_zeros_mz_dFz, SA_vec, tmp_zeros_mz_dFz, mean(FZ_440_mz.FZ)*tmp_ones_mz_dFz,tyre_coeffs_pl);
+MZ0_fz_var_vec3 = MF96_MZ0_vec(tmp_zeros_mz_dFz, SA_vec, tmp_zeros_mz_dFz, mean(FZ_700_mz.FZ)*tmp_ones_mz_dFz,tyre_coeffs_pl);
+MZ0_fz_var_vec4 = MF96_MZ0_vec(tmp_zeros_mz_dFz, SA_vec, tmp_zeros_mz_dFz, mean(FZ_900_mz.FZ)*tmp_ones_mz_dFz,tyre_coeffs_pl);
+MZ0_fz_var_vec5 = MF96_MZ0_vec(tmp_zeros_mz_dFz, SA_vec, tmp_zeros_mz_dFz, mean(FZ_1120_mz.FZ)*tmp_ones_mz_dFz,tyre_coeffs_pl);
+
+
+figure('Name','Mz0(Fz0)')
+plot(TDataDFz_mz.SA*to_deg,TDataDFz_mz.MZ,'o')
+hold on
+
+plot(SA_vec*to_deg,MZ0_fz_var_vec1,'-','LineWidth',2)
+plot(SA_vec*to_deg,MZ0_fz_var_vec2,'-','LineWidth',2)
+plot(SA_vec*to_deg,MZ0_fz_var_vec3,'-','LineWidth',2)
+plot(SA_vec*to_deg,MZ0_fz_var_vec4,'-','LineWidth',2)
+plot(SA_vec*to_deg,MZ0_fz_var_vec5,'-','LineWidth',2)
+
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}$ [N]')
+
+figure('Name','MZ0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FY0)
+hold on
+plot(FZ_220_mz_dFz.SA*to_deg,FZ_220_mz_dFz.MZ,'o', 'Color', [1 0.4 0.4])
+plot(FZ_440_mz_dFz.SA*to_deg,FZ_440_mz_dFz.MZ,'o', 'Color', [0.6 0.8 1])
+plot(FZ_700_mz_dFz.SA*to_deg,FZ_700_mz_dFz.MZ,'o', 'Color', [0.5 1 0.5])
+plot(FZ_900_mz_dFz.SA*to_deg,FZ_900_mz_dFz.MZ,'o', 'Color', [0.8 0.6 1])
+plot(FZ_1120_mz_dFz.SA*to_deg,FZ_1120_mz_dFz.MZ,'o', 'Color', [0.6 1 1])
+plot(SA_vec*to_deg,MZ0_fz_var_vec1,'.','LineWidth',2, 'Color', 'r')
+plot(SA_vec*to_deg,MZ0_fz_var_vec2,'.','LineWidth',2, 'Color', 'b')
+plot(SA_vec*to_deg,MZ0_fz_var_vec3,'.','LineWidth',2, 'Color', 'g')
+plot(SA_vec*to_deg,MZ0_fz_var_vec4,'.','LineWidth',2, 'Color', 'm')
+plot(SA_vec*to_deg,MZ0_fz_var_vec5,'.','LineWidth',2, 'Color', 'c')
+hold off
+legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Mz0(Fz_{220})$','$Mz0(Fz_{440})$','$Mz0(Fz_{700})$','$Mz0(Fz_{900})$','$Mz0(Fz_{1120})$'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}(Fz)$ [Nm]')
+
+%% ---FY0(gamma): fitting with variable camber(gamma)
+% extract data with the same vertical load (Fz = 220N) 
+TDataGamma_mz = FZ_220_mz;
+
+
+% Extract points at constant camber and plot
+GAMMA_tol_mz_dgamma = 0.05*to_rad;
+idx_mz_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 0.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_mz_dgamma.GAMMA_1 = 1.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 1.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_mz_dgamma.GAMMA_2 = 2.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 2.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_mz_dgamma.GAMMA_3 = 3.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 3.0*to_rad+GAMMA_tol_mz_dgamma;
+idx_mz_dgamma.GAMMA_4 = 4.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 4.0*to_rad+GAMMA_tol_mz_dgamma;
+
+GAMMA_0__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_0, : );
+GAMMA_1__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_1, : );
+GAMMA_2__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_2, : );
+GAMMA_3__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_3, : );
+GAMMA_4__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_4, : );
+
+
+% Fit the coeffs { qBz4, qBz5, qDz3, qDz4, qEz5, qDz8, qDz9, qHz3, qHz4 }
+% Guess values for parameters to be optimised
+P0__mz_dgamma = [1, 0, 0, 0, 0, 0, 0, 0, 0];
+
+% Limits for parameters to be optimised
+lb_mz_dgamma = [-100, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1];
+ub_mz_dgamma = [100, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+
+zeros_vec_mz_dgamma = zeros(size(TDataGamma_mz.IA));
+ones_vec_mz_dgamma  = ones(size(TDataGamma_mz.IA));
+
+ALPHA_vec_mz_dgamma = TDataGamma_mz.SA;
+GAMMA_vec_mz_dgamma = TDataGamma_mz.IA; 
+MZ_vec_mz_dgamma    = TDataGamma_mz.MZ;
+FZ_vec_mz_dgamma    = TDataGamma_mz.FZ;
+
+MZ0_varGamma_vec = MF96_MZ0_vec(zeros(size(SA_vec)), SA_vec , GAMMA_vec_mz_dgamma, tyre_coeffs_pl.FZ0*ones(size(SA_vec)),tyre_coeffs_pl);
+
+figure('Name','MZ0(gamma): guess', 'NumberTitle', 9 + last_fig_FY0)
+plot(ALPHA_vec_mz_dgamma,TDataGamma_mz.MZ,'o')
+hold on
+plot(SA_vec,MZ0_varGamma_vec,'.','MarkerSize',5)
+legend({'Raw data variable camber','Guess MZ0(gamma)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$F_{y0}(\gamma)$ [N]')
+
+% LSM_pure_Fx returns the residual, so minimize the residual varying X. It
+% is an unconstrained minimization problem 
+[P_varGamma_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz_varGamma(P,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma,GAMMA_vec_mz_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0__mz_dgamma,[],[],[],[],lb_mz_dgamma,ub_mz_dgamma);
+
+% Change tyre data with new optimal values       
+tyre_coeffs_pl.qBz4 = P_varGamma_mz(1); 
+tyre_coeffs_pl.qBz5 = P_varGamma_mz(2);
+tyre_coeffs_pl.qDz3 = P_varGamma_mz(3);
+tyre_coeffs_pl.qDz4 = P_varGamma_mz(4);
+tyre_coeffs_pl.qEz5 = P_varGamma_mz(5);
+tyre_coeffs_pl.qDz8 = P_varGamma_mz(6);
+tyre_coeffs_pl.qDz9 = P_varGamma_mz(7);
+tyre_coeffs_pl.qHz3 = P_varGamma_mz(8);
+tyre_coeffs_pl.qHz4 = P_varGamma_mz(9);
+
+tmp_zeros_mz_dgamma = zeros(size(SA_vec));
+tmp_ones__mz_dgamma = ones(size(SA_vec));
+
+MZ0_gamma_var_vec1 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_0__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec2 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_1__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec3 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_2__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec4 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_3__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec5 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_4__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+
+figure('Name','MZ0(gamma): fitted with variable camber','NumberTitle', 10 + last_fig_FY0)
+hold on
+plot(GAMMA_0__mz_dgamma.SA*to_deg,GAMMA_0__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_1__mz_dgamma.SA*to_deg,GAMMA_1__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_2__mz_dgamma.SA*to_deg,GAMMA_2__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(GAMMA_3__mz_dgamma.SA*to_deg,GAMMA_3__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
+plot(GAMMA_4__mz_dgamma.SA*to_deg,GAMMA_4__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(SA_vec*to_deg,MZ0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
+plot(SA_vec*to_deg,MZ0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
+legend({'Raw data with $\gamma = 0 deg $','Raw data with $\gamma = 1 deg $','Raw data with $\gamma = 2 deg $','Raw data with $\gamma = 3 deg $','Raw data with $\gamma = 4 deg $', 'Mz0($\gamma = 0 deg$)','Mz0($\gamma = 1 deg$)','Mz0($\gamma = 2 deg$)','Mz0($\gamma = 3 deg$)','Mz0($\gamma = 4 deg$)'}, 'Location','eastoutside');
+xlabel('$\alpha$ [deg]')
+ylabel('$M_{z0}$ [Nm]')
+
+
+% Calculate the residuals with the optimal solution found above
+res_Mz0_varGamma  = resid_pure_Mz_varGamma(P_varGamma_mz,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma, GAMMA_vec_mz_dgamma, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+
+%% ---------------last figure MZ0---------------
+last_fig_MZ0 = 10 + last_fig_FY0;
+
 
 %% --Combined longitudinal force FX: dataset import
 
@@ -967,7 +1396,7 @@ fprintf('\ncompleted!')
 
 %% ---Dataset for combined behaviour: plot
 
-figure ('Name','CombFXFY: entire raw dataset', 'NumberTitle',1+ last_fig_FY0)
+figure ('Name','CombFXFY: entire raw dataset', 'NumberTitle',1+ last_fig_MZ0)
 tiledlayout(6,1)
 
 ax_list_5(1) = nexttile; y_range = [min(min(-FZ),0) round(max(-FZ)*1.1)];
@@ -1085,7 +1514,7 @@ SA_3_comb     = tyre_data_comb( idx_comb.SA_3, : );
 SA_6_comb     = tyre_data_comb( idx_comb.SA_6, : );
 
 % Plot
-figure('Name','CombFXFY: higher pressure dataset with regions', 'NumberTitle', 2 + last_fig_FY0)
+figure('Name','CombFXFY: higher pressure dataset with regions', 'NumberTitle', 2 + last_fig_MZ0)
 tiledlayout(3,1)
 
 ax_list_6(1) = nexttile;
@@ -1131,7 +1560,7 @@ linkaxes(ax_list_6,'x')
 
 [TData_x_dalpha, ~] = intersect_table_data( GAMMA_0_comb, FZ_220_comb );
 
-figure('Name','FX: dataset in pure conditions range', 'NumberTitle', 3 + last_fig_FY0)
+figure('Name','FX: dataset in pure conditions range', 'NumberTitle', 3 + last_fig_MZ0)
 plot_selected_data(TData_x_dalpha);
 
 % extract data with variable side slip
@@ -1150,7 +1579,7 @@ ALPHA_3_dalpha  = TData_x_dalpha( idx_x_dalpha.ALPHA_3, : );
 ALPHA_6_dalpha  = TData_x_dalpha( idx_x_dalpha.ALPHA_6, : );
 
 % Plot
-figure('Name','FX: Considered ranges for pure conditions', 'NumberTitle', 4 + last_fig_FY0)
+figure('Name','FX: Considered ranges for pure conditions', 'NumberTitle', 4 + last_fig_MZ0)
 tiledlayout(4,1)
 ax_list_7(1) = nexttile;
 plot(TData_x_dalpha.SA*to_deg)
@@ -1231,7 +1660,7 @@ tmp_ones_dalpha = ones(size(SL_vec));
 [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.3*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
 
-figure('Name','FX(kappa): fitted in pure conditions','NumberTitle', 5 + last_fig_FY0)
+figure('Name','FX(kappa): fitted in pure conditions','NumberTitle', 5 + last_fig_MZ0)
 hold on
 plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
 plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
@@ -1244,7 +1673,7 @@ legend({'Raw with $\alpha_0 = 0 deg $','Raw with $\alpha_3 = 3 deg $','Raw with 
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
 
-figure('Name','Gxa(kappa) as function of kappa','NumberTitle', 6 + last_fig_FY0)
+figure('Name','Gxa(kappa) as function of kappa','NumberTitle', 6 + last_fig_MZ0)
 hold on
 plot(SL_vec,Gxa_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
 plot(SL_vec,Gxa_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
@@ -1253,7 +1682,7 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, '
 xlabel('$\kappa$ [-]')
 ylabel('$G_{xa}$ [-]')
 
-figure('Name','Gxa(alpha) as function of alpha','NumberTitle', 7 + last_fig_FY0)
+figure('Name','Gxa(alpha) as function of alpha','NumberTitle', 7 + last_fig_MZ0)
 hold on
 plot(SA_vec*to_deg,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
 plot(SA_vec*to_deg,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
@@ -1265,7 +1694,7 @@ ylabel('$G_{xa}$ [-]')
 
 %% ---------------last figure FY0---------------
 % For figure number:
-last_fig_FX = 7 + last_fig_FY0;
+last_fig_FX = 7 + last_fig_MZ0;
 
 %% --Combined longitudinal force FY: same dataset (combined)
 
