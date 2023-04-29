@@ -1692,7 +1692,7 @@ xlabel('$\alpha$ [deg]')
 ylabel('$G_{xa}$ [-]')
 
 
-%% ---------------last figure FY0---------------
+%% ---------------last figure FX---------------
 % For figure number:
 last_fig_FX = 7 + last_fig_MZ0;
 
@@ -2165,3 +2165,7 @@ plot(SL_vec,FY_dgamma2_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color'
 legend({'Raw with $\gamma=0deg$,$\alpha=6 deg$','Raw with $\gamma=2deg$,$\alpha=6 deg$','Raw with $\gamma=2deg$,$\alpha=6 deg$','Fy($\gamma=0deg$), fitted','Fy($\gamma=2deg$), fitted', 'Fy($\gamma=4deg$), fitted'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(\gamma)$ [N]')
+
+%% -Save tyre data structure to mat file
+save('tyre_coeffs_team6.mat','tyre_coeffs_pl');
+
