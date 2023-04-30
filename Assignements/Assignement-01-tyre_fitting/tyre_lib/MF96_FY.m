@@ -1,5 +1,5 @@
 % Combined force Fy
-function [fy] = MF96_FY(kappa, alpha, phi, Fz, tyre_data)
+function [fy, Gyk] = MF96_FY(kappa, alpha, phi, Fz, tyre_data)
 
  % precode
 

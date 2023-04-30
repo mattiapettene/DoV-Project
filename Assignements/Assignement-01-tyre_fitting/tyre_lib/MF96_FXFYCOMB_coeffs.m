@@ -3,6 +3,10 @@ function [Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_dat
 
  % precode
 
+  FZ0             = tyre_data.FZ0;
+  pDy1            = tyre_data.pDy1;
+  pDy2            = tyre_data.pDy2;
+  pDy3            = tyre_data.pDy3;
   rBx1            = tyre_data.rBx1;
   rBx2            = tyre_data.rBx2;
   rBy1            = tyre_data.rBy1;
@@ -19,6 +23,8 @@ function [Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_dat
   rVy5            = tyre_data.rVy5;
   rVy6            = tyre_data.rVy6;
   LFZ0            = tyre_data.LFZ0;
+  LGAMMAY         = tyre_data.LGAMMAY;
+  LMUY            = tyre_data.LMUY;
   LVYK            = tyre_data.LVYK;
   LXA             = tyre_data.LXA;
   LYK             = tyre_data.LYK;
@@ -28,6 +34,8 @@ function [Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_dat
 
   FZ01 = (LFZ0 * FZ0);
   dfz = Fz / FZ01 - 1;
+  gamma__s = (phi * LGAMMAY);
+  mu__y = (dfz * pDy2 + pDy1) * (-pDy3 * gamma__s ^ 2 + 1) * LMUY;
   SHxa = rHx1;
   Bxa = rBx1 * (kappa ^ 2 * rBx2 ^ 2 + 1) ^ (-0.1e1 / 0.2e1) * LXA;
   Cxa = rCx1;

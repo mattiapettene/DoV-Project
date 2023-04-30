@@ -5,8 +5,8 @@ function ty_data = initialise_tyre_data_ply(R0, Fz0)
 
 ty_data.FZ0             = Fz0; % Fz0  % Normal load
 ty_data.R0              = R0; % R0  % nominal radius
-ty_data.pCx1            = 0; % pCx1
-ty_data.pDx1            = 0; % pDx1
+ty_data.pCx1            = 1.5; % pCx1
+ty_data.pDx1            = 2.35; % pDx1
 ty_data.pDx2            = 0; % pDx2
 ty_data.pDx3            = 0; % pDx3
 ty_data.pEx1            = 0; % pEx1
@@ -20,6 +20,7 @@ ty_data.pKx2            = 0; % pKx2
 ty_data.pKx3            = 0; % pKx3
 ty_data.pVx1            = 0; % pVx1
 ty_data.pVx2            = 0; % pVx2
+<<<<<<< HEAD
 %ty_data.Fz01            = 0; % Fz01
 ty_data.pCy1            = 0.15e1; % pCy1
 ty_data.pDy1            = 0.24e1; % pDy1
@@ -41,26 +42,48 @@ ty_data.pVy3            = 0; %-0.292370451981899437e1; % pVy3
 ty_data.pVy4            = 0; %-0.281666715709585791e1; % pVy4
 ty_data.qBz1            = 0; % qBz1
 ty_data.qBz10           = 0; % qBz10
+=======
+ty_data.pCy1            = 0.15e1; % pCy1
+ty_data.pDy1            = 0.24e1; % pDy1
+ty_data.pDy2            = 0; % pDy2
+ty_data.pDy3            = 0; % pDy3
+ty_data.pEy1            = 0.34; % pEy1
+ty_data.pEy2            = 0; % pEy2
+ty_data.pEy3            = 0; % pEy3
+ty_data.pEy4            = 0; % pEy4
+ty_data.pHy1            = -0.48e-2; % pHy1
+ty_data.pHy2            = 0; % pHy2
+ty_data.pHy3            = 0; % pHy3
+ty_data.pKy1            = -0.29e2; % pKy1
+ty_data.pKy2            = -0.10e1; % pKy2
+ty_data.pKy3            = 0; % pKy3
+ty_data.pVy1            = 0.47e-1; % pVy1
+ty_data.pVy2            = 0; % pVy2
+ty_data.pVy3            = 0; % pVy3
+ty_data.pVy4            = 0; % pVy4
+ty_data.qBz1            = 3.11; % qBz1
+ty_data.qBz10           = 12.10; % qBz10
+>>>>>>> origin/main
 ty_data.qBz2            = 0; % qBz2
 ty_data.qBz3            = 0; % qBz3
 ty_data.qBz4            = 0; % qBz4
 ty_data.qBz5            = 0; % qBz5
-ty_data.qBz9            = 0; % qBz9
-ty_data.qCz1            = 0; % qCz1
-ty_data.qDz1            = 0; % qDz1
+ty_data.qBz9            = 1.87; % qBz9
+ty_data.qCz1            = 2.82; % qCz1
+ty_data.qDz1            = -0.96; % qDz1
 ty_data.qDz2            = 0; % qDz2
 ty_data.qDz3            = 0; % qDz3
 ty_data.qDz4            = 0; % qDz4
-ty_data.qDz6            = 0; % qDz6
+ty_data.qDz6            = -0.01; % qDz6
 ty_data.qDz7            = 0; % qDz7
 ty_data.qDz8            = 0; % qDz8
 ty_data.qDz9            = 0; % qDz9
-ty_data.qEz1            = 0; % qEz1
+ty_data.qEz1            = 2.90; % qEz1
 ty_data.qEz2            = 0; % qEz2
 ty_data.qEz3            = 0; % qEz3
-ty_data.qEz4            = 0; % qEz4
+ty_data.qEz4            = -0.33; % qEz4
 ty_data.qEz5            = 0; % qEz5
-ty_data.qHz1            = 0; % qHz1
+ty_data.qHz1            = 0.48; % qHz1
 ty_data.qHz2            = 0; % qHz2
 ty_data.qHz3            = 0; % qHz3
 ty_data.qHz4            = 0; % qHz4
@@ -98,8 +121,16 @@ ty_data.LVX             = 1; % LVX
 ty_data.LVY             = 1; % LVY
 ty_data.LVYK            = 1; % LVYK
 ty_data.LXA             = 1; % LXA
+<<<<<<< HEAD
 ty_data.LKY             = 1; % LKY  % prima era -> ty_data.LYK = 1; % LYK probabilmente un refuso
 ty_data.LMR             = 1; % aggiunto
 ty_data.LT              = 1; % aggiunto
+=======
+ty_data.LYK             = 1; % LYK
+ty_data.LKY             = 1; % LKY
+
+ty_data.LMR             = 1; % LMR
+ty_data.LT              = 1; % LT
+>>>>>>> origin/main
 
 end

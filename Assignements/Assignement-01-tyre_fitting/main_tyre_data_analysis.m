@@ -245,7 +245,7 @@ plot_selected_data(TData0);
 
 %% FITTING 
 % initialise tyre data
-tyre_coeffs = initialise_tyre_data(R0, Fz0);
+tyre_coeffs_pl = initialise_tyre_data_pl(R0, Fz0);
 
 %% Fitting with Fz=Fz_nom= 220N and camber=0  alpha = 0 VX= 10
 % ------------------
@@ -257,7 +257,7 @@ FZ0 = mean(TData0.FZ);
 zeros_vec = zeros(size(TData0.SL));
 ones_vec  = ones(size(TData0.SL));
 
-FX0_guess = MF96_FX0_vec(TData0.SL,zeros_vec , zeros_vec, tyre_coeffs.FZ0*ones_vec, tyre_coeffs);
+FX0_guess = MF96_FX0_vec(TData0.SL,zeros_vec , zeros_vec, tyre_coeffs_pl.FZ0*ones_vec, tyre_coeffs_pl);
 
 % check guess 
 figure()
@@ -273,7 +273,7 @@ plot(TData0.SL,FX0_guess,'-')
 
 % Guess values for parameters to be optimised
 %    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
-P0 = [  1,   2,   1,  0,   0,   1,   0]; 
+P0_dFz = [  1,   2,   1,  0,   0,   1,   0]; 
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -290,7 +290,7 @@ FX_vec    = TData0.FX;
 % check guess
 SL_vec = -0.3:0.001:0.3;
 FX0_fz_nom_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
-                              FZ0.*ones(size(SL_vec)),tyre_coeffs);
+                              FZ0.*ones(size(SL_vec)),tyre_coeffs_pl);
 % 
 % figure
 % plot(KAPPA_vec,FX_vec,'.')
@@ -302,20 +302,20 @@ FX0_fz_nom_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), 
 % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
 % is an unconstrained minimization problem 
 
-[P_fz_nom,fval,exitflag] = fmincon(@(P)resid_pure_Fx(P,FX_vec, KAPPA_vec,0,FZ0, tyre_coeffs),...
-                               P0,[],[],[],[],lb,ub);
+[P_fz_nom,fval,exitflag] = fmincon(@(P)resid_pure_Fx(P,FX_vec, KAPPA_vec,0,FZ0, tyre_coeffs_pl),...
+                               P0_dFz,[],[],[],[],lb,ub);
 
 % Update tyre data with new optimal values                             
-tyre_coeffs.pCx1 = P_fz_nom(1) ; % 1
-tyre_coeffs.pDx1 = P_fz_nom(2) ;  
-tyre_coeffs.pEx1 = P_fz_nom(3) ;
-tyre_coeffs.pEx4 = P_fz_nom(4) ;
-tyre_coeffs.pHx1 = P_fz_nom(5) ; 
-tyre_coeffs.pKx1 = P_fz_nom(6) ;
-tyre_coeffs.pVx1 = P_fz_nom(7) ;
+tyre_coeffs_pl.pCx1 = P_fz_nom(1) ; % 1
+tyre_coeffs_pl.pDx1 = P_fz_nom(2) ;  
+tyre_coeffs_pl.pEx1 = P_fz_nom(3) ;
+tyre_coeffs_pl.pEx4 = P_fz_nom(4) ;
+tyre_coeffs_pl.pHx1 = P_fz_nom(5) ; 
+tyre_coeffs_pl.pKx1 = P_fz_nom(6) ;
+tyre_coeffs_pl.pVx1 = P_fz_nom(7) ;
 
 FX0_fz_nom_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
-                              FZ0.*ones(size(SL_vec)),tyre_coeffs);
+                              FZ0.*ones(size(SL_vec)),tyre_coeffs_pl);
 
 figure('Name','Fx0(Fz0)')
 plot(TData0.SL,TData0.FX,'o')
@@ -337,7 +337,7 @@ ylabel('$F_{x0}$ [N]')
 zeros_vec = zeros(size(TDataDFz.SL));
 ones_vec  = ones(size(TDataDFz.SL));
 
-FX0_guess = MF96_FX0_vec(TDataDFz.SL,zeros_vec , zeros_vec, tyre_coeffs.FZ0*ones_vec, tyre_coeffs);
+FX0_guess = MF96_FX0_vec(TDataDFz.SL,zeros_vec , zeros_vec, tyre_coeffs_pl.FZ0*ones_vec, tyre_coeffs_pl);
 
 % check guess 
 figure()
@@ -353,7 +353,7 @@ plot(TDataDFz.SL,FX0_guess,'-')
 
 % Guess values for parameters to be optimised
 %    [pDx2 pEx2 pEx3 pHx2  pKx2  pKx3  pVx2] 
-P0 = [  0,   0,   0,  0,   0,   0,   0]; 
+P0_dFz = [  0,   0,   0,  0,   0,   0,   0]; 
 
 
 % NOTE: many local minima => limits on parameters are fundamentals
@@ -372,7 +372,7 @@ FZ_vec    = TDataDFz.FZ;
 % check guess
 SL_vec = -0.3:0.001:0.3;
 FX0_dfz_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
-                           TDataDFz.FZ,tyre_coeffs);
+                           TDataDFz.FZ,tyre_coeffs_pl);
 % 
 % figure
 % plot(KAPPA_vec,FX_vec,'.')
@@ -383,30 +383,30 @@ FX0_dfz_vec = MF96_FX0_vec(SL_vec,zeros(size(SL_vec)) , zeros(size(SL_vec)), ...
 % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
 % is an unconstrained minimization problem 
 
-[P_dfz,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varFz(P,FX_vec, KAPPA_vec,0,FZ_vec, tyre_coeffs),...
-                               P0,[],[],[],[],lb,ub);
+[P_dfz,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varFz(P,FX_vec, KAPPA_vec,0,FZ_vec, tyre_coeffs_pl),...
+                               P0_dFz,[],[],[],[],lb,ub);
 
 disp(exitflag)
 % Change tyre data with new optimal values                             
-tyre_coeffs.pDx2 = P_dfz(1) ; % 1
-tyre_coeffs.pEx2 = P_dfz(2) ;  
-tyre_coeffs.pEx3 = P_dfz(3) ;
-tyre_coeffs.pHx2 = P_dfz(4) ;
-tyre_coeffs.pKx2 = P_dfz(5) ; 
-tyre_coeffs.pKx3 = P_dfz(6) ;
-tyre_coeffs.pVx2 = P_dfz(7) ;
+tyre_coeffs_pl.pDx2 = P_dfz(1) ; % 1
+tyre_coeffs_pl.pEx2 = P_dfz(2) ;  
+tyre_coeffs_pl.pEx3 = P_dfz(3) ;
+tyre_coeffs_pl.pHx2 = P_dfz(4) ;
+tyre_coeffs_pl.pKx2 = P_dfz(5) ; 
+tyre_coeffs_pl.pKx3 = P_dfz(6) ;
+tyre_coeffs_pl.pVx2 = P_dfz(7) ;
 
 
-res_FX0_dfz_vec = resid_pure_Fx_varFz(P_dfz,FX_vec,SL_vec,0 , FZ_vec,tyre_coeffs);
+res_FX0_dfz_vec = resid_pure_Fx_varFz(P_dfz,FX_vec,SL_vec,0 , FZ_vec,tyre_coeffs_pl);
 
 tmp_zeros = zeros(size(SL_vec));
 tmp_ones = ones(size(SL_vec));
 
 
-FX0_fz_var_vec1 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs);
-FX0_fz_var_vec2 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs);
-FX0_fz_var_vec3 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs);
-FX0_fz_var_vec4 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs);
+FX0_fz_var_vec1 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec2 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec3 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
+FX0_fz_var_vec4 = MF96_FX0_vec(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
 
 
 figure('Name','Fx0(Fz0)')
@@ -423,19 +423,19 @@ xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
 
 
-[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_220.FZ), tyre_coeffs);
+[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_220.FZ), tyre_coeffs_pl);
 Calfa_vec1_0 = magic_formula_stiffness(kappa__x, Bx, Cx, Dx, Ex, SVx);
-[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_700.FZ), tyre_coeffs);
+[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_700.FZ), tyre_coeffs_pl);
 Calfa_vec2_0 = magic_formula_stiffness(kappa__x, Bx, Cx, Dx, Ex, SVx);
-[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_900.FZ), tyre_coeffs);
+[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_900.FZ), tyre_coeffs_pl);
 Calfa_vec3_0 = magic_formula_stiffness(kappa__x, Bx, Cx, Dx, Ex, SVx);
-[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_1120.FZ), tyre_coeffs);
+[kappa__x, Bx, Cx, Dx, Ex, SVx] =MF96_FX0_coeffs(0, 0, 0, mean(FZ_1120.FZ), tyre_coeffs_pl);
 Calfa_vec4_0 = magic_formula_stiffness(kappa__x, Bx, Cx, Dx, Ex, SVx);
 
-Calfa_vec1 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs);
-Calfa_vec2 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs);
-Calfa_vec3 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs);
-Calfa_vec4 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs);
+Calfa_vec1 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec2 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec3 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_900.FZ)*tmp_ones,tyre_coeffs_pl);
+Calfa_vec4 = MF96_CorneringStiffness(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_1120.FZ)*tmp_ones,tyre_coeffs_pl);
 
 figure('Name','C_alpha')
 subplot(2,1,1)
@@ -465,7 +465,7 @@ legend({'$Fz_{220}$','$Fz_{700}$','$Fz_{900}$','$Fz_{1120}$'})
 % Fit the coeffs { pDx3}
 
 % Guess values for parameters to be optimised
-P0 = [0]; 
+P0_dFz = [0]; 
 
 % NOTE: many local minima => limits on parameters are fundamentals
 % Limits for parameters to be optimised
@@ -491,13 +491,13 @@ plot(KAPPA_vec,FX_vec);
 
 % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
 % is an unconstrained minimization problem 
-[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs),...
-                               P0,[],[],[],[],lb,ub);
+[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0_dFz,[],[],[],[],lb,ub);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs.pDx3 = P_varGamma(1) ; % 1
+tyre_coeffs_pl.pDx3 = P_varGamma(1) ; % 1
 
-FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs.FZ0*ones_vec,tyre_coeffs);
+FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
 
 figure('Name','Fx0 vs Gamma')
 plot(KAPPA_vec,TDataGamma.FX,'o')
@@ -506,7 +506,7 @@ plot(KAPPA_vec,FX0_varGamma_vec,'-')
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
 % Calculate the residuals with the optimal solution found above
-res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs.FZ0, tyre_coeffs);
+res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 % R-squared is 
 % 1-SSE/SST
@@ -516,15 +516,15 @@ res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_ve
 fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
 
 
-[kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs.FZ0, tyre_coeffs);
+[kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 % 
 fprintf('Bx      = %6.3f\n',Bx);
 fprintf('Cx      = %6.3f\n',Cx);
-fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
+fprintf('mux      = %6.3f\n',Dx/tyre_coeffs_pl.FZ0);
 fprintf('Ex      = %6.3f\n',Ex);
 fprintf('SVx     = %6.3f\n',SVx);
 fprintf('kappa_x = %6.3f\n',kappa__x);
-fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
+fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs_pl.FZ0);
 
 % % Longitudinal stiffness
 % Kx_vec = zeros(size(load_vec));
@@ -538,7 +538,7 @@ fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
 
 %% Save tyre data structure to mat file
 %
-save(['tyre_' data_set,'.mat'],'tyre_coeffs');
+save(['tyre_' data_set,'.mat'],'tyre_coeffs_pl');
 
 
 
