@@ -3,12 +3,8 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(kappa, a
 
  % precode
 
-<<<<<<< HEAD
-  FZ0             = tyre_data.FZ0;       
-=======
   FZ0             = tyre_data.FZ0;
   R0              = tyre_data.R0;
->>>>>>> origin/main
   qBz1            = tyre_data.qBz1;
   qBz10           = tyre_data.qBz10;
   qBz2            = tyre_data.qBz2;
@@ -41,12 +37,7 @@ function [Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(kappa, a
   LMUY            = tyre_data.LMUY;
   LT              = tyre_data.LT;
   
-<<<<<<< HEAD
-  [alpha__y, By, Cy, Dy, Ey, SVy, SHy, Kya, mu__y, R0] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
-
-=======
   [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);
->>>>>>> origin/main
 
  % main code
 
