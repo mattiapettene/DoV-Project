@@ -1,11 +1,9 @@
 % Coefficients for Magic Formula pure lateral force
-function [alpha__y, By, Cy, Dy, Ey, SVy, SHy, Kya, mu__y, R0] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data)
- %  è stato aggiuntoin uscita il raggio dato che viene ripreso da mzo_vec
- %  che lo vuole e se lo mangia dato che gli serve per generare il vettore
+function [alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data)
+
  % precode
 
   FZ0             = tyre_data.FZ0;
-  R0              = tyre_data.R0;
   pCy1            = tyre_data.pCy1;
   pDy1            = tyre_data.pDy1;
   pDy2            = tyre_data.pDy2;
