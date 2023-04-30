@@ -652,7 +652,7 @@ ylabel('$F_{y0}$ [N]')
 
 % Guess values for parameters to be optimised
 %       [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1]
-P0_pl = [ 1, 1,	1,	1,	1,	1,	1 ]; 
+P0_pl = [ 1.5, 2.4, 0.34, -0.48e-2, -0.29e2, -0.1e1, 0.47e-1 ]; 
 
 % Limits for parameters to be optimised
 lb_pl = [ ];
@@ -899,11 +899,11 @@ linkaxes(ax_list_4,'x')
 
 % Guess values for parameters to be optimised
 %   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-P0_pl_dgamma = [ 0.51e1 , 1.88 , -0.42e1 , -2.04 , 0.13e1 , -0.29e1 , -0.28e1 ];
+P0_pl_dgamma = [ 0 , 0 , 0 , 0 , 0 , 0 , 0 ];
 
 % Limits for parameters to be optimised
-lb_dgamma = [5,1,-100,-2.5,0,-100,-100];
-ub_dgamma = [100,100,0,-0.1,100,0,0];
+lb_dgamma = [ ];
+ub_dgamma = [ ];
 
 zeros_vec_dgamma = zeros(size(TDataGamma_pl.IA));
 ones_vec_dgamma  = ones(size(TDataGamma_pl.IA));
@@ -1181,8 +1181,8 @@ xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}$ [Nm]')
 
 % Guess values for parameters to be optimised
-%    {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
-P0_mz = [  1,   1,   1,   1,   1,   1,   1,   1,   1 ];
+%         {qBz1, qBz9, qBz10, qCz1,  qDz1,  qDz6, qEz1,  qEz4, qHz1}
+P0_mz = [  3.11, 1.87, 12.10, 2.82, -0.96, -0.01, 2.90, -0.33, 0.48];
 
 % Limits for parameters to be optimised
 lb_mz_dgamma = [ ];
@@ -1352,11 +1352,11 @@ GAMMA_4__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_4, : );
 
 % Fit the coeffs { qBz4, qBz5, qDz3, qDz4, qEz5, qDz8, qDz9, qHz3, qHz4 }
 % Guess values for parameters to be optimised
-P0__mz_dgamma = [1, 0, 0, 0, 0, 0, 0, 0, 0];
+P0__mz_dgamma = [1, 0, 0, 0, 0, 0, 0, 0, 0 ];
 
 % Limits for parameters to be optimised
-lb_mz_dgamma = [-100, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1];
-ub_mz_dgamma = [100, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+lb_mz_dgamma = [ ];
+ub_mz_dgamma = [ ];
 
 zeros_vec_mz_dgamma = zeros(size(TDataGamma_mz.IA));
 ones_vec_mz_dgamma  = ones(size(TDataGamma_mz.IA));
