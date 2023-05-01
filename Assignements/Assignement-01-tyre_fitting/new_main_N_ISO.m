@@ -1,4 +1,4 @@
-%% Assignment 1 - Tyre fitting-
+%% -Assignment 1 - Tyre fitting-
 % Team 6: Consalvi Natale - Pettene Mattia - Zumerle Matteo
 
 %% --Initialization
@@ -28,7 +28,6 @@ to_rad = pi/180;
 to_deg = 180/pi;
 
 data_set_path = 'dataset/';
-
 
 %% --Initialization phase for tyre coefficients
 tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
@@ -131,11 +130,11 @@ vec_samples = 1:1:length(smpl_range);
 tyre_data = table();
 % store raw data in table
 tyre_data.SL =  SL(smpl_range);
-tyre_data.SA =  SA(smpl_range)*to_rad;
+tyre_data.SA = -SA(smpl_range)*to_rad;
 tyre_data.FZ = -FZ(smpl_range);
 tyre_data.FX =  FX(smpl_range);
-tyre_data.FY =  FY(smpl_range);
-tyre_data.MZ =  MZ(smpl_range);
+tyre_data.FY = -FY(smpl_range);
+tyre_data.MZ = -MZ(smpl_range);
 tyre_data.IA =  IA(smpl_range)*to_rad;
 
 % Extract points at constant inclination angle
@@ -177,8 +176,8 @@ FZ_1120 = tyre_data( idx.FZ_1120, : );
 % 0° , - 3° , -6 °
 SA_tol = 0.5*to_rad;
 idx.SA_0    =  0-SA_tol          < tyre_data.SA & tyre_data.SA < 0+SA_tol;
-idx.SA_3neg = -(3*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -3*to_rad+SA_tol;
-idx.SA_6neg = -(6*to_rad+SA_tol) < tyre_data.SA & tyre_data.SA < -6*to_rad+SA_tol;
+idx.SA_3neg = 3*to_rad-SA_tol < tyre_data.SA & tyre_data.SA < 3*to_rad+SA_tol;
+idx.SA_6neg = 6*to_rad-SA_tol < tyre_data.SA & tyre_data.SA < 6*to_rad+SA_tol;
 SA_0     = tyre_data( idx.SA_0, : );
 SA_3neg  = tyre_data( idx.SA_3neg, : );
 SA_6neg  = tyre_data( idx.SA_6neg, : );
@@ -251,13 +250,13 @@ xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
 
 % Guess values for parameters to be optimised
-%    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1] 
-P0_FX0_pure = [  1,   2,   1,  0,   0,   1,   0]; 
+%    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
+P0 = [  1,   2,   1,  0,   0,   1,   0]; 
 
 % Limits for parameters to be optimised
 %    [pCx1 pDx1 pEx1 pEx4  pHx1  pKx1  pVx1 
-lb_FX0_pure = [1,   0.1,   0,   0,  -10,    0,   -10];
-ub_FX0_pure = [2,    4,   1,   1,   10,   100,  10];
+lb = [1,   0.1,   0,   0,  -10,    0,   -10];
+ub = [2,    4,   1,   1,   10,   100,  10];
 
 
 KAPPA_vec = TData0.SL;
@@ -267,19 +266,19 @@ FX_vec    = TData0.FX;
 SL_vec = -0.3:0.001:0.3;
 
 % Minimization of the residual
-[P_opt_FX0_pure,fval_FX0_pure,exitflag_FX0_pure] = fmincon(@(P)resid_pure_Fx(P,FX_vec, KAPPA_vec,0,FZ0, tyre_coeffs_pl),...
-                               P0_FX0_pure,[],[],[],[],lb_FX0_pure,ub_FX0_pure);
+[P_fz_nom,fval,exitflag] = fmincon(@(P)resid_pure_Fx(P,FX_vec, KAPPA_vec,0,FZ0, tyre_coeffs_pl),...
+                               P0,[],[],[],[],lb,ub);
 
 % Update tyre data with new optimal values                             
-tyre_coeffs_pl.pCx1 = P_opt_FX0_pure(1) ;
-tyre_coeffs_pl.pDx1 = P_opt_FX0_pure(2) ;  
-tyre_coeffs_pl.pEx1 = P_opt_FX0_pure(3) ;
-tyre_coeffs_pl.pEx4 = P_opt_FX0_pure(4) ;
-tyre_coeffs_pl.pHx1 = P_opt_FX0_pure(5) ; 
-tyre_coeffs_pl.pKx1 = P_opt_FX0_pure(6) ;
-tyre_coeffs_pl.pVx1 = P_opt_FX0_pure(7) ;
+tyre_coeffs_pl.pCx1 = P_fz_nom(1) ;
+tyre_coeffs_pl.pDx1 = P_fz_nom(2) ;  
+tyre_coeffs_pl.pEx1 = P_fz_nom(3) ;
+tyre_coeffs_pl.pEx4 = P_fz_nom(4) ;
+tyre_coeffs_pl.pHx1 = P_fz_nom(5) ; 
+tyre_coeffs_pl.pKx1 = P_fz_nom(6) ;
+tyre_coeffs_pl.pVx1 = P_fz_nom(7) ;
 
-res_FX0 = resid_pure_Fx(P_opt_FX0_pure , FX_vec(1), SL_vec(1), 0 , mean(TData0.FZ), tyre_coeffs_pl);
+res_FX0 = resid_pure_Fx(P_fz_nom , FX_vec(1), SL_vec(1), 0 , mean(TData0.FZ), tyre_coeffs_pl);
 
 
 % Plot of the optimized solution
@@ -315,11 +314,11 @@ ones_vec  = ones(size(TDataDFz.SL));
 
 % Guess values for parameters to be optimised
 %    [pDx2 pEx2 pEx3 pHx2  pKx2  pKx3  pVx2] 
-P0_FX0_dFz = [  0,   0,   0,  0,   0,   0,   0]; 
+P0_dFz = [  0,   0,   0,  0,   0,   0,   0]; 
 
 % Limits for parameters to be optimised
-lb_FX0_dFz = [];
-ub_FX0_dFz = [];
+lb = [];
+ub = [];
 
 KAPPA_vec = TDataDFz.SL;
 FX_vec    = TDataDFz.FX;
@@ -338,19 +337,19 @@ xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}(Fz)$ [N]')
 
 % Residual minimization
-[P_opt_FX0_dFz,fval_FX0_dFz,exitflag_FX0_dFz] = fmincon(@(P)resid_pure_Fx_varFz(P,FX_vec, KAPPA_vec,0,FZ_vec, tyre_coeffs_pl),...
-                               P0_FX0_dFz,[],[],[],[],lb_FX0_dFz,ub_FX0_dFz);
+[P_dfz,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varFz(P,FX_vec, KAPPA_vec,0,FZ_vec, tyre_coeffs_pl),...
+                               P0_dFz,[],[],[],[],lb,ub);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDx2 = P_opt_FX0_dFz(1) ;
-tyre_coeffs_pl.pEx2 = P_opt_FX0_dFz(2) ;  
-tyre_coeffs_pl.pEx3 = P_opt_FX0_dFz(3) ;
-tyre_coeffs_pl.pHx2 = P_opt_FX0_dFz(4) ;
-tyre_coeffs_pl.pKx2 = P_opt_FX0_dFz(5) ; 
-tyre_coeffs_pl.pKx3 = P_opt_FX0_dFz(6) ;
-tyre_coeffs_pl.pVx2 = P_opt_FX0_dFz(7) ; 
+tyre_coeffs_pl.pDx2 = P_dfz(1) ;
+tyre_coeffs_pl.pEx2 = P_dfz(2) ;  
+tyre_coeffs_pl.pEx3 = P_dfz(3) ;
+tyre_coeffs_pl.pHx2 = P_dfz(4) ;
+tyre_coeffs_pl.pKx2 = P_dfz(5) ; 
+tyre_coeffs_pl.pKx3 = P_dfz(6) ;
+tyre_coeffs_pl.pVx2 = P_dfz(7) ; 
 
-res_FX0_dfz_vec = resid_pure_Fx_varFz(P_opt_FX0_dFz,FX_vec,KAPPA_vec, 0 , FZ_vec, tyre_coeffs_pl);
+res_FX0_dfz_vec = resid_pure_Fx_varFz(P_dfz,FX_vec,SL_vec,0 , FZ_vec,tyre_coeffs_pl);
 
 tmp_zeros = zeros(size(SL_vec));
 tmp_ones = ones(size(SL_vec));
@@ -410,11 +409,11 @@ ylabel('$K_{kx}(Fz)$ [-]')
 % Fit the coeffs { pDx3}
 
 % Guess values for parameters to be optimised
-P0_FX0_dgamma = [0]; 
+P0_dgamma = [0]; 
 
 % Limits for parameters to be optimised
-lb_FX0_dgamma = [];
-ub_FX0_dgamma = [];
+lb = [];
+ub = [];
 
 zeros_vec = zeros(size(TDataGamma.SL));
 ones_vec  = ones(size(TDataGamma.SL));
@@ -424,11 +423,11 @@ GAMMA_vec = TDataGamma.IA;
 FX_vec    = TDataGamma.FX;
 FZ_vec    = TDataGamma.FZ;
 
-[P_opt_FX0_dgamma,fval_FX0_dgamma,exitflag_FX0_dgamma] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
-                               P0_FX0_dgamma,[],[],[],[],lb_FX0_dgamma,ub_FX0_dgamma);
+[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fx_varGamma(P,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0_dgamma,[],[],[],[],lb,ub);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDx3 = P_opt_FX0_dgamma(1) ; % 1
+tyre_coeffs_pl.pDx3 = P_varGamma(1) ; % 1
 
 [FX0_varGamma_vec,~] = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
 
@@ -440,7 +439,7 @@ xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
 
 % Calculate the residuals with the optimal solution found above
-res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_opt_FX0_dgamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_varGamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 %% ---------------last figure FX0---------------
 last_fig_FX0 = 10;
@@ -462,15 +461,13 @@ switch data_set
 end
 
 % select dataset portion (at the higher pressure)
-%cut_start_pl = 31350;
-cut_start_pl = 27760;
+cut_start_pl = 31350;
 cut_end_pl   = 54500;
 
 
 smpl_range_pl = cut_start_pl:cut_end_pl;
 
 fprintf('\ncompleted!')
-
 
 %% ---Dataset for pure lateral: plot
 
@@ -547,8 +544,8 @@ tyre_data_pl.SL =  SL(smpl_range_pl);
 tyre_data_pl.SA = -SA(smpl_range_pl)*to_rad;    % SAE -> Adapted SAE
 tyre_data_pl.FZ = -FZ(smpl_range_pl);           % SAE -> Adapted SAE
 tyre_data_pl.FX =  FX(smpl_range_pl);
-tyre_data_pl.FY =  FY(smpl_range_pl);   
-tyre_data_pl.MZ =  MZ(smpl_range_pl);
+tyre_data_pl.FY = -FY(smpl_range_pl);   
+tyre_data_pl.MZ = -MZ(smpl_range_pl);
 tyre_data_pl.IA =  IA(smpl_range_pl)*to_rad;
 
 % Extract points at constant camber angle
@@ -654,14 +651,12 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
 
 % Guess values for parameters to be optimised
-%       [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1]
-P0_FY0_pure = [1.3, 2.7, -1, 0.0038, 170, 5.05, -0.0792];
+%       [pCy1  pDy1  pEy1   pHy1    pKy1    pKy2   pVy1]
+P0_pl = [ 1.3, 0.9,   0, -0.0018, -15.34,  1.7, -0.006 ]; 
 
 % Limits for parameters to be optimised
-%        [pCy1 pDy1 pEy1 pHy1  pKy1  pKy2  pVy1]
-lb_FY0_pure = [ 1.1, 2.5, -1000, -1000,0, 4.9, -1000];
-ub_FY0_pure = [ 1000, 1000, 1, 1000, 175, 5.1, 1000];
-
+lb_pl = [  ];
+ub_pl = [  ];
 
 ALPHA_vec = TData0_pl.SA;
 FY_vec    = TData0_pl.FY;
@@ -670,19 +665,19 @@ FY_vec    = TData0_pl.FY;
 SA_vec = (-12.5*to_rad):0.001:(12.5*to_rad);
 
 % Minimization of the residual
-[P_opt_FY0_pure,fval_FY0_pure,exitflag_FY0_pure] = fmincon(@(P)resid_pure_Fy(P,FY_vec, ALPHA_vec,0,mean(TData0_pl.FZ), tyre_coeffs_pl),...
-                               P0_FY0_pure,[],[],[],[],lb_FY0_pure,ub_FY0_pure);
+[P_fz_nom_pl,fval,exitflag] = fmincon(@(P)resid_pure_Fy(P,FY_vec, ALPHA_vec,0,mean(TData0_pl.FZ), tyre_coeffs_pl),...
+                               P0_pl,[],[],[],[],lb_pl,ub_pl);
 
 % Update tyre data with new optimal values                            
-tyre_coeffs_pl.pCy1 = P_opt_FY0_pure(1) ;
-tyre_coeffs_pl.pDy1 = P_opt_FY0_pure(2) ;  
-tyre_coeffs_pl.pEy1 = P_opt_FY0_pure(3) ;
-tyre_coeffs_pl.pHy1 = P_opt_FY0_pure(4) ;
-tyre_coeffs_pl.pKy1 = P_opt_FY0_pure(5) ; 
-tyre_coeffs_pl.pKy2 = P_opt_FY0_pure(6) ;
-tyre_coeffs_pl.pVy1 = P_opt_FY0_pure(7) ;
+tyre_coeffs_pl.pCy1 = P_fz_nom_pl(1) ;
+tyre_coeffs_pl.pDy1 = P_fz_nom_pl(2) ;  
+tyre_coeffs_pl.pEy1 = P_fz_nom_pl(3) ;
+tyre_coeffs_pl.pHy1 = P_fz_nom_pl(4) ;
+tyre_coeffs_pl.pKy1 = P_fz_nom_pl(5) ; 
+tyre_coeffs_pl.pKy2 = P_fz_nom_pl(6) ;
+tyre_coeffs_pl.pVy1 = P_fz_nom_pl(7) ;
 
-res_FY0 = resid_pure_Fy(P_opt_FY0_pure , FY_vec, SA_vec, 0 , mean(TData0_pl.FZ), tyre_coeffs_pl);
+res_FY0 = resid_pure_Fy(P_fz_nom_pl , FY_vec, SA_vec, 0 , mean(TData0_pl.FZ), tyre_coeffs_pl);
 
 
 % Plot of the optimized solution
@@ -750,13 +745,12 @@ ones_vec_pl  = ones(size(TDataDFz_pl.SA));
 
 % Guess values for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
-P0_FY0_dFz =[ -0.05, -1, 0, 0 ]; 
-
+P0_pl_dFz =[ -0.05, 0, 0.005, 0.03  ];   
 
 % Limits for parameters to be optimised
 %    [pDy2 pEy2 pHy2 pVy2] 
-lb_FY0_dFz = [ -0.2, -100, -100, -100];
-ub_FY0_dFz = [ 0, 100, 100, 100];
+lb_dFz = [ ];
+ub_dFz = [ ];
 
 ALPHA_vec_dFz = TDataDFz_pl.SA;
 FY_vec_dFz    = TDataDFz_pl.FY;
@@ -775,56 +769,56 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(Fz)$ [N]')
 
 % Resitual minimization
-[P_opt_FY0_dFz,fval_FY0_dFz,exitflag_FY0_dFz] = fmincon(@(P_pl)resid_pure_Fy_varFz(P_pl,FY_vec_dFz, ALPHA_vec_dFz,0,FZ_vec_dFz, tyre_coeffs_pl),...
-                               P0_FY0_dFz,[],[],[],[],lb_FY0_dFz,ub_FY0_dFz);
+[P_dfz_pl,fval,exitflag] = fmincon(@(P_pl)resid_pure_Fy_varFz(P_pl,FY_vec_dFz, ALPHA_vec_dFz,0,FZ_vec_dFz, tyre_coeffs_pl),...
+                               P0_pl_dFz,[],[],[],[],lb_dFz,ub_dFz);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDy2 = P_opt_FY0_dFz(1);
-tyre_coeffs_pl.pEy2 = P_opt_FY0_dFz(2);
-tyre_coeffs_pl.pHy2 = P_opt_FY0_dFz(3);
-tyre_coeffs_pl.pVy2 = P_opt_FY0_dFz(4);
+tyre_coeffs_pl.pDy2 = P_dfz_pl(1);
+tyre_coeffs_pl.pEy2 = P_dfz_pl(2);
+tyre_coeffs_pl.pHy2 = P_dfz_pl(3);
+tyre_coeffs_pl.pVy2 = P_dfz_pl(4);
 
-res_FY0_dfz = resid_pure_Fy_varFz(P_opt_FY0_dFz , FY_vec_dFz,SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
+res_FY0_dfz = resid_pure_Fy_varFz(P_dfz_pl , FY_vec_dFz,SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
 
 tmp_zeros_dFz = zeros(size(SA_vec));
 tmp_ones_dFz = ones(size(SA_vec));
 
-[FY0_fz_var_vec1, ~] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-[FY0_fz_var_vec2, ~] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-[FY0_fz_var_vec3, ~] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_700_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-[FY0_fz_var_vec4, ~] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
-[FY0_fz_var_vec5, ~] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec1, Kya_fz_var_vec1] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec2, Kya_fz_var_vec2] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec3, Kya_fz_var_vec3] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_700_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec4, Kya_fz_var_vec4] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
+[FY0_fz_var_vec5, Kya_fz_var_vec5] = MF96_FY0_vec(tmp_zeros_dFz, SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 
 
 figure('Name','FY0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FX0)
 hold on
-plot(FZ_220_pl_dFz.SA*to_deg,FZ_220_pl_dFz.FY,'.', 'Color', '#0b9eff')
-plot(FZ_440_pl_dFz.SA*to_deg,FZ_440_pl_dFz.FY,'.', 'Color', '#eb8153')
-plot(FZ_700_pl_dFz.SA*to_deg,FZ_700_pl_dFz.FY,'.', 'Color', '#f3ca67')
-plot(FZ_900_pl_dFz.SA*to_deg,FZ_900_pl_dFz.FY,'.', 'Color', '#9dd058')
-plot(FZ_1120_pl_dFz.SA*to_deg,FZ_1120_pl_dFz.FY,'.', 'Color', '#94D8F4')
-plot(SA_vec*to_deg,FY0_fz_var_vec1,'-','LineWidth',2, 'Color', '#0072BD')
-plot(SA_vec*to_deg,FY0_fz_var_vec2,'-','LineWidth',2, 'Color', '#D95319')
-plot(SA_vec*to_deg,FY0_fz_var_vec3,'-','LineWidth',2, 'Color', '#EDB120')
-plot(SA_vec*to_deg,FY0_fz_var_vec4,'-','LineWidth',2, 'Color', '#77AC30')
-plot(SA_vec*to_deg,FY0_fz_var_vec5,'-','LineWidth',2, 'Color', '#4DBEEE')
+plot(FZ_220_pl_dFz.SA*to_deg,FZ_220_pl_dFz.FY,'o', 'Color', [1 0.4 0.4])
+plot(FZ_440_pl_dFz.SA*to_deg,FZ_440_pl_dFz.FY,'o', 'Color', [0.6 0.8 1])
+plot(FZ_700_pl_dFz.SA*to_deg,FZ_700_pl_dFz.FY,'o', 'Color', [0.5 1 0.5])
+plot(FZ_900_pl_dFz.SA*to_deg,FZ_900_pl_dFz.FY,'o', 'Color', [0.8 0.6 1])
+plot(FZ_1120_pl_dFz.SA*to_deg,FZ_1120_pl_dFz.FY,'o', 'Color', [0.6 1 1])
+plot(SA_vec*to_deg,FY0_fz_var_vec1,'.','LineWidth',2, 'Color', 'r')
+plot(SA_vec*to_deg,FY0_fz_var_vec2,'.','LineWidth',2, 'Color', 'b')
+plot(SA_vec*to_deg,FY0_fz_var_vec3,'.','LineWidth',2, 'Color', 'g')
+plot(SA_vec*to_deg,FY0_fz_var_vec4,'.','LineWidth',2, 'Color', 'm')
+plot(SA_vec*to_deg,FY0_fz_var_vec5,'.','LineWidth',2, 'Color', 'c')
+hold off
 legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fy(Fz_{220})$','$Fy(Fz_{440})$','$Fy(Fz_{700})$','$Fy(Fz_{900})$','$Fy(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(Fz)$ [N]')
 
-
 % Stiffness
-
-[alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_220_pl_dFz.FZ), tyre_coeffs_pl);
-Calfa_vec1_0_y = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-[alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_440_pl_dFz.FZ), tyre_coeffs_pl);
-Calfa_vec2_0_y = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-[alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_700_pl_dFz.FZ), tyre_coeffs_pl);
-Calfa_vec3_0_y = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-[alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_900_pl_dFz.FZ), tyre_coeffs_pl);
-Calfa_vec4_0_y = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
-[alpha__y, By, Cy, Dy, Ey, SVy, ~, ~, ~] =MF96_FY0_coeffs(0, 0, 0, mean(FZ_1120_pl_dFz.FZ), tyre_coeffs_pl);
-Calfa_vec5_0_y = magic_formula_stiffness(alpha__y, By, Cy, Dy, Ey, SVy);
+figure('Name','Kya(Fz): cornering stiffness as function of Fz','NumberTitle', 9 + last_fig_FX0)
+hold on
+plot(mean(FZ_220_pl_dFz.FZ),Kya_fz_var_vec1(1),'+','MarkerSize',10)
+plot(mean(FZ_440_pl_dFz.FZ),Kya_fz_var_vec2(1),'+','MarkerSize',10)
+plot(mean(FZ_700_pl_dFz.FZ),Kya_fz_var_vec3(1),'+','MarkerSize',10)
+plot(mean(FZ_900_pl_dFz.FZ),Kya_fz_var_vec4(1),'+','MarkerSize',10)
+plot(mean(FZ_1120_pl_dFz.FZ),Kya_fz_var_vec5(1),'+','MarkerSize',10)
+hold off
+legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
+xlabel('$Fz$ [N]')
+ylabel('$K_{ya}(Fz)$')
 
 Calfa_vec1_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_220_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 Calfa_vec2_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_440_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
@@ -832,21 +826,7 @@ Calfa_vec3_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, me
 Calfa_vec4_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_900_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 Calfa_vec5_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 
-
-
-figure('Name','Kya(Fz): cornering stiffness as function of Fz','NumberTitle', 9 + last_fig_FX0)
-hold on
-plot(mean(FZ_220_pl_dFz.FZ),Calfa_vec1_0_y,'+','MarkerSize',10)
-plot(mean(FZ_440_pl_dFz.FZ),Calfa_vec2_0_y,'+','MarkerSize',10)
-plot(mean(FZ_700_pl_dFz.FZ),Calfa_vec3_0_y,'+','MarkerSize',10)
-plot(mean(FZ_900_pl_dFz.FZ),Calfa_vec4_0_y,'+','MarkerSize',10)
-plot(mean(FZ_1120_pl_dFz.FZ),Calfa_vec5_0_y,'+','MarkerSize',10)
-hold off
-legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
-xlabel('$Fz$ [N]')
-ylabel('$K_{ya}(Fz)$')
-
-figure('Name','Kya(alpha): cornering stiffness as function of alpha','NumberTitle', 11 + last_fig_FX0)
+figure('Name','Kya(alpha): cornering stiffness as function of alpha','NumberTitle', 10 + last_fig_FX0)
 hold on
 plot(SA_vec*to_deg,Calfa_vec1_y,'-','LineWidth',2)
 plot(SA_vec*to_deg,Calfa_vec2_y,'-','LineWidth',2)
@@ -856,7 +836,7 @@ plot(SA_vec*to_deg,Calfa_vec5_y,'-','LineWidth',2)
 hold off
 legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
-ylabel('$K_{kx}(Fz)$ [-]')
+ylabel('$K_{ya}(Fz)$ [-]')
 
 %% ---FY0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
@@ -880,7 +860,7 @@ GAMMA_3_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_3, : );
 GAMMA_4_dgamma  = TDataGamma_pl( idx_pl_dgamma.GAMMA_4, : );
 
 % Plot
-figure('Name','FY0(gamma): considered dataset', 'NumberTitle', 12 + last_fig_FX0)
+figure('Name','FY0(gamma): considered dataset', 'NumberTitle', 11 + last_fig_FX0)
 tiledlayout(3,1)
 ax_list_4(1) = nexttile;
 plot(TDataGamma_pl.IA*to_deg)
@@ -918,14 +898,12 @@ linkaxes(ax_list_4,'x')
 % Fit the coeffs {pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4}
 
 % Guess values for parameters to be optimised
-%   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-P0_FY0_dgamma = [ -2,  0 , -2 , 0 , 0 , 0.15 , 0 ];
-
+%              [pDy3,  pEy3, pEy4, pHy3, pKy3, pVy3, pVy4 ]
+P0_pl_dgamma = [   0, 0.098,   -7,  0.3,  0.4, -0.1, -0.4 ];
 
 % Limits for parameters to be optimised
-%   [pDy3, pEy3, pEy4, pHy3, pKy3, pVy3, pVy4]
-lb_FY0_dgamma = [-100, -100, -3, -100, -100, -100, -100 ];
-ub_FY0_dgamma = [ 100, 100, 100, 100, 100, 100, 100];
+lb_dgamma = [ ];
+ub_dgamma = [ ];
 
 zeros_vec_dgamma = zeros(size(TDataGamma_pl.IA));
 ones_vec_dgamma  = ones(size(TDataGamma_pl.IA));
@@ -937,7 +915,7 @@ FZ_vec_dgamma    = TDataGamma_pl.FZ;
 
 [FY0_varGamma_vec,~] = MF96_FY0_vec(zeros(size(SA_vec)), SA_vec , GAMMA_vec_dgamma, tyre_coeffs_pl.FZ0*ones(size(SA_vec)),tyre_coeffs_pl);
 
-figure('Name','FY0(gamma): guess', 'NumberTitle', 13 + last_fig_FX0)
+figure('Name','FY0(gamma): guess', 'NumberTitle', 12 + last_fig_FX0)
 plot(ALPHA_vec_dgamma,TDataGamma_pl.FY,'o')
 hold on
 plot(SA_vec,FY0_varGamma_vec,'.','MarkerSize',5)
@@ -946,17 +924,17 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
 
 % Residual minimization
-[P__FY0_dgamma,fval_FY0_dgamma,exitflag_FY0_dgamma] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
-                               P0_FY0_dgamma,[],[],[],[],lb_FY0_dgamma,ub_FY0_dgamma);
+[P_varGamma,fval,exitflag] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0_pl_dgamma,[],[],[],[],lb_dgamma,ub_dgamma);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDy3 = P__FY0_dgamma(1);  
-tyre_coeffs_pl.pEy3 = P__FY0_dgamma(2); 
-tyre_coeffs_pl.pEy4 = P__FY0_dgamma(3); 
-tyre_coeffs_pl.pHy3 = P__FY0_dgamma(4); 
-tyre_coeffs_pl.pKy3 = P__FY0_dgamma(5); 
-tyre_coeffs_pl.pVy3 = P__FY0_dgamma(6); 
-tyre_coeffs_pl.pVy4 = P__FY0_dgamma(7); 
+tyre_coeffs_pl.pDy3 = P_varGamma(1);  
+tyre_coeffs_pl.pEy3 = P_varGamma(2); 
+tyre_coeffs_pl.pEy4 = P_varGamma(3); 
+tyre_coeffs_pl.pHy3 = P_varGamma(4); 
+tyre_coeffs_pl.pKy3 = P_varGamma(5); 
+tyre_coeffs_pl.pVy3 = P_varGamma(6); 
+tyre_coeffs_pl.pVy4 = P_varGamma(7); 
 
 tmp_zeros_dgamma = zeros(size(SA_vec));
 tmp_ones_dgamma = ones(size(SA_vec));
@@ -968,7 +946,7 @@ tmp_ones_dgamma = ones(size(SA_vec));
 [FY0_gamma_var_vec5,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_4_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
 
 
-figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 14 + last_fig_FX0)
+figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 13 + last_fig_FX0)
 hold on
 plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
 plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
@@ -985,22 +963,7 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
 
 % Calculate the residuals with the optimal solution found above
-res_Fy0_dgamma  = resid_pure_Fy_varGamma(P__FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
-
-% Coefficients (used to check)
-coeffs_FY0 = zeros(9,1);
-
-[alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(0, 0, 2*to_rad, 1120, tyre_coeffs_pl);
-
-coeffs_FY0(1) = alpha__y;
-coeffs_FY0(2) = By;
-coeffs_FY0(3) = Cy;
-coeffs_FY0(4) = Dy;
-coeffs_FY0(5) = Ey;
-coeffs_FY0(6) = SVy;
-coeffs_FY0(7) = Kya;
-coeffs_FY0(8) = SHy;
-coeffs_FY0(9) = mu__y;
+res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_varGamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 % % R-squared is 
 % % 1-SSE/SST
@@ -1008,6 +971,27 @@ coeffs_FY0(9) = mu__y;
 % 
 % % SSE is the sum of squared error,  SST is the sum of squared total
 % fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
+% 
+% 
+% [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, GAMMA_vec_dgamma(3), tyre_coeffs.FZ0, tyre_coeffs);
+% % 
+% fprintf('Bx      = %6.3f\n',Bx);
+% fprintf('Cx      = %6.3f\n',Cx);
+% fprintf('mux      = %6.3f\n',Dx/tyre_coeffs.FZ0);
+% fprintf('Ex      = %6.3f\n',Ex);
+% fprintf('SVx     = %6.3f\n',SVx);
+% fprintf('kappa_x = %6.3f\n',kappa__x);
+% fprintf('Kx      = %6.3f\n',Bx*Cx*Dx/tyre_coeffs.FZ0);
+
+% % Longitudinal stiffness
+% Kx_vec = zeros(size(load_vec));
+% for i = 1:length(load_vec)
+%   [kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(0, 0, 0, load_vec(i), tyre_data);
+%   Kx_vec(i) = Bx*Cx*Dx/tyre_data.Fz0;
+% end
+% 
+% figure('Name','Kx vs Fz')
+% plot(load_vec,Kx_vec,'o-')
 
 %% ---------------last figure FY0---------------
 last_fig_FY0 = 13 + last_fig_FX0;
@@ -1197,33 +1181,32 @@ xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}$ [Nm]')
 
 % Guess values for parameters to be optimised
-%       {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
-P0_MZ0_pure = [  6,   0,     0.7,    1,   0,    0,     -1,    -0.5,    0];
+%    {qBz1, qBz9, qBz10, qCz1, qDz1, qDz6, qEz1, qEz4, qHz1}
+P0_mz = [  1,   1,   1,   1,   1,   1,   1,   1,   1 ];
 
 % Limits for parameters to be optimised
-lb_MZ0_pure = [ -10,   -1,    -5,   -5,  -10,  -10,  -0.8, -0.8,  -1];
-ub_MZ0_pure =  [  10,    1,     5,    5,   10,   10,   0.8,  0.8,   1];
+lb_mz_dgamma = [ ];
+ub_mz_dgamma = [ ];
+
 
 ALPHA_vec_mz = TData0_mz.SA;
 MZ_vec_mz    = TData0_mz.MZ;
 
 
 % Residual minimization
-[P_opt_MZ0_pure,fval_MZ0_pure,exitflag_MZ0_pure] = fmincon(@(P)resid_pure_Mz(P, MZ_vec_mz, ALPHA_vec_mz, 0, mean(TData0_mz.FZ), tyre_coeffs_pl),...
-                               P0_MZ0_pure,[],[],[],[],lb_MZ0_pure,ub_MZ0_pure);
+[P_fz_nom_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz(P, MZ_vec_mz, ALPHA_vec_mz, 0, mean(TData0_mz.FZ), tyre_coeffs_pl),...
+                               P0_mz,[],[],[],[],lb_mz_dgamma,ub_mz_dgamma);
 
 % Update tyre data with new optimal values                             
-tyre_coeffs_pl.qBz1 = P_opt_MZ0_pure(1); 
-tyre_coeffs_pl.qBz9 = P_opt_MZ0_pure(2);
-tyre_coeffs_pl.qBz10 = P_opt_MZ0_pure(3);
-tyre_coeffs_pl.qCz1 = P_opt_MZ0_pure(4);
-tyre_coeffs_pl.qDz1 = P_opt_MZ0_pure(5);
-tyre_coeffs_pl.qDz6 = P_opt_MZ0_pure(6);
-tyre_coeffs_pl.qEz1 = P_opt_MZ0_pure(7);
-tyre_coeffs_pl.qEz4 = P_opt_MZ0_pure(8);
-tyre_coeffs_pl.qHz1 = P_opt_MZ0_pure(9);
-
-% Check residuals!
+tyre_coeffs_pl.qBz1 = P_fz_nom_mz(1); 
+tyre_coeffs_pl.qBz9 = P_fz_nom_mz(2);
+tyre_coeffs_pl.qBz10 = P_fz_nom_mz(3);
+tyre_coeffs_pl.qCz1 = P_fz_nom_mz(4);
+tyre_coeffs_pl.qDz1 = P_fz_nom_mz(5);
+tyre_coeffs_pl.qDz6 = P_fz_nom_mz(6);
+tyre_coeffs_pl.qEz1 = P_fz_nom_mz(7);
+tyre_coeffs_pl.qEz4 = P_fz_nom_mz(8);
+tyre_coeffs_pl.qHz1 = P_fz_nom_mz(9);
 
 % Plot of the optimized solution
 MZ0_fz_nom_vec = MF96_MZ0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), ...
@@ -1268,11 +1251,11 @@ ones_vec_mz  = ones(size(TDataDFz_mz.SA));
 
 % Guess values for parameters to be optimised
 % [qBz2, qBz3, qDz2, qDz7, qEz2, qEz3, qHz2]
-P0_MZ0_dFz = [0,      0,     0,    0,    0,   0,    0]; 
+P0_mz_dFz = [ 0,  0,  0,  0,  0,  0,   0 ]; 
 
 % Limits for parameters to be optimised
-lb_MZ0_dFz = [-4,   -4,    -5,   -5,    -2,  -1,   -5];
-ub_MZ0_dFz = [4,    4,     5,    5,     2,   1,    5];
+lb_mz_dFz = [];
+ub_mz_dFz = [];
 
 
 ALPHA_vec_mz_dFz = TDataDFz_mz.SA;
@@ -1292,20 +1275,20 @@ xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}(Fz)$ [Nm]')
 
 % Residual minimization
-[P_opt_MZ0_dFz,fval_MZ0_dFz,exitflag_Mz0_dFz] = fmincon(@(P)resid_pure_Mz_varFz(P, Mz_vec_dFz, ALPHA_vec_mz_dFz, 0, FZ_vec_dFz, tyre_coeffs_pl),...
-                               P0_MZ0_dFz,[],[],[],[],lb_MZ0_dFz,ub_MZ0_dFz);
+[P_dfz_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz_varFz(P, Mz_vec_dFz, ALPHA_vec_mz_dFz, 0, FZ_vec_dFz, tyre_coeffs_pl),...
+                               P0_mz_dFz,[],[],[],[],lb_mz_dFz,ub_mz_dFz);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.qBz2 = P_opt_MZ0_dFz(1); 
-tyre_coeffs_pl.qBz3 = P_opt_MZ0_dFz(2);
-tyre_coeffs_pl.qDz2 = P_opt_MZ0_dFz(3);
-tyre_coeffs_pl.qDz7 = P_opt_MZ0_dFz(4);
-tyre_coeffs_pl.qEz2 = P_opt_MZ0_dFz(5);
-tyre_coeffs_pl.qEz3 = P_opt_MZ0_dFz(6);
-tyre_coeffs_pl.qHz2 = P_opt_MZ0_dFz(7);
+tyre_coeffs_pl.qBz2 = P_dfz_mz(1); 
+tyre_coeffs_pl.qBz3 = P_dfz_mz(2);
+tyre_coeffs_pl.qDz2 = P_dfz_mz(3);
+tyre_coeffs_pl.qDz7 = P_dfz_mz(4);
+tyre_coeffs_pl.qEz2 = P_dfz_mz(5);
+tyre_coeffs_pl.qEz3 = P_dfz_mz(6);
+tyre_coeffs_pl.qHz2 = P_dfz_mz(7);
 
-% Check residuals
-res_MZ0_dfz_vec = resid_pure_Mz_varFz(P_opt_MZ0_dFz, Mz_vec_dFz, SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
+
+res_MZ0_dfz_vec = resid_pure_Mz_varFz(P_dfz_mz, Mz_vec_dFz, SA_vec, 0 , FZ_vec_dFz, tyre_coeffs_pl);
 
 tmp_zeros_mz_dFz = zeros(size(SA_vec));
 tmp_ones_mz_dFz = ones(size(SA_vec));
@@ -1351,6 +1334,7 @@ ylabel('$M_{z0}(Fz)$ [Nm]')
 % extract data with the same vertical load (Fz = 220N) 
 TDataGamma_mz = FZ_220_mz;
 
+
 % Extract points at constant camber and plot
 GAMMA_tol_mz_dgamma = 0.05*to_rad;
 idx_mz_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_mz_dgamma < TDataGamma_mz.IA & TDataGamma_mz.IA < 0.0*to_rad+GAMMA_tol_mz_dgamma;
@@ -1368,13 +1352,11 @@ GAMMA_4__mz_dgamma  = TDataGamma_mz( idx_mz_dgamma.GAMMA_4, : );
 
 % Fit the coeffs { qBz4, qBz5, qDz3, qDz4, qEz5, qDz8, qDz9, qHz3, qHz4 }
 % Guess values for parameters to be optimised
-P0_MZ0_dgamma = [0, 0, 0, -1, 0, 0.6, 0.2, 0, 0];
+P0__mz_dgamma = [1, 0, 0, 0, 0, 0, 0, 0, 0];
 
 % Limits for parameters to be optimised
-% lb_mz_dgamma = [-100, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1];
-% ub_mz_dgamma = [100, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-lb_MZ0_dgamma = [ ];
-ub_MZ0_dgamma = [ ];
+lb_mz_dgamma = [-100, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1];
+ub_mz_dgamma = [100, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
 
 zeros_vec_mz_dgamma = zeros(size(TDataGamma_mz.IA));
 ones_vec_mz_dgamma  = ones(size(TDataGamma_mz.IA));
@@ -1396,29 +1378,28 @@ ylabel('$F_{y0}(\gamma)$ [N]')
 
 % LSM_pure_Fx returns the residual, so minimize the residual varying X. It
 % is an unconstrained minimization problem 
-[P_opt_MZ0_dgamma,fval_MZ0_dgamma,exitflag_MZ0_dgamma] = fmincon(@(P)resid_pure_Mz_varGamma(P,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma,GAMMA_vec_mz_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
-                               P0_MZ0_dgamma,[],[],[],[],lb_MZ0_dgamma,ub_MZ0_dgamma);
+[P_varGamma_mz,fval,exitflag] = fmincon(@(P)resid_pure_Mz_varGamma(P,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma,GAMMA_vec_mz_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+                               P0__mz_dgamma,[],[],[],[],lb_mz_dgamma,ub_mz_dgamma);
 
 % Change tyre data with new optimal values       
-tyre_coeffs_pl.qBz4 = P_opt_MZ0_dgamma(1); 
-tyre_coeffs_pl.qBz5 = P_opt_MZ0_dgamma(2);
-tyre_coeffs_pl.qDz3 = P_opt_MZ0_dgamma(3);
-tyre_coeffs_pl.qDz4 = P_opt_MZ0_dgamma(4);
-tyre_coeffs_pl.qEz5 = P_opt_MZ0_dgamma(5);
-tyre_coeffs_pl.qDz8 = P_opt_MZ0_dgamma(6);
-tyre_coeffs_pl.qDz9 = P_opt_MZ0_dgamma(7);
-tyre_coeffs_pl.qHz3 = P_opt_MZ0_dgamma(8);
-tyre_coeffs_pl.qHz4 = P_opt_MZ0_dgamma(9);
-
+tyre_coeffs_pl.qBz4 = P_varGamma_mz(1); 
+tyre_coeffs_pl.qBz5 = P_varGamma_mz(2);
+tyre_coeffs_pl.qDz3 = P_varGamma_mz(3);
+tyre_coeffs_pl.qDz4 = P_varGamma_mz(4);
+tyre_coeffs_pl.qEz5 = P_varGamma_mz(5);
+tyre_coeffs_pl.qDz8 = P_varGamma_mz(6);
+tyre_coeffs_pl.qDz9 = P_varGamma_mz(7);
+tyre_coeffs_pl.qHz3 = P_varGamma_mz(8);
+tyre_coeffs_pl.qHz4 = P_varGamma_mz(9);
 
 tmp_zeros_mz_dgamma = zeros(size(SA_vec));
 tmp_ones__mz_dgamma = ones(size(SA_vec));
 
-MZ0_gamma_var_vec1 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_0__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma_mz.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
-MZ0_gamma_var_vec2 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_1__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma_mz.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
-MZ0_gamma_var_vec3 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_2__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma_mz.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
-MZ0_gamma_var_vec4 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_3__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma_mz.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
-MZ0_gamma_var_vec5 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_4__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma_mz.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec1 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_0__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec2 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_1__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec3 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_2__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec4 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_3__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
+MZ0_gamma_var_vec5 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_4__mz_dgamma.IA)*tmp_ones__mz_dgamma, mean(TDataGamma.FZ)*tmp_ones__mz_dgamma,tyre_coeffs_pl);
 
 figure('Name','MZ0(gamma): fitted with variable camber','NumberTitle', 10 + last_fig_FY0)
 hold on
@@ -1438,19 +1419,8 @@ ylabel('$M_{z0}$ [Nm]')
 
 
 % Calculate the residuals with the optimal solution found above
-res_Mz0_varGamma  = resid_pure_Mz_varGamma(P_opt_MZ0_dgamma,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma, GAMMA_vec_mz_dgamma, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+res_Mz0_varGamma  = resid_pure_Mz_varGamma(P_varGamma_mz,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma, GAMMA_vec_mz_dgamma, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
-% Check coefficients
-coeffs_MZ0 = zeros(8,1);
-[Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(0, 0, 5*to_rad, 1120, tyre_coeffs_pl);
-coeffs_MZ0(1) = Br;
-coeffs_MZ0(2) = Bt;
-coeffs_MZ0(3) = Ct;
-coeffs_MZ0(4) = Dr;
-coeffs_MZ0(5) = Dt;
-coeffs_MZ0(6) = Et;
-coeffs_MZ0(7) = alpha__r;
-coeffs_MZ0(8) = alpha__t;
 
 %% ---------------last figure MZ0---------------
 last_fig_MZ0 = 10 + last_fig_FY0;
@@ -1710,11 +1680,11 @@ linkaxes(ax_list_7,'x')
 
 % Guess values for parameters to be optimised
 %   [rBx1, rBx2, rCx1, rHx1]
-P0_FX_pure = [ 17 , -11 , 1 , 0 ];
+P0_x_dalpha = [ -11 , -11 , 1 , 0 ];
 
 % Limits for parameters to be optimised
-lb_FX_pure = [ 0, -16.5, -0.5, -0.015 ];
-ub_FX_pure = [ 20, 20, 10, 0.015];
+lb_x_dalpha = [ -17, -16.5, -0.5, -0.015 ];
+ub_x_dalpha = [ 20, 20, 10, 0.015];
 
 zeros_vec_x_dalpha = zeros(size(TData_x_dalpha.IA));
 ones_vec_x_dalpha  = ones(size(TData_x_dalpha.IA));
@@ -1726,16 +1696,15 @@ FZ_vec_dalpha    = TData_x_dalpha.FZ;
 
 
 % Minimize the residual:
-[P_opt_FX_pure,fval_FX_pure,exitflag_FX_pure] = fmincon(@(P)resid_Fx_varAlpha(P,FX_vec_dalpha, KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha,tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl),...
-                               P0_FX_pure,[],[],[],[],lb_FX_pure,ub_FX_pure);
+[P_x_dalpha,fval,exitflag] = fmincon(@(P)resid_Fx_varAlpha(P,FX_vec_dalpha, KAPPA_vec_x_dalpha, ALPHA_vec_x_dalpha, zeros_vec_x_dalpha,tyre_coeffs_pl.FZ0*ones_vec_x_dalpha, tyre_coeffs_pl),...
+                               P0_x_dalpha,[],[],[],[],lb_x_dalpha,ub_x_dalpha);
 
 % Change tyre data with new optimal values                             
-    tyre_coeffs_pl.rBx1 = P_opt_FX_pure(1);  
-    tyre_coeffs_pl.rBx2 = P_opt_FX_pure(2); 
-    tyre_coeffs_pl.rCx1 = P_opt_FX_pure(3); 
-    tyre_coeffs_pl.rHx1 = P_opt_FX_pure(4); 
+    tyre_coeffs_pl.rBx1 = P_x_dalpha(1);  
+    tyre_coeffs_pl.rBx2 = P_x_dalpha(2); 
+    tyre_coeffs_pl.rCx1 = P_x_dalpha(3); 
+    tyre_coeffs_pl.rHx1 = P_x_dalpha(4); 
 
-% Check residuals!
 
 tmp_zeros_dalpha = zeros(size(SL_vec));
 tmp_ones_dalpha = ones(size(SL_vec));
@@ -1796,11 +1765,11 @@ last_fig_FX = 7 + last_fig_MZ0;
 
 % Guess values for parameters to be optimised
 %   [ rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6 ]
-P0_FY_pure = [ 14 , 13, -0.5 , 0.98 , 0.03 , -0.23 , 3.8 , -0.1 , 28.4  ];
+P0_y_dalpha = [ 14 , 13, -0.5 , 0.98 , 0.03 , -0.23 , 3.8 , -0.1 , 28.4  ];
 
 % Limits for parameters to be optimised
-lb_FY_pure = [ ];
-ub_FY_pure = [ ];
+lb_y_dalpha = [ ];
+ub_y_dalpha = [ ];
 
 zeros_vec_y_dalpha = zeros(size(TData_x_dalpha.IA));
 ones_vec_y_dalpha  = ones(size(TData_x_dalpha.IA));
@@ -1811,21 +1780,19 @@ FY_vec_dalpha    = TData_x_dalpha.FY;
 
 
 % Minimize the residual:
-[P_opt_FY_pure,fval_FY_pure,exitflag_FY_pure] = fmincon(@(P)resid_Fy_varAlpha(P,FY_vec_dalpha, KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha,tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl),...
-                               P0_FY_pure,[],[],[],[],lb_FY_pure,ub_FY_pure);
+[P_y_dalpha,fval,exitflag] = fmincon(@(P)resid_Fy_varAlpha(P,FY_vec_dalpha, KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha,tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl),...
+                               P0_y_dalpha,[],[],[],[],lb_y_dalpha,ub_y_dalpha);
 
 % Change tyre data with new optimal values                             
-    tyre_coeffs_pl.rBy1 = P_opt_FY_pure(1);  
-    tyre_coeffs_pl.rBy2 = P_opt_FY_pure(2); 
-    tyre_coeffs_pl.rBy3 = P_opt_FY_pure(3); 
-    tyre_coeffs_pl.rCy1 = P_opt_FY_pure(4);
-    tyre_coeffs_pl.rHy1 = P_opt_FY_pure(5);
-    tyre_coeffs_pl.rVy1 = P_opt_FY_pure(6);
-    tyre_coeffs_pl.rVy4 = P_opt_FY_pure(7);
-    tyre_coeffs_pl.rVy5 = P_opt_FY_pure(8);
-    tyre_coeffs_pl.rVy6 = P_opt_FY_pure(9); 
-
-% Check residuals!
+    tyre_coeffs_pl.rBy1 = P_y_dalpha(1);  
+    tyre_coeffs_pl.rBy2 = P_y_dalpha(2); 
+    tyre_coeffs_pl.rBy3 = P_y_dalpha(3); 
+    tyre_coeffs_pl.rCy1 = P_y_dalpha(4);
+    tyre_coeffs_pl.rHy1 = P_y_dalpha(5);
+    tyre_coeffs_pl.rVy1 = P_y_dalpha(6);
+    tyre_coeffs_pl.rVy4 = P_y_dalpha(7);
+    tyre_coeffs_pl.rVy5 = P_y_dalpha(8);
+    tyre_coeffs_pl.rVy6 = P_y_dalpha(9); 
 
 
 tmp_zeros_dalpha = zeros(size(SL_vec));
@@ -1850,7 +1817,7 @@ plot(SL_vec,FY_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#D953
 plot(SL_vec,FY_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#EDB120')
 legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
-ylabel('$F_{y}$ [N]')
+ylabel('$F_{x}$ [N]')
 
 figure('Name','Gyk(kappa) as function of kappa','NumberTitle', 2 + last_fig_FX)
 hold on
@@ -1978,11 +1945,11 @@ linkaxes(ax_list_8,'x')
 
 % Guess values for parameters to be optimised
 %   [rVy2]
-P0_FY_dFz = [0];
+P0_y_comb_dFz = [0];
 
 % Limits for parameters to be optimised
-lb_FY_dFz = [ ];
-ub_FY_dFz = [ ];
+lb_y_comb_dFz = [ ];
+ub_y_comb_dFz = [ ];
 
 zeros_vec_y_comb_dFz = zeros(size(TData_y_comb_dFz.IA));
 ones_vec_y_comb_dFz  = ones(size(TData_y_comb_dFz.IA));
@@ -1994,16 +1961,21 @@ FZ_vec_comb_dFz    = TData_y_comb_dFz.FZ;
 
 
 % LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
-[P_opt_FY_dFz,fval_FY_dFz,exitflag_FY_dFz] = fmincon(@(P)resid_Fy_varFz(P,FY_vec_comb_dFz, KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz,FZ_vec_comb_dFz, tyre_coeffs_pl),...
-                               P0_FY_dFz,[],[],[],[],lb_FY_dFz,ub_FY_dFz);
+[P_y_comb_dFz,fval,exitflag] = fmincon(@(P)resid_Fy_varFz(P,FY_vec_comb_dFz, KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz,FZ_vec_comb_dFz, tyre_coeffs_pl),...
+                               P0_y_comb_dFz,[],[],[],[],lb_y_comb_dFz,ub_y_comb_dFz);
 
 % Change tyre data with new optimal values                             
-    tyre_coeffs_pl.rVy2 = P_opt_FY_dFz(1);  
+    tyre_coeffs_pl.rVy2 = P_y_comb_dFz(1);  
  
-% Check residuals!
 
 [FY_comb_dFz_vec,~] = MF96_FY_vec(KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz, tyre_coeffs_pl.FZ0*ones_vec_y_comb_dFz, tyre_coeffs_pl);
 
+% figure('Name','Fx vs Alpha', 'NumberTitle', 6 + last_fig_FY0)
+% plot(KAPPA_vec_y_comb_dFz,TData_y_comb_dFz.FY,'o')
+% hold on
+% plot(KAPPA_vec_y_comb_dFz,FY_comb_dFz_vec,'-')
+% xlabel('$\kappa$ [-]')
+% ylabel('$F_{y} (Fz)$ [N]')
 
 tmp_zeros_comb_dFz = zeros(size(SL_vec));
 tmp_ones_comb_dFz = ones(size(SL_vec));
@@ -2011,6 +1983,10 @@ tmp_ones_comb_dFz = ones(size(SL_vec));
 [FY_dFz_var_vec1, Gxa_dFz_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_0_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_0_y_comb_dFz.FZ)*tmp_ones_comb_dFz, tyre_coeffs_pl);
 [FY_dFz_var_vec2, Gxa_dFz_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_3_y_comb_dFz.FZ)*tmp_ones_comb_dFz,tyre_coeffs_pl);
 [FY_dFz_var_vec3, Gxa_dFz_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dFz.SA)*tmp_ones_comb_dFz , tmp_zeros_comb_dFz, mean(ALPHA_6_y_comb_dFz.FZ)*tmp_ones_comb_dFz,tyre_coeffs_pl);
+
+% [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
 
 
 figure('Name','FY(Fz) for all side slip angles','NumberTitle', 7 + last_fig_FX)
@@ -2064,6 +2040,25 @@ legend({'Raw with $Fz=220N$,$\alpha=6 deg$','Raw with $Fz=700N$,$\alpha=6 deg$',
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(Fz)$ [N]')
 
+
+% figure('Name','Gxa coeffs as function of kappa','NumberTitle', 8 + last_fig_FY0)
+% hold on
+% plot(SL_vec,Gxa_dFz_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,Gxa_dFz_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,Gxa_dFz_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, 'Location','eastoutside');
+% xlabel('$\kappa$ [-]')
+% ylabel('$G_{xa}$ [-]')
+% 
+% % To be done!
+% % figure('Name','Gxa coeffs as function of alpha','NumberTitle', 9 + last_fig_FY0)
+% % hold on
+% % plot(SA_vec,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% % plot(SA_vec,Gxa_gamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% % plot(SA_vec,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% % legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
+% % xlabel('$\alpha$ [rad]')
+% % ylabel('$G_{xa}$ [-]')
 
 %% ---FY(gamma): fitting with variable camber (gamma)
 % evaluate the differences at the same nominal load Fz = 220N
@@ -2151,11 +2146,11 @@ linkaxes(ax_list_9,'x')
 
 % Guess values for parameters to be optimised
 %   [rVy3]
-P0_FY_dgamma = [0];
+P0_y_comb_dgamma = [0];
 
 % Limits for parameters to be optimised
-lb_FY_dgamma = [ ];
-ub_FY_dgamma = [ ];
+lb_y_comb_dgamma = [ ];
+ub_y_comb_dgamma = [ ];
 
 zeros_vec_y_comb_dgamma = zeros(size(TData_y_comb_dgamma.IA));
 ones_vec_y_comb_dgamma  = ones(size(TData_y_comb_dgamma.IA));
@@ -2168,17 +2163,34 @@ FZ_vec_y_comb_dgamma    = TData_y_comb_dgamma.FZ;
 
 
 % Minimization of residuals
-[P_FY_dgamma,fval_FY_dgamma,exitflag_FY_dgamma] = fmincon(@(P)resid_Fy_varGamma(P,FY_vec_y_comb_dgamma, KAPPA_vec_y_comb_dgamma, ALPHA_vec_y_comb_dgamma, GAMMA_vec_y_comb_dgamma,mean(FZ_vec_y_comb_dgamma)*ones_vec_y_comb_dgamma, tyre_coeffs_pl),...
-                               P0_FY_dgamma,[],[],[],[],lb_FY_dgamma,ub_FY_dgamma);
+[P_y_comb_varGamma,fval,exitflag] = fmincon(@(P)resid_Fy_varGamma(P,FY_vec_y_comb_dgamma, KAPPA_vec_y_comb_dgamma, ALPHA_vec_y_comb_dgamma, GAMMA_vec_y_comb_dgamma,mean(FZ_vec_y_comb_dgamma)*ones_vec_y_comb_dgamma, tyre_coeffs_pl),...
+                               P0_y_comb_dgamma,[],[],[],[],lb_y_comb_dgamma,ub_y_comb_dgamma);
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.rVy3 = P_FY_dgamma(1);  
-
-% Check residuals!
+tyre_coeffs_pl.rVy3 = P_y_comb_varGamma(1);  
 
 tmp_zeros_comb_dgamma = zeros(size(SL_vec));
 tmp_ones_comb_dgamma = ones(size(SL_vec));
 
+% [FY_dgamma0_var_vec1, Gxa_dgamma_var_vec1] = MF96_FY_vec(SL_vec, mean(ALPHA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
+% [FY_dgamma_var_vec2, Gxa_dgamma_var_vec2] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma,tyre_coeffs_pl);
+% [FY_dgamma_var_vec3, Gxa_dgamma_var_vec3] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.SA)*tmp_ones_comb_dgamma, mean(ALPHA_0_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma,tyre_coeffs_pl);
+% 
+% % [~, Gxa_gamma_var_vec1] = MF96_FX_vec(0*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_0_dalpha.FZ)*ones(size(SA_vec)), tyre_coeffs_pl);
+% % [~, Gxa_gamma_var_vec2] = MF96_FX_vec(0.1*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_3_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% % [~, Gxa_gamma_var_vec3] = MF96_FX_vec(0.2*ones(size(SA_vec)) , SA_vec , zeros(size(SA_vec)), mean(ALPHA_6_dalpha.FZ)*ones(size(SA_vec)),tyre_coeffs_pl);
+% 
+% figure('Name','FY(Fz) for all side slip angles','NumberTitle', 22 + last_fig_FY0)
+% hold on
+% plot(ALPHA_0_y_comb_dgamma.SL,ALPHA_0_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','y',
+% plot(ALPHA_3_y_comb_dgamma.SL,ALPHA_3_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','c',
+% plot(ALPHA_6_y_comb_dgamma.SL,ALPHA_6_y_comb_dgamma.FY,'.','MarkerSize',5) %'MarkerEdgeColor','m',
+% plot(SL_vec,FY_dgamma0_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,FY_dgamma_var_vec2,'-s','LineWidth',1,'MarkerSize',1)
+% plot(SL_vec,FY_dgamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
+% legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
+% xlabel('$\kappa$ [-]')
+% ylabel('$F_{y}$ [N]')
 
 [FY_dgamma0_alpha3_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_3_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 [FY_dgamma1_alpha3_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_3_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_1_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_3_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
