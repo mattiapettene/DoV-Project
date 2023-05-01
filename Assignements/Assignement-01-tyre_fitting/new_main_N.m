@@ -1026,19 +1026,19 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
 
 % Residual minimization
-[P__FY0_dgamma,fval_FY0_dgamma,exitflag_FY0_dgamma] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+[P_opt_FY0_dgamma,fval_FY0_dgamma,exitflag_FY0_dgamma] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
                                P0_FY0_dgamma,[],[],[],[],lb_FY0_dgamma,ub_FY0_dgamma);
 
 R_squared_FY0_dgamma = 1 - fval_FY0_dgamma;
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDy3 = P__FY0_dgamma(1);  
-tyre_coeffs_pl.pEy3 = P__FY0_dgamma(2); 
-tyre_coeffs_pl.pEy4 = P__FY0_dgamma(3); 
-tyre_coeffs_pl.pHy3 = P__FY0_dgamma(4); 
-tyre_coeffs_pl.pKy3 = P__FY0_dgamma(5); 
-tyre_coeffs_pl.pVy3 = P__FY0_dgamma(6); 
-tyre_coeffs_pl.pVy4 = P__FY0_dgamma(7); 
+tyre_coeffs_pl.pDy3 = P_opt_FY0_dgamma(1);  
+tyre_coeffs_pl.pEy3 = P_opt_FY0_dgamma(2); 
+tyre_coeffs_pl.pEy4 = P_opt_FY0_dgamma(3); 
+tyre_coeffs_pl.pHy3 = P_opt_FY0_dgamma(4); 
+tyre_coeffs_pl.pKy3 = P_opt_FY0_dgamma(5); 
+tyre_coeffs_pl.pVy3 = P_opt_FY0_dgamma(6); 
+tyre_coeffs_pl.pVy4 = P_opt_FY0_dgamma(7); 
 
 tmp_zeros_dgamma = zeros(size(SA_vec));
 tmp_ones_dgamma = ones(size(SA_vec));
@@ -1069,7 +1069,7 @@ ylabel('$F_{y0}(\gamma)$ [N]')
 saveas(gcf, 'Plots/FY0_fitted_with_variable_camber.eps', 'epsc');
 
 % Calculate the residuals with the optimal solution found above
-res_Fy0_dgamma  = resid_pure_Fy_varGamma(P__FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_opt_FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 % Coefficients (used to check)
 coeffs_FY0 = zeros(9,1);

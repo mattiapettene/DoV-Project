@@ -1026,19 +1026,19 @@ xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
 
 % Residual minimization
-[P__FY0_dgamma,fval_FY0_dgamma,exitflag_FY0_dgamma] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
+[P_opt_FY0_dgamma,fval_FY0_dgamma,exitflag_FY0_dgamma] = fmincon(@(P)resid_pure_Fy_varGamma(P,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl),...
                                P0_FY0_dgamma,[],[],[],[],lb_FY0_dgamma,ub_FY0_dgamma);
 
 R_squared_FY0_dgamma = 1 - fval_FY0_dgamma;
 
 % Change tyre data with new optimal values                             
-tyre_coeffs_pl.pDy3 = P__FY0_dgamma(1);  
-tyre_coeffs_pl.pEy3 = P__FY0_dgamma(2); 
-tyre_coeffs_pl.pEy4 = P__FY0_dgamma(3); 
-tyre_coeffs_pl.pHy3 = P__FY0_dgamma(4); 
-tyre_coeffs_pl.pKy3 = P__FY0_dgamma(5); 
-tyre_coeffs_pl.pVy3 = P__FY0_dgamma(6); 
-tyre_coeffs_pl.pVy4 = P__FY0_dgamma(7); 
+tyre_coeffs_pl.pDy3 = P_opt_FY0_dgamma(1);  
+tyre_coeffs_pl.pEy3 = P_opt_FY0_dgamma(2); 
+tyre_coeffs_pl.pEy4 = P_opt_FY0_dgamma(3); 
+tyre_coeffs_pl.pHy3 = P_opt_FY0_dgamma(4); 
+tyre_coeffs_pl.pKy3 = P_opt_FY0_dgamma(5); 
+tyre_coeffs_pl.pVy3 = P_opt_FY0_dgamma(6); 
+tyre_coeffs_pl.pVy4 = P_opt_FY0_dgamma(7); 
 
 tmp_zeros_dgamma = zeros(size(SA_vec));
 tmp_ones_dgamma = ones(size(SA_vec));
@@ -1069,7 +1069,7 @@ ylabel('$F_{y0}(\gamma)$ [N]')
 saveas(gcf, 'Plots/FY0_fitted_with_variable_camber.eps', 'epsc');
 
 % Calculate the residuals with the optimal solution found above
-res_Fy0_dgamma  = resid_pure_Fy_varGamma(P__FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+res_Fy0_dgamma  = resid_pure_Fy_varGamma(P_opt_FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 % Coefficients (used to check)
 coeffs_FY0 = zeros(9,1);
@@ -1936,7 +1936,8 @@ last_fig_FX = 7 + last_fig_MZ0;
 
 % Guess values for parameters to be optimised
 %   [ rBy1, rBy2, rBy3, rCy1, rHy1, rVy1, rVy4, rVy5, rVy6 ]
-P0_FY_pure = [ 14 , 13, -0.5 , 0.98 , 0.03 , -0.23 , 3.8 , -0.1 , 28.4  ];
+% P0_FY_pure = [ 14 , 13, -0.5 , 0.98 , 0.03 , -0.23 , 3.8 , -0.1 , 28.4  ];
+P0_FY_pure = [7, 2.5, 0.1, 1, 0.02, 0, 30, 1.9, 10 ];
 
 % Limits for parameters to be optimised
 lb_FY_pure = [ ];
@@ -1954,7 +1955,7 @@ FY_vec_dalpha    = TData_x_dalpha.FY;
 [P_opt_FY_pure,fval_FY_pure,exitflag_FY_pure] = fmincon(@(P)resid_Fy_varAlpha(P,FY_vec_dalpha, KAPPA_vec_y_dalpha, ALPHA_vec_y_dalpha, zeros_vec_y_dalpha,tyre_coeffs_pl.FZ0*ones_vec_y_dalpha, tyre_coeffs_pl),...
                                P0_FY_pure,[],[],[],[],lb_FY_pure,ub_FY_pure);
 
-R_squared_FY_pure = 1 -     
+R_squared_FY_pure = 1 - fval_FY_pure;
 
 % Change tyre data with new optimal values                             
     tyre_coeffs_pl.rBy1 = P_opt_FY_pure(1);  
@@ -2126,7 +2127,8 @@ linkaxes(ax_list_8,'x')
 
 % Guess values for parameters to be optimised
 %   [rVy2]
-P0_FY_dFz = [0];
+% P0_FY_dFz = [0];
+P0_FY_dFz = [-0.01];
 
 % Limits for parameters to be optimised
 lb_FY_dFz = [ ];
@@ -2144,6 +2146,8 @@ FZ_vec_comb_dFz    = TData_y_comb_dFz.FZ;
 % LSM_pure_Fx returns the residual, so minimize the residual varying alpha:
 [P_opt_FY_dFz,fval_FY_dFz,exitflag_FY_dFz] = fmincon(@(P)resid_Fy_varFz(P,FY_vec_comb_dFz, KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz,FZ_vec_comb_dFz, tyre_coeffs_pl),...
                                P0_FY_dFz,[],[],[],[],lb_FY_dFz,ub_FY_dFz);
+
+R_squared_FY_dFz = 1 - fval_FY_dFz;
 
 % Change tyre data with new optimal values                             
     tyre_coeffs_pl.rVy2 = P_opt_FY_dFz(1);  
@@ -2212,6 +2216,7 @@ legend({'Raw with $Fz=220N$,$\alpha=6 deg$','Raw with $Fz=700N$,$\alpha=6 deg$',
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(Fz)$ [N]')
 
+saveas(gcf, 'Plots/FY_dFz_with_alpha_6deg.eps', 'epsc');
 
 %% ---FY(gamma): fitting with variable camber (gamma)
 % evaluate the differences at the same nominal load Fz = 220N
@@ -2299,11 +2304,12 @@ linkaxes(ax_list_9,'x')
 
 % Guess values for parameters to be optimised
 %   [rVy3]
-P0_FY_dgamma = [0];
+% P0_FY_dgamma = [0];
+P0_FY_dgamma = [1];
 
 % Limits for parameters to be optimised
-lb_FY_dgamma = [ ];
-ub_FY_dgamma = [ ];
+lb_FY_dgamma = [ 0.7 ];
+ub_FY_dgamma = [ 100 ];
 
 zeros_vec_y_comb_dgamma = zeros(size(TData_y_comb_dgamma.IA));
 ones_vec_y_comb_dgamma  = ones(size(TData_y_comb_dgamma.IA));
@@ -2318,6 +2324,8 @@ FZ_vec_y_comb_dgamma    = TData_y_comb_dgamma.FZ;
 % Minimization of residuals
 [P_FY_dgamma,fval_FY_dgamma,exitflag_FY_dgamma] = fmincon(@(P)resid_Fy_varGamma(P,FY_vec_y_comb_dgamma, KAPPA_vec_y_comb_dgamma, ALPHA_vec_y_comb_dgamma, GAMMA_vec_y_comb_dgamma,mean(FZ_vec_y_comb_dgamma)*ones_vec_y_comb_dgamma, tyre_coeffs_pl),...
                                P0_FY_dgamma,[],[],[],[],lb_FY_dgamma,ub_FY_dgamma);
+
+R_squared_FY_dgamma = 1 - fval_FY_dgamma;
 
 % Change tyre data with new optimal values                             
 tyre_coeffs_pl.rVy3 = P_FY_dgamma(1);  
@@ -2344,6 +2352,8 @@ legend({'Raw with $\gamma=0deg$,$\alpha=3 deg$','Raw with $\gamma=2deg$,$\alpha=
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(\gamma)$ [N]')
 
+saveas(gcf, 'Plots/FY_dgamma_with_alpha_3deg.eps', 'epsc');
+
 [FY_dgamma0_alpha6_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_0_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_6_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 [FY_dgamma1_alpha6_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_1_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_6_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
 [FY_dgamma2_alpha6_var_vec1, ~] = MF96_FY_vec(SL_vec, mean(ALPHA_6_y_comb_dgamma.SA)*tmp_ones_comb_dgamma , mean(GAMMA_2_y_comb_dgamma.IA)*tmp_ones_comb_dgamma, mean(ALPHA_6_y_comb_dgamma.FZ)*tmp_ones_comb_dgamma, tyre_coeffs_pl);
@@ -2360,20 +2370,6 @@ legend({'Raw with $\gamma=0deg$,$\alpha=6 deg$','Raw with $\gamma=2deg$,$\alpha=
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(\gamma)$ [N]')
 
-%% -------------- Coefficients FX - FY -------------
-
-coeffs_FXFY = zeros(3,1);
-
-[Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(0, 0, GAMMA_vec_y_comb_dgamma(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
-
-coeffs_FXFY(1) = Gxa;
-coeffs_FXFY(2) = Gyk;
-coeffs_FXFY(3) = SVyk;
-
-
-fprintf('Gxa      = %6.3f\n', Gxa);
-fprintf('Gyk      = %6.3f\n', Gyk);
-fprintf('SVyk      = %6.3f\n', SVyk);
 
 %% -Save tyre data structure to mat file
 save('tyre_coeffs_team6.mat','tyre_coeffs_pl');
