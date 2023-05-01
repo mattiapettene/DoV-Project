@@ -20,18 +20,18 @@ ty_data.pKx2            = 0; % pKx2
 ty_data.pKx3            = 0; % pKx3
 ty_data.pVx1            = 0; % pVx1
 ty_data.pVx2            = 0; % pVx2
-ty_data.pCy1            = 0; % pCy1
-ty_data.pDy1            = 0; % pDy1
+ty_data.pCy1            = 1.3; % pCy1
+ty_data.pDy1            = 1; % pDy1
 ty_data.pDy2            = 0; % pDy2
 ty_data.pDy3            = 0; % pDy3
-ty_data.pEy1            = 0; % pEy1
+ty_data.pEy1            = -1; % pEy1
 ty_data.pEy2            = 0; % pEy2
 ty_data.pEy3            = 0; % pEy3
 ty_data.pEy4            = 0; % pEy4
 ty_data.pHy1            = 0; % pHy1
 ty_data.pHy2            = 0; % pHy2
 ty_data.pHy3            = 0; % pHy3
-ty_data.pKy1            = 0; % pKy1
+ty_data.pKy1            = 10; % pKy1
 ty_data.pKy2            = 0; % pKy2
 ty_data.pKy3            = 0; % pKy3
 ty_data.pVy1            = 0; % pVy1
@@ -77,6 +77,7 @@ ty_data.rVy3            = 0; % rVy3
 ty_data.rVy4            = 0; % rVy4
 ty_data.rVy5            = 0; % rVy5
 ty_data.rVy6            = 0; % rVy6
+ty_data.rBx1            = 0; % rBx1
 
 
 
