@@ -12,8 +12,8 @@ set(0,'defaulttextinterpreter','latex')
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 set(0,'DefaultFigureWindowStyle','docked');
-set(0,'defaultAxesFontSize',  16)
-set(0,'DefaultLegendFontSize',16)
+set(0,'defaultAxesFontSize',  22)
+set(0,'DefaultLegendFontSize', 20)
 
 addpath('dataset/');
 addpath('tyre_lib/');
@@ -288,12 +288,14 @@ res_FX0 = resid_pure_Fx(P_opt_FX0_pure , FX_vec(1), SL_vec(1), 0 , mean(TData0.F
 
 % Result of the fitting FY0 in the pure conditions
 figure('Name','FX0: fitted in pure conditions','NumberTitle', 5)
-plot(TData0.SL,TData0.FX,'o')
+plot(TData0.SL,TData0.FX, 'o', 'Color', '#0072BD')
 hold on
-plot(SL_vec,FX0_fz_nom_vec,'-','LineWidth',2)
-legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
+plot(SL_vec,FX0_fz_nom_vec,'-','LineWidth',2, 'Color', '#de1f21')
+legend({'Raw data','Fitted FX0'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}$ [N]')
+
+saveas(gcf, 'Plots/FX0_fitted_in_pure_conditions.eps', 'epsc');
 
 %% ---FX0(Fz): fitting with variable Fz
 % extract data with variable load, side slip equal to 0, camber angle equal to 0
@@ -363,29 +365,35 @@ tmp_ones = ones(size(SL_vec));
 
 figure('Name','FX0(Fz): fitted with variable Fz','NumberTitle', 7)
 hold on
-plot(FZ_220_dFz.SL,FZ_220_dFz.FX,'.','Color',[0.8500 0.3250 0.0980])
-plot(FZ_700_dFz.SL,FZ_700_dFz.FX,'.','Color',[0.6350 0.0780 0.1840])
-plot(FZ_900_dFz.SL,FZ_900_dFz.FX,'.','Color',[0.4940 0.1840 0.5560])
-plot(FZ_1120_dFz.SL,FZ_1120_dFz.FX,'.','Color',[0.3010 0.7450 0.9330])
-plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2,'Color',[1 0.7 0.34])
-plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2,'Color','r')
-plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2,'Color','m')
-plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2,'Color','c')
+plot(FZ_220_dFz.SL,FZ_220_dFz.FX,'.','Color', '#0b9eff')
+plot(FZ_700_dFz.SL,FZ_700_dFz.FX,'.','Color', '#eb8153')
+plot(FZ_900_dFz.SL,FZ_900_dFz.FX,'.','Color','#f3ca67')
+plot(FZ_1120_dFz.SL,FZ_1120_dFz.FX,'.','Color','#9dd058')
+plot(SL_vec,FX0_fz_var_vec1,'-','LineWidth',2,'Color', '#0072BD')
+plot(SL_vec,FX0_fz_var_vec2,'-','LineWidth',2,'Color','#D95319')
+plot(SL_vec,FX0_fz_var_vec3,'-','LineWidth',2,'Color','#EDB120')
+plot(SL_vec,FX0_fz_var_vec4,'-','LineWidth',2,'Color','#77AC30')
 hold off
 legend({'Raw with $Fz=220N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Fx(Fz_{220})$','$Fx(Fz_{700})$','$Fx(Fz_{900})$','$Fx(Fz_{1120})$'}, 'Location','eastoutside');
-xlabel('$\kappa$ [.]')
+xlabel('$\kappa$ [-]')
 ylabel('$F_{x0}(Fz)$ [N]')
+
+saveas(gcf, 'Plots/FX0_fitted_with_variable_Fz.eps', 'epsc');
+
 
 figure('Name','Kxk(Fz): cornering stiffness as function of Fz','NumberTitle', 8)
 hold on
-plot(mean(FZ_220_dFz.FZ),Kxk_fz_var_vec1(1),'+')
-plot(mean(FZ_700_dFz.FZ),Kxk_fz_var_vec2(1),'+')
-plot(mean(FZ_900_dFz.FZ),Kxk_fz_var_vec3(1),'+')
-plot(mean(FZ_1120_dFz.FZ),Kxk_fz_var_vec4(1),'+')
+plot(mean(FZ_220_dFz.FZ),Kxk_fz_var_vec1(1),'+', 'MarkerSize', 15, 'LineWidth', 4, 'Color', '#0072BD')
+plot(mean(FZ_700_dFz.FZ),Kxk_fz_var_vec2(1),'+', 'MarkerSize', 15, 'LineWidth', 4, 'Color', '#D95319')
+plot(mean(FZ_900_dFz.FZ),Kxk_fz_var_vec3(1),'+', 'MarkerSize', 15, 'LineWidth', 4, 'Color', '#EDB120')
+plot(mean(FZ_1120_dFz.FZ),Kxk_fz_var_vec4(1),'+', 'MarkerSize', 15, 'LineWidth', 4, 'Color', '#77AC30')
 hold off
 legend({'Kxk($Fz_{220}$)','Kxk($Fz_{700}$)','Kxk($Fz_{900}$)','Kxk($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$Fz$ [N]')
 ylabel('$K_{kx}(Fz)$ [-]')
+
+saveas(gcf, 'Plots/Kxk_cornering_stiffness_as_function_of_Fz.eps', 'epsc')
+
 
 Calfa_vec1_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_220_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
 Calfa_vec2_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_700_dFz.FZ)*tmp_ones,tyre_coeffs_pl);
@@ -394,18 +402,30 @@ Calfa_vec4_x = MF96_CorneringStiffness_x(SL_vec,tmp_zeros ,tmp_zeros, mean(FZ_11
 
 figure('Name','Kxk(kappa): cornering stiffness as function of kappa','NumberTitle', 9)
 hold on
-plot(SL_vec,Calfa_vec1_x,'-','LineWidth',2)
-plot(SL_vec,Calfa_vec2_x,'-','LineWidth',2)
-plot(SL_vec,Calfa_vec3_x,'-','LineWidth',2)
-plot(SL_vec,Calfa_vec4_x,'-','LineWidth',2)
+plot(SL_vec,Calfa_vec1_x,'-','LineWidth',2, 'Color', '#0072BD')
+plot(SL_vec,Calfa_vec2_x,'-','LineWidth',2, 'Color', '#D95319')
+plot(SL_vec,Calfa_vec3_x,'-','LineWidth',2, 'Color', '#EDB120')
+plot(SL_vec,Calfa_vec4_x,'-','LineWidth',2, 'Color', '#77AC30')
 hold off
 legend({'Kxk($Fz_{220}$)','Kxk($Fz_{700}$)','Kxk($Fz_{900}$)','Kxk($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$K_{kx}(Fz)$ [-]')
 
+saveas(gcf, 'Plots/Kxk_cornering_stiffness_as_function_of_kappa.eps', 'epsc')
+
 %% ---FX0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N)
 [TDataGamma, ~] = intersect_table_data( SA_0, FZ_220 );
+
+GAMMA_tol_lg_dgamma = 0.05*to_rad;
+idx_lg_dgamma.GAMMA_0 = 0.0*to_rad-GAMMA_tol_lg_dgamma < TDataGamma.IA & TDataGamma.IA < 0.0*to_rad+GAMMA_tol_lg_dgamma;
+idx_lg_dgamma.GAMMA_2 = 2.0*to_rad-GAMMA_tol_lg_dgamma < TDataGamma.IA & TDataGamma.IA < 2.0*to_rad+GAMMA_tol_lg_dgamma;
+idx_lg_dgamma.GAMMA_4 = 4.0*to_rad-GAMMA_tol_lg_dgamma < TDataGamma.IA & TDataGamma.IA < 4.0*to_rad+GAMMA_tol_lg_dgamma;
+
+GAMMA_0_dgamma_lg  = TDataGamma( idx_lg_dgamma.GAMMA_0, : );
+GAMMA_2_dgamma_lg  = TDataGamma( idx_lg_dgamma.GAMMA_2, : );
+GAMMA_4_dgamma_lg  = TDataGamma( idx_lg_dgamma.GAMMA_4, : );
+
 
 % Fit the coeffs { pDx3}
 
@@ -430,20 +450,63 @@ FZ_vec    = TDataGamma.FZ;
 % Change tyre data with new optimal values                             
 tyre_coeffs_pl.pDx3 = P_opt_FX0_dgamma(1) ; % 1
 
-[FX0_varGamma_vec,~] = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
+FX0_varGamma_vec = MF96_FX0_vec(KAPPA_vec,zeros_vec , GAMMA_vec, tyre_coeffs_pl.FZ0*ones_vec,tyre_coeffs_pl);
 
-figure('Name','FX0(Gamma): fitted with variable camber','NumberTitle', 10)
-plot(KAPPA_vec,TDataGamma.FX,'o')
+
+tmp_zeros_dgamma_lg = zeros(size(SL_vec));
+tmp_ones_dgamma_lg = ones(size(SL_vec));
+
+FX0_gamma_var_vec1 = MF96_FX0_vec(SL_vec, tmp_zeros_dgamma_lg, mean(GAMMA_0_dgamma_lg.IA)*tmp_ones_dgamma_lg, mean(TDataGamma.FZ)*tmp_ones_dgamma_lg,tyre_coeffs_pl);
+FX0_gamma_var_vec3 = MF96_FX0_vec(SL_vec, tmp_zeros_dgamma_lg, mean(GAMMA_2_dgamma_lg.IA)*tmp_ones_dgamma_lg, mean(TDataGamma.FZ)*tmp_ones_dgamma_lg,tyre_coeffs_pl);
+FX0_gamma_var_vec5 = MF96_FX0_vec(SL_vec, tmp_zeros_dgamma_lg, mean(GAMMA_4_dgamma_lg.IA)*tmp_ones_dgamma_lg, mean(TDataGamma.FZ)*tmp_ones_dgamma_lg,tyre_coeffs_pl);
+
+
+figure('Name','FX0(gamma): fitted with variable camber','NumberTitle', 8)
 hold on
-plot(KAPPA_vec,FX0_varGamma_vec,'-')
+plot(GAMMA_0_dgamma_lg.SL,GAMMA_0_dgamma_lg.FX,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_2_dgamma_lg.SL,GAMMA_2_dgamma_lg.FX,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_4_dgamma_lg.SL,GAMMA_4_dgamma_lg.FX,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(SL_vec,FX0_gamma_var_vec1,'-','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
+plot(SL_vec,FX0_gamma_var_vec3,'-','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
+plot(SL_vec,FX0_gamma_var_vec5,'-','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
+legend({'Raw data with $\gamma = 0 deg $', 'Raw data with $\gamma = 2 deg $','Raw data with $\gamma = 4 deg $', 'Fx($\gamma = 0 deg$)', 'Fx($\gamma = 2 deg$)', 'Fx($\gamma = 4 deg$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
-ylabel('$F_{x0}$ [N]')
+ylabel('$F_{x0}(\gamma)$ [N]')
+
+saveas(gcf, 'Plots/FX0_fitted_with_variable_camber.eps', 'epsc');
+
 
 % Calculate the residuals with the optimal solution found above
 res_Fx0_varGamma  = resid_pure_Fx_varGamma(P_opt_FX0_dgamma,FX_vec, KAPPA_vec,GAMMA_vec,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
 %% ---------------last figure FX0---------------
 last_fig_FX0 = 10;
+
+%% -------------- Coefficients FX0 -------------
+
+coeffs_FX0 = zeros(9,1);
+
+[kappa__x, Bx, Cx, Dx, Ex, SVx, Kxk, SHx, mu__x] = MF96_FX0_coeffs(0, 0, GAMMA_vec(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+coeffs_FX0(1) = kappa__x;
+coeffs_FX0(2) = Bx;
+coeffs_FX0(3) = Cx;
+coeffs_FX0(4) = Dx;
+coeffs_FX0(5) = Ex;
+coeffs_FX0(6) = SVx;
+coeffs_FX0(7) = Kxk;
+coeffs_FX0(8) = SHx;
+coeffs_FX0(9) = mu__x;
+
+fprintf('kappa_x = %6.3f\n', kappa__x);
+fprintf('Bx      = %6.3f\n', Bx);
+fprintf('Cx      = %6.3f\n', Cx);
+fprintf('Dx      = %6.3f\n', Dx);
+fprintf('Ex      = %6.3f\n', Ex);
+fprintf('SVx     = %6.3f\n', SVx);
+fprintf('SHx     = %6.3f\n', SHx);
+fprintf('Kxk      = %6.3f\n', Kxk);
+fprintf('mux      = %6.3f\n', mu__x);
 
 %% --Pure lateral force FY0: dataset import
 
@@ -691,12 +754,14 @@ res_FY0 = resid_pure_Fy(P_opt_FY0_pure , FY_vec, SA_vec, 0 , mean(TData0_pl.FZ),
 
 % Result of the fitting FY0 in the pure conditions
 figure('Name','FY0: fitted in pure conditions','NumberTitle', 5 + last_fig_FX0)
-plot(TData0_pl.SA*to_deg,TData0_pl.FY,'o')
+plot(TData0_pl.SA*to_deg,TData0_pl.FY,'o','Color', '#0072BD')
 hold on
-plot(SA_vec*to_deg,FY0_fz_nom_vec,'-','LineWidth',2)
+plot(SA_vec*to_deg,FY0_fz_nom_vec,'-','LineWidth',2, 'Color', '#de1f21')
 legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}$ [N]')
+
+saveas(gcf, 'Plots/FY0_fitted_in_pure_conditions.eps', 'epsc');
 
 %% ---FY0(Fz): fitting with variable Fz
 % extract data with variable load and camber angle equal to 0
@@ -812,6 +877,8 @@ legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(Fz)$ [N]')
 
+saveas(gcf, 'Plots/FY0_fitted_with_variable_Fz.eps', 'epsc');
+
 
 % Stiffness
 
@@ -833,30 +900,33 @@ Calfa_vec4_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, me
 Calfa_vec5_y = MF96_CorneringStiffness_y(tmp_zeros_dFz,SA_vec ,tmp_zeros_dFz, mean(FZ_1120_pl_dFz.FZ)*tmp_ones_dFz,tyre_coeffs_pl);
 
 
-
 figure('Name','Kya(Fz): cornering stiffness as function of Fz','NumberTitle', 9 + last_fig_FX0)
 hold on
-plot(mean(FZ_220_pl_dFz.FZ),Calfa_vec1_0_y,'+','MarkerSize',10)
-plot(mean(FZ_440_pl_dFz.FZ),Calfa_vec2_0_y,'+','MarkerSize',10)
-plot(mean(FZ_700_pl_dFz.FZ),Calfa_vec3_0_y,'+','MarkerSize',10)
-plot(mean(FZ_900_pl_dFz.FZ),Calfa_vec4_0_y,'+','MarkerSize',10)
-plot(mean(FZ_1120_pl_dFz.FZ),Calfa_vec5_0_y,'+','MarkerSize',10)
+plot(mean(FZ_220_pl_dFz.FZ),Calfa_vec1_0_y,'+','MarkerSize',15, 'LineWidth', 4, 'Color', '#0072BD')
+plot(mean(FZ_440_pl_dFz.FZ),Calfa_vec2_0_y,'+','MarkerSize',15, 'LineWidth', 4, 'Color', '#D95319')
+plot(mean(FZ_700_pl_dFz.FZ),Calfa_vec3_0_y,'+','MarkerSize',15, 'LineWidth', 4, 'Color', '#EDB120')
+plot(mean(FZ_900_pl_dFz.FZ),Calfa_vec4_0_y,'+','MarkerSize',15, 'LineWidth', 4, 'Color', '#77AC30')
+plot(mean(FZ_1120_pl_dFz.FZ),Calfa_vec5_0_y,'+','MarkerSize',15, 'LineWidth', 4, 'Color', '#4DBEEE')
 hold off
 legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$Fz$ [N]')
 ylabel('$K_{ya}(Fz)$')
 
-figure('Name','Kya(alpha): cornering stiffness as function of alpha','NumberTitle', 11 + last_fig_FX0)
+saveas(gcf, 'Plots/Kya_cornering_stiffness_as_function_of_Fz.eps', 'epsc')
+
+figure('Name','Kya(alpha): cornering stiffness as function of alpha','NumberTitle', 10 + last_fig_FX0)
 hold on
-plot(SA_vec*to_deg,Calfa_vec1_y,'-','LineWidth',2)
-plot(SA_vec*to_deg,Calfa_vec2_y,'-','LineWidth',2)
-plot(SA_vec*to_deg,Calfa_vec3_y,'-','LineWidth',2)
-plot(SA_vec*to_deg,Calfa_vec4_y,'-','LineWidth',2)
-plot(SA_vec*to_deg,Calfa_vec5_y,'-','LineWidth',2)
+plot(SA_vec*to_deg,Calfa_vec1_y,'-','LineWidth',2, 'Color', '#0072BD')
+plot(SA_vec*to_deg,Calfa_vec2_y,'-','LineWidth',2, 'Color', '#D95319')
+plot(SA_vec*to_deg,Calfa_vec3_y,'-','LineWidth',2, 'Color', '#EDB120')
+plot(SA_vec*to_deg,Calfa_vec4_y,'-','LineWidth',2, 'Color', '#77AC30')
+plot(SA_vec*to_deg,Calfa_vec5_y,'-','LineWidth',2, 'Color', '#4DBEEE')
 hold off
 legend({'Kya($Fz_{220}$)','Kya($Fz_{440}$)','Kya($Fz_{700}$)','Kya($Fz_{900}$)','Kya($Fz_{1120}$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$K_{kx}(Fz)$ [-]')
+
+saveas(gcf, 'Plots/Kya_cornering_stiffness_as_function_of_alpha.eps', 'epsc')
 
 %% ---FY0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
@@ -968,21 +1038,23 @@ tmp_ones_dgamma = ones(size(SA_vec));
 [FY0_gamma_var_vec5,~] = MF96_FY0_vec(tmp_zeros_dgamma, SA_vec ,mean(GAMMA_4_dgamma.IA)*tmp_ones_dgamma, mean(TDataGamma_pl.FZ)*tmp_ones_dgamma,tyre_coeffs_pl);
 
 
-figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 14 + last_fig_FX0)
+figure('Name','FY0(gamma): fitted with variable camber','NumberTitle', 11 + last_fig_FX0)
 hold on
-plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
-plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
-plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
-plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
-plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
-plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
-plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
-plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
-plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#77AC30')
-plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#4DBEEE')
+plot(GAMMA_0_dgamma.SA*to_deg,GAMMA_0_dgamma.FY,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
+plot(GAMMA_1_dgamma.SA*to_deg,GAMMA_1_dgamma.FY,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
+plot(GAMMA_2_dgamma.SA*to_deg,GAMMA_2_dgamma.FY,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(GAMMA_3_dgamma.SA*to_deg,GAMMA_3_dgamma.FY,'.','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
+plot(GAMMA_4_dgamma.SA*to_deg,GAMMA_4_dgamma.FY,'.','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(SA_vec*to_deg,FY0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0b9eff')
+plot(SA_vec*to_deg,FY0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#eb8153')
+plot(SA_vec*to_deg,FY0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#f3ca67')
+plot(SA_vec*to_deg,FY0_gamma_var_vec4,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#9dd058')
+plot(SA_vec*to_deg,FY0_gamma_var_vec5,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#94D8F4')
 legend({'Raw data with $\gamma = 0 deg $','Raw data with $\gamma = 1 deg $','Raw data with $\gamma = 2 deg $','Raw data with $\gamma = 3 deg $','Raw data with $\gamma = 4 deg $', 'Fy($\gamma = 0 deg$)','Fy($\gamma = 1 deg$)','Fy($\gamma = 2 deg$)','Fy($\gamma = 3 deg$)','Fy($\gamma = 4 deg$)'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$F_{y0}(\gamma)$ [N]')
+
+saveas(gcf, 'Plots/FY0_fitted_with_variable_camber.eps', 'epsc');
 
 % Calculate the residuals with the optimal solution found above
 res_Fy0_dgamma  = resid_pure_Fy_varGamma(P__FY0_dgamma,FY_vec_dgamma, ALPHA_vec_dgamma,GAMMA_vec_dgamma,tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
@@ -1011,6 +1083,32 @@ coeffs_FY0(9) = mu__y;
 
 %% ---------------last figure FY0---------------
 last_fig_FY0 = 13 + last_fig_FX0;
+
+%% -------------- Coefficients FY0 -------------
+
+coeffs_FY0 = zeros(9,1);
+
+[alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(0, 0, GAMMA_vec_dgamma(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+coeffs_FY0(1) = alpha__y;
+coeffs_FY0(2) = By;
+coeffs_FY0(3) = Cy;
+coeffs_FY0(4) = Dy;
+coeffs_FY0(5) = Ey;
+coeffs_FY0(6) = SVy;
+coeffs_FY0(7) = Kya;
+coeffs_FY0(8) = SHy;
+coeffs_FY0(9) = mu__y;
+
+fprintf('alpha_y = %6.3f\n', alpha__y);
+fprintf('By      = %6.3f\n', By);
+fprintf('Cy      = %6.3f\n', Cy);
+fprintf('Dy      = %6.3f\n', Dy);
+fprintf('Ey      = %6.3f\n', Ey);
+fprintf('SVy     = %6.3f\n', SVy);
+fprintf('SHy     = %6.3f\n', SHy);
+fprintf('Kya      = %6.3f\n', Kya);
+fprintf('muy      = %6.3f\n', mu__y);
 
 %% --Pure self aligning moment MZO: same dataset (lateral)
 cut_start_mz = 27760;
@@ -1232,12 +1330,14 @@ MZ0_fz_nom_vec = MF96_MZ0_vec(zeros(size(SA_vec)), SA_vec, zeros(size(SA_vec)), 
 
 % Result of the fitting MZ0 in the pure conditions
 figure('Name','MZ0: fitted in pure conditions','NumberTitle', 5 + last_fig_FY0)
-plot(TData0_mz.SA*to_deg,TData0_mz.MZ,'o')
+plot(TData0_mz.SA*to_deg,TData0_mz.MZ,'o', 'Color', '#0072BD')
 hold on
-plot(SA_vec*to_deg,MZ0_fz_nom_vec,'-','LineWidth',2)
+plot(SA_vec*to_deg,MZ0_fz_nom_vec,'-','LineWidth', 2, 'Color', '#de1f21')
 legend({'Raw data','Fitted FY0'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}$ [Nm]')
+
+saveas(gcf, 'Plots/MZ0_fitted_in_pure_conditions.eps', 'epsc');
 
 %% ---MZ0(Fz): fitting with variable Fz
 % extract data with variable load and camber angle equal to 0
@@ -1332,20 +1432,22 @@ ylabel('$M_{z0}$ [N]')
 
 figure('Name','MZ0(Fz): fitted with variable Fz','NumberTitle', 8 + last_fig_FY0)
 hold on
-plot(FZ_220_mz_dFz.SA*to_deg,FZ_220_mz_dFz.MZ,'o', 'Color', [1 0.4 0.4])
-plot(FZ_440_mz_dFz.SA*to_deg,FZ_440_mz_dFz.MZ,'o', 'Color', [0.6 0.8 1])
-plot(FZ_700_mz_dFz.SA*to_deg,FZ_700_mz_dFz.MZ,'o', 'Color', [0.5 1 0.5])
-plot(FZ_900_mz_dFz.SA*to_deg,FZ_900_mz_dFz.MZ,'o', 'Color', [0.8 0.6 1])
-plot(FZ_1120_mz_dFz.SA*to_deg,FZ_1120_mz_dFz.MZ,'o', 'Color', [0.6 1 1])
-plot(SA_vec*to_deg,MZ0_fz_var_vec1,'.','LineWidth',2, 'Color', 'r')
-plot(SA_vec*to_deg,MZ0_fz_var_vec2,'.','LineWidth',2, 'Color', 'b')
-plot(SA_vec*to_deg,MZ0_fz_var_vec3,'.','LineWidth',2, 'Color', 'g')
-plot(SA_vec*to_deg,MZ0_fz_var_vec4,'.','LineWidth',2, 'Color', 'm')
-plot(SA_vec*to_deg,MZ0_fz_var_vec5,'.','LineWidth',2, 'Color', 'c')
+plot(FZ_220_mz_dFz.SA*to_deg,FZ_220_mz_dFz.MZ,'.', 'Color', '#0b9eff')
+plot(FZ_440_mz_dFz.SA*to_deg,FZ_440_mz_dFz.MZ,'.', 'Color', '#eb8153')
+plot(FZ_700_mz_dFz.SA*to_deg,FZ_700_mz_dFz.MZ,'.', 'Color', '#f3ca67')
+plot(FZ_900_mz_dFz.SA*to_deg,FZ_900_mz_dFz.MZ,'.', 'Color', '#9dd058')
+plot(FZ_1120_mz_dFz.SA*to_deg,FZ_1120_mz_dFz.MZ,'.', 'Color', '#94D8F4')
+plot(SA_vec*to_deg,MZ0_fz_var_vec1,'-', 'LineWidth' ,2, 'Color', '#0072BD')
+plot(SA_vec*to_deg,MZ0_fz_var_vec2,'-', 'LineWidth' ,2, 'Color', '#D95319')
+plot(SA_vec*to_deg,MZ0_fz_var_vec3,'-', 'LineWidth' ,2, 'Color', '#EDB120')
+plot(SA_vec*to_deg,MZ0_fz_var_vec4,'-', 'LineWidth' ,2, 'Color', '#77AC30')
+plot(SA_vec*to_deg,MZ0_fz_var_vec5,'-', 'LineWidth' ,2, 'Color', '#4DBEEE')
 hold off
 legend({'Raw with $Fz=220N$','Raw with $Fz=440N$','Raw with $Fz=700N$','Raw with $Fz=900N$','Raw with $Fz=1120N$', '$Mz0(Fz_{220})$','$Mz0(Fz_{440})$','$Mz0(Fz_{700})$','$Mz0(Fz_{900})$','$Mz0(Fz_{1120})$'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}(Fz)$ [Nm]')
+
+saveas(gcf, 'Plots/MZ0_fitted_with_variable_Fz.eps', 'epsc');
 
 %% ---MZ0(gamma): fitting with variable camber(gamma)
 % extract data with the same vertical load (Fz = 220N) 
@@ -1422,11 +1524,11 @@ MZ0_gamma_var_vec5 = MF96_MZ0_vec(tmp_zeros_mz_dgamma, SA_vec ,mean(GAMMA_4__mz_
 
 figure('Name','MZ0(gamma): fitted with variable camber','NumberTitle', 10 + last_fig_FY0)
 hold on
-plot(GAMMA_0__mz_dgamma.SA*to_deg,GAMMA_0__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
-plot(GAMMA_1__mz_dgamma.SA*to_deg,GAMMA_1__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
-plot(GAMMA_2__mz_dgamma.SA*to_deg,GAMMA_2__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
-plot(GAMMA_3__mz_dgamma.SA*to_deg,GAMMA_3__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#77AC30') %'MarkerEdgeColor','b',
-plot(GAMMA_4__mz_dgamma.SA*to_deg,GAMMA_4__mz_dgamma.MZ,'-','MarkerSize',5, 'Color', '#4DBEEE') %'MarkerEdgeColor','r',
+plot(GAMMA_0__mz_dgamma.SA*to_deg,GAMMA_0__mz_dgamma.MZ,'.','MarkerSize',5, 'Color', '#0b9eff') %'MarkerEdgeColor','y',
+plot(GAMMA_1__mz_dgamma.SA*to_deg,GAMMA_1__mz_dgamma.MZ,'.','MarkerSize',5, 'Color', '#eb8153') %'MarkerEdgeColor','c',
+plot(GAMMA_2__mz_dgamma.SA*to_deg,GAMMA_2__mz_dgamma.MZ,'.','MarkerSize',5, 'Color', '#f3ca67') %'MarkerEdgeColor','m',
+plot(GAMMA_3__mz_dgamma.SA*to_deg,GAMMA_3__mz_dgamma.MZ,'.','MarkerSize',5, 'Color', '#9dd058') %'MarkerEdgeColor','b',
+plot(GAMMA_4__mz_dgamma.SA*to_deg,GAMMA_4__mz_dgamma.MZ,'.','MarkerSize',5, 'Color', '#94D8F4') %'MarkerEdgeColor','r',
 plot(SA_vec*to_deg,MZ0_gamma_var_vec1,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#0072BD')
 plot(SA_vec*to_deg,MZ0_gamma_var_vec2,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#D95319')
 plot(SA_vec*to_deg,MZ0_gamma_var_vec3,'-s','LineWidth',2,'MarkerSize',1, 'Color', '#EDB120')
@@ -1436,13 +1538,20 @@ legend({'Raw data with $\gamma = 0 deg $','Raw data with $\gamma = 1 deg $','Raw
 xlabel('$\alpha$ [deg]')
 ylabel('$M_{z0}$ [Nm]')
 
+saveas(gcf, 'Plots/MZ0_fitted_with_variable_camber.eps', 'epsc');
 
 % Calculate the residuals with the optimal solution found above
 res_Mz0_varGamma  = resid_pure_Mz_varGamma(P_opt_MZ0_dgamma,MZ_vec_mz_dgamma, ALPHA_vec_mz_dgamma, GAMMA_vec_mz_dgamma, tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
 
-% Check coefficients
+%% ---------------last figure MZ0---------------
+last_fig_MZ0 = 10 + last_fig_FY0;
+
+%% -------------- Coefficients MZ0 -------------
+
 coeffs_MZ0 = zeros(8,1);
-[Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(0, 0, 5*to_rad, 1120, tyre_coeffs_pl);
+
+[Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t] = MF96_MZ0_coeffs(0, 0, GAMMA_vec_mz_dgamma(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
 coeffs_MZ0(1) = Br;
 coeffs_MZ0(2) = Bt;
 coeffs_MZ0(3) = Ct;
@@ -1452,9 +1561,14 @@ coeffs_MZ0(6) = Et;
 coeffs_MZ0(7) = alpha__r;
 coeffs_MZ0(8) = alpha__t;
 
-%% ---------------last figure MZ0---------------
-last_fig_MZ0 = 10 + last_fig_FY0;
-
+fprintf('Br      = %6.3f\n', Br);
+fprintf('Bt      = %6.3f\n', Bt);
+fprintf('Ct      = %6.3f\n', Ct);
+fprintf('Dr      = %6.3f\n', Dr);
+fprintf('Dt      = %6.3f\n', Dt);
+fprintf('Et      = %6.3f\n', Et);
+fprintf('alpha__r     = %6.3f\n', alpha__r);
+fprintf('alpha__t     = %6.3f\n', alpha__t);
 
 %% --Combined longitudinal force FX: dataset import
 
@@ -1751,9 +1865,9 @@ tmp_ones_dalpha = ones(size(SL_vec));
 
 figure('Name','FX(kappa): fitted in pure conditions','NumberTitle', 5 + last_fig_MZ0)
 hold on
-plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
-plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
-plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FX,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FX,'.','MarkerSize',5, 'Color', '#0b9eff') %'MarkerEdgeColor','y',
+plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FX,'.','MarkerSize',5, 'Color', '#eb8153') %'MarkerEdgeColor','c',
+plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FX,'.','MarkerSize',5, 'Color', '#f3ca67') %'MarkerEdgeColor','m',
 
 plot(SL_vec,FX_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#0072BD')
 plot(SL_vec,FX_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#D95319')
@@ -1761,6 +1875,8 @@ plot(SL_vec,FX_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#EDB1
 legend({'Raw with $\alpha_0 = 0 deg $','Raw with $\alpha_3 = 3 deg $','Raw with $ \alpha_6 = 6 deg $', 'Fx($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{x}$ [N]')
+
+saveas(gcf, 'Plots/FX_fitted_in_pure_conditions.eps', 'epsc');
 
 figure('Name','Gxa(kappa) as function of kappa','NumberTitle', 6 + last_fig_MZ0)
 hold on
@@ -1771,6 +1887,8 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, '
 xlabel('$\kappa$ [-]')
 ylabel('$G_{xa}$ [-]')
 
+saveas(gcf, 'Plots/Gxa_as_function_of_kappa.eps', 'epsc');
+
 figure('Name','Gxa(alpha) as function of alpha','NumberTitle', 7 + last_fig_MZ0)
 hold on
 plot(SA_vec*to_deg,Gxa_gamma_var_vec1,'-s','LineWidth',1,'MarkerSize',1)
@@ -1779,6 +1897,8 @@ plot(SA_vec*to_deg,Gxa_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
 legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$G_{xa}$ [-]')
+
+saveas(gcf, 'Plots/Gxa_as_function_of_alpha.eps', 'epsc');
 
 
 %% ---------------last figure FX---------------
@@ -1841,9 +1961,9 @@ tmp_ones_dalpha = ones(size(SL_vec));
 
 figure('Name','FY(kappa): fitted in pure conditions','NumberTitle', 1 + last_fig_FX)
 hold on
-plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FY,'.','MarkerSize',5, 'Color', '#0072BD') %'MarkerEdgeColor','y',
-plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FY,'.','MarkerSize',5, 'Color', '#D95319') %'MarkerEdgeColor','c',
-plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FY,'.','MarkerSize',5, 'Color', '#EDB120') %'MarkerEdgeColor','m',
+plot(ALPHA_0_dalpha.SL,ALPHA_0_dalpha.FY,'.','MarkerSize',5, 'Color', '#0b9eff') %'MarkerEdgeColor','y',
+plot(ALPHA_3_dalpha.SL,ALPHA_3_dalpha.FY,'.','MarkerSize',5, 'Color', '#eb8153') %'MarkerEdgeColor','c',
+plot(ALPHA_6_dalpha.SL,ALPHA_6_dalpha.FY,'.','MarkerSize',5, 'Color', '#f3ca67') %'MarkerEdgeColor','m',
 
 plot(SL_vec,FY_alpha_var_vec1,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#0072BD')
 plot(SL_vec,FY_alpha_var_vec2,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#D95319')
@@ -1851,6 +1971,8 @@ plot(SL_vec,FY_alpha_var_vec3,'-s','LineWidth',1,'MarkerSize',1, 'Color', '#EDB1
 legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $', 'Fy($\alpha_0$)','Fy($\alpha_3$)','Fy($\alpha_6$)'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}$ [N]')
+
+saveas(gcf, 'Plots/FY_fitted_in_pure_conditions.eps', 'epsc');
 
 figure('Name','Gyk(kappa) as function of kappa','NumberTitle', 2 + last_fig_FX)
 hold on
@@ -1861,6 +1983,8 @@ legend({'$ \alpha_0 = 0 deg $','$ \alpha_3 = 3 deg $','$ \alpha_6 = 6 deg $'}, '
 xlabel('$\kappa$ [-]')
 ylabel('$G_{yk}$ [-]')
 
+saveas(gcf, 'Plots/Gyk_as_function_of_kappa.eps', 'epsc');
+
 % To be done!
 figure('Name','Gyk(alpha) as function of alpha','NumberTitle', 3 + last_fig_FX)
 hold on
@@ -1870,6 +1994,8 @@ plot(SA_vec*to_deg,Gyk_gamma_var_vec3,'-s','LineWidth',1,'MarkerSize',1)
 legend({'$ \kappa = 0 $','$ \kappa = 0.1 $','$ \kappa = 0.3 $'}, 'Location','eastoutside');
 xlabel('$\alpha$ [deg]')
 ylabel('$G_{yk}$ [-]')
+
+saveas(gcf, 'Plots/Gyk_as_function_of_alpha.eps', 'epsc');
 
 
 %% ---FY(Fz): fitting with variable Fz
@@ -2033,14 +2159,14 @@ ylabel('$F_{y}$ [N]')
 
 figure('Name','FY(Fz) with alpha = 3 deg','NumberTitle', 8 + last_fig_FX)
 hold on
-plot(alpha3_FZ_220_y_comb_dFz.SL,alpha3_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79]) %'MarkerEdgeColor','m',
-plot(alpha3_FZ_700_y_comb_dFz.SL,alpha3_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.85 0.64]) %'MarkerEdgeColor','m',
-plot(alpha3_FZ_900_y_comb_dFz.SL,alpha3_FZ_900_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[0.79 0.88 1]) %'MarkerEdgeColor','m',
-plot(alpha3_FZ_1120_y_comb_dFz.SL,alpha3_FZ_1120_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[0.85 0.75 1]) %'MarkerEdgeColor','m',
-plot(SL_vec,FY_dFz220_alpha3_vec,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.75 0.79])
-plot(SL_vec,FY_dFz700_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.7 0.34])
-plot(SL_vec,FY_dFz900_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.64 0.75 1])
-plot(SL_vec,FY_dFz1120_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.7 0.5 1])
+plot(alpha3_FZ_220_y_comb_dFz.SL,alpha3_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#0b9eff') %'MarkerEdgeColor','m',
+plot(alpha3_FZ_700_y_comb_dFz.SL,alpha3_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#eb8153') %'MarkerEdgeColor','m',
+plot(alpha3_FZ_900_y_comb_dFz.SL,alpha3_FZ_900_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#f3ca67') %'MarkerEdgeColor','m',
+plot(alpha3_FZ_1120_y_comb_dFz.SL,alpha3_FZ_1120_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#9dd058') %'MarkerEdgeColor','m',
+plot(SL_vec,FY_dFz220_alpha3_vec,'-s','LineWidth',1,'MarkerSize',1,'Color', '#0072BD')
+plot(SL_vec,FY_dFz700_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#D95319')
+plot(SL_vec,FY_dFz900_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#EDB120')
+plot(SL_vec,FY_dFz1120_alpha3_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#77AC30')
 legend({'Raw with $Fz=220N$,$\alpha=3 deg$','Raw with $Fz=700N$,$\alpha=3 deg$','Raw with $Fz=900N$,$\alpha=3 deg$','Raw with $Fz=1120N$,$\alpha=3 deg$','Fy(Fz=220N), fitted','Fy(Fz=700N), fitted', 'Fy(Fz=900N), fitted','Fy(Fz=1120N), fitted'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(Fz)$ [N]')
@@ -2052,14 +2178,14 @@ ylabel('$F_{y}(Fz)$ [N]')
 
 figure('Name','FY(Fz) with alpha = 6 deg','NumberTitle', 9 + last_fig_FX)
 hold on
-plot(alpha6_FZ_220_y_comb_dFz.SL,alpha6_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79]) %'MarkerEdgeColor','m',
-plot(alpha6_FZ_700_y_comb_dFz.SL,alpha6_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[1 0.85 0.64]) %'MarkerEdgeColor','m',
-plot(alpha6_FZ_900_y_comb_dFz.SL,alpha6_FZ_900_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[0.79 0.88 1]) %'MarkerEdgeColor','m',
-plot(alpha6_FZ_1120_y_comb_dFz.SL,alpha6_FZ_1120_y_comb_dFz.FY,'.','MarkerSize',5,'Color',[0.85 0.75 1]) %'MarkerEdgeColor','m',
-plot(SL_vec,FY_dFz220_alpha6_vec,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.75 0.79])
-plot(SL_vec,FY_dFz700_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.7 0.34])
-plot(SL_vec,FY_dFz900_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.64 0.75 1])
-plot(SL_vec,FY_dFz1120_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.7 0.5 1])
+plot(alpha6_FZ_220_y_comb_dFz.SL,alpha6_FZ_220_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#0b9eff') %'MarkerEdgeColor','m',
+plot(alpha6_FZ_700_y_comb_dFz.SL,alpha6_FZ_700_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#eb8153') %'MarkerEdgeColor','m',
+plot(alpha6_FZ_900_y_comb_dFz.SL,alpha6_FZ_900_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#f3ca67') %'MarkerEdgeColor','m',
+plot(alpha6_FZ_1120_y_comb_dFz.SL,alpha6_FZ_1120_y_comb_dFz.FY,'.','MarkerSize',5,'Color', '#9dd058') %'MarkerEdgeColor','m',
+plot(SL_vec,FY_dFz220_alpha6_vec,'-s','LineWidth',1,'MarkerSize',1,'Color', '#0072BD')
+plot(SL_vec,FY_dFz700_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#D95319')
+plot(SL_vec,FY_dFz900_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#EDB120')
+plot(SL_vec,FY_dFz1120_alpha6_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#77AC30')
 legend({'Raw with $Fz=220N$,$\alpha=6 deg$','Raw with $Fz=700N$,$\alpha=6 deg$','Raw with $Fz=900N$,$\alpha=6 deg$','Raw with $Fz=1120N$,$\alpha=6 deg$','Fy(Fz=220N), fitted','Fy(Fz=700N), fitted', 'Fy(Fz=900N), fitted','Fy(Fz=1120N), fitted'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(Fz)$ [N]')
@@ -2186,12 +2312,12 @@ tmp_ones_comb_dgamma = ones(size(SL_vec));
 
 figure('Name','FY(gamma) with alpha = 3deg','NumberTitle', 11 + last_fig_FX)
 hold on
-plot(alpha3_gamma0_y_comb_dgamma.SL,alpha3_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79])
-plot(alpha3_gamma2_y_comb_dgamma.SL,alpha3_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 1 0.4])
-plot(alpha3_gamma4_y_comb_dgamma.SL,alpha3_gamma4_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[0.79 0.88 1])
-plot(SL_vec,FY_dgamma0_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.5 0.64])
-plot(SL_vec,FY_dgamma1_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 1 0])
-plot(SL_vec,FY_dgamma2_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.64 0.75 1])
+plot(alpha3_gamma0_y_comb_dgamma.SL,alpha3_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#0b9eff')
+plot(alpha3_gamma2_y_comb_dgamma.SL,alpha3_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#eb8153')
+plot(alpha3_gamma4_y_comb_dgamma.SL,alpha3_gamma4_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#f3ca67')
+plot(SL_vec,FY_dgamma0_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#0072BD')
+plot(SL_vec,FY_dgamma1_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#D95319')
+plot(SL_vec,FY_dgamma2_alpha3_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#EDB120')
 legend({'Raw with $\gamma=0deg$,$\alpha=3 deg$','Raw with $\gamma=2deg$,$\alpha=3 deg$','Raw with $\gamma=2deg$,$\alpha=3 deg$','Fy($\gamma=0deg$), fitted','Fy($\gamma=2deg$), fitted', 'Fy($\gamma=4deg$), fitted'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(\gamma)$ [N]')
@@ -2202,15 +2328,30 @@ ylabel('$F_{y}(\gamma)$ [N]')
 
 figure('Name','FY(gamma) with alpha = 6deg','NumberTitle', 12 + last_fig_FX)
 hold on
-plot(alpha6_gamma0_y_comb_dgamma.SL,alpha6_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 0.75 0.79])
-plot(alpha6_gamma2_y_comb_dgamma.SL,alpha6_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[1 1 0.4])
-plot(alpha6_gamma4_y_comb_dgamma.SL,alpha6_gamma4_y_comb_dgamma.FY,'.','MarkerSize',5,'Color',[0.79 0.88 1])
-plot(SL_vec,FY_dgamma0_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 0.5 0.64])
-plot(SL_vec,FY_dgamma1_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[1 1 0])
-plot(SL_vec,FY_dgamma2_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color',[0.64 0.75 1])
+plot(alpha6_gamma0_y_comb_dgamma.SL,alpha6_gamma0_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#0b9eff')
+plot(alpha6_gamma2_y_comb_dgamma.SL,alpha6_gamma2_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#eb8153')
+plot(alpha6_gamma4_y_comb_dgamma.SL,alpha6_gamma4_y_comb_dgamma.FY,'.','MarkerSize',5,'Color', '#f3ca67')
+plot(SL_vec,FY_dgamma0_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#0072BD')
+plot(SL_vec,FY_dgamma1_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#D95319')
+plot(SL_vec,FY_dgamma2_alpha6_var_vec1,'-s','LineWidth',1,'MarkerSize',1,'Color', '#EDB120')
 legend({'Raw with $\gamma=0deg$,$\alpha=6 deg$','Raw with $\gamma=2deg$,$\alpha=6 deg$','Raw with $\gamma=2deg$,$\alpha=6 deg$','Fy($\gamma=0deg$), fitted','Fy($\gamma=2deg$), fitted', 'Fy($\gamma=4deg$), fitted'}, 'Location','eastoutside');
 xlabel('$\kappa$ [-]')
 ylabel('$F_{y}(\gamma)$ [N]')
+
+%% -------------- Coefficients FX - FY -------------
+
+coeffs_FXFY = zeros(3,1);
+
+[Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(0, 0, GAMMA_vec_y_comb_dgamma(3), tyre_coeffs_pl.FZ0, tyre_coeffs_pl);
+
+coeffs_FXFY(1) = Gxa;
+coeffs_FXFY(2) = Gyk;
+coeffs_FXFY(3) = SVyk;
+
+
+fprintf('Gxa      = %6.3f\n', Gxa);
+fprintf('Gyk      = %6.3f\n', Gyk);
+fprintf('SVyk      = %6.3f\n', SVyk);
 
 %% -Save tyre data structure to mat file
 save('tyre_coeffs_team6.mat','tyre_coeffs_pl');
