@@ -29,6 +29,7 @@ to_deg = 180/pi;
 
 data_set_path = 'dataset/';
 
+% ADAPTED SAE CONVENCTION IS USED!
 
 %% --Initialization phase for tyre coefficients
 tyre_coeffs_pl = initialise_tyre_data_ply(R0, Fz0);
@@ -1086,12 +1087,6 @@ coeffs_FY0(7) = Kya;
 coeffs_FY0(8) = SHy;
 coeffs_FY0(9) = mu__y;
 
-% % R-squared is 
-% % 1-SSE/SST
-% % SSE/SST = res_Fx0_nom
-% 
-% % SSE is the sum of squared error,  SST is the sum of squared total
-% fprintf('R-squared = %6.3f\n',1-res_Fx0_varGamma);
 
 %% ---------------last figure FY0---------------
 last_fig_FY0 = 13 + last_fig_FX0;
@@ -1753,7 +1748,6 @@ ax_list_6(2) = nexttile;
 plot(tyre_data_comb.FZ)
 hold on
 plot(vec_samples_comb(idx_comb.FZ_220),FZ_220_comb.FZ,'.');
-%plot(vec_samples_comb(idx_comb.FZ_440),FZ_440_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_700),FZ_700_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_900),FZ_900_comb.FZ,'.');
 plot(vec_samples_comb(idx_comb.FZ_1120),FZ_1120_comb.FZ,'.');
@@ -1869,8 +1863,6 @@ R_squared_FX_pure = 1 - fval_FX_pure;
     tyre_coeffs_pl.rCx1 = P_opt_FX_pure(3); 
     tyre_coeffs_pl.rHx1 = P_opt_FX_pure(4); 
 
-% Check residuals!
-
 tmp_zeros_dalpha = zeros(size(SL_vec));
 tmp_ones_dalpha = ones(size(SL_vec));
 
@@ -1967,8 +1959,6 @@ R_squared_FY_pure = 1 - fval_FY_pure;
     tyre_coeffs_pl.rVy4 = P_opt_FY_pure(7);
     tyre_coeffs_pl.rVy5 = P_opt_FY_pure(8);
     tyre_coeffs_pl.rVy6 = P_opt_FY_pure(9); 
-
-% Check residuals!
 
 
 tmp_zeros_dalpha = zeros(size(SL_vec));
@@ -2152,7 +2142,6 @@ R_squared_FY_dFz = 1 - fval_FY_dFz;
 % Change tyre data with new optimal values                             
     tyre_coeffs_pl.rVy2 = P_opt_FY_dFz(1);  
  
-% Check residuals!
 
 [FY_comb_dFz_vec,~] = MF96_FY_vec(KAPPA_vec_y_comb_dFz, ALPHA_vec_y_comb_dFz, zeros_vec_y_comb_dFz, tyre_coeffs_pl.FZ0*ones_vec_y_comb_dFz, tyre_coeffs_pl);
 
@@ -2329,8 +2318,6 @@ R_squared_FY_dgamma = 1 - fval_FY_dgamma;
 
 % Change tyre data with new optimal values                             
 tyre_coeffs_pl.rVy3 = P_FY_dgamma(1);  
-
-% Check residuals!
 
 tmp_zeros_comb_dgamma = zeros(size(SL_vec));
 tmp_ones_comb_dgamma = ones(size(SL_vec));
