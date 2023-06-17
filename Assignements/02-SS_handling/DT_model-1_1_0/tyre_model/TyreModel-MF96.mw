@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Worksheet>
+<Version major="2020" minor="2"/>
+<Label-Scheme value="2" prefix=""/>
+<View-Properties presentation="false" autoexpanding_sections="true" UserProfileName="Maple Default Profile" NumericFormat-ApplyInteger="true" NumericFormat-ApplyRational="true" NumericFormat-ApplyExponent="false" editable="true">
+<Hide name="Group Range"/>
+<Hide name="Table Borders"/>
+</View-Properties>
+<MapleNet-Properties prettyprint="3" warnlevel="3" compactdisplay="false" preplot="" helpbrowser="standard" displayprecision="-1" echo="1" unitattributes="&quot;fontweight&quot; = &quot;bold&quot;" imaginaryunit="I" longdelim="true" elisiontermsthreshold="10000" elisiondigitsafter="100" elisiondigitsbefore="100" plotdevice="inline" errorbreak="1" plotoptions="" plotdriver="opengl" quiet="false" elisiontermsbefore="100" elisiontermsafter="100" historytimestamp="false" screenwidth="79" indentamount="4" plotoutput="terminal" screenpixelheight="1120" rtablesize="30" useclientjvm="true" labelwidth="20" postplot="" typesetting="extended" ansi="false" ansicolor="[]" elisiondigitsthreshold="10000" showassumed="1" ansilprint="false" trailingsemicolon="true" errorcursor="false" labelling="true" screenheight="25" prompt="&gt; " verboseproc="1" latexwidth="8.0" ShowLabels="true"/>
+<Styles>
+<Font name="Heading 1" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[195,69,11]" italic="false" opaque="false" readonly="false" size="20" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 4" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[235,132,3]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 2" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[206,93,0]" italic="false" opaque="false" readonly="false" size="16" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 3" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[235,132,3]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 1" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text Output" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[0,128,0]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text-blue colored" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[25,123,199]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 2" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 3" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Comment-purple" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[153,51,102]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 4" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 5" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="sub-Title" background="[255,255,255]" bold="true" executable="false" family="Avenir Next" foreground="[255,153,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="text_color_orange_bold" background="[255,255,255]" bold="true" executable="false" family="Avenir Next" foreground="[255,102,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text-colored-blue" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[25,123,199]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="supra-title" background="[255,255,255]" bold="true" executable="false" family="Avenir Next" foreground="[255,153,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="SubSubTitle" background="[255,255,255]" bold="true" executable="false" family="Century Gothic" foreground="[69,69,69]" italic="false" opaque="false" readonly="false" size="20" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Atomic Variable" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[175,0,175]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="HyperlinkWarning" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[255,0,255]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Dictionary Hyperlink" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[147,0,15]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="SectionBlue" background="[255,255,255]" bold="true" executable="false" family="Avenir Next" foreground="[38,120,192]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="text-orange colored" background="[255,255,255]" bold="true" executable="false" family="Century Gothic" foreground="[255,155,20]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="List Item" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Dash Item" background="[255,255,255]" bold="false" executable="false" family="Century Gothic" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Input" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Code" background="[255,255,255]" bold="false" executable="false" family="Consolas" foreground="[61,167,214]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="TextBoldBlue" background="[255,255,255]" bold="true" executable="false" family="Avenir Next" foreground="[38,120,192]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Subtitle" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[128,128,128]" italic="false" opaque="false" readonly="false" size="24" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Author" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Warning" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[255,0,255]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[51,51,51]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Line Printed Output" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[0,128,0]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Output" background="[255,255,255]" bold="false" executable="false" family="Avenir Next" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Inert Output" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[144,144,144]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Diagnostic" background="[255,255,255]" bold="false" executable="false" family="Courier New" foreground="[40,120,40]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Input" background="[255,255,255]" bold="true" executable="true" family="Consolas" foreground="[19,82,186]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Page Number" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Annotation Title" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[128,128,128]" italic="false" opaque="false" readonly="false" size="18" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="text-blue-colored" background="[255,255,255]" bold="true" executable="false" family="Century Gothic" foreground="[35,83,192]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Header and Footer" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="HyperlinkError" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[255,0,0]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Maple Input gray-commented" background="[255,255,255]" bold="true" executable="false" family="Roboto Mono" foreground="[192,192,192]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Bullet Item" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Plot" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Annotation Text" background="[255,255,255]" bold="false" executable="false" family="Century Gothic" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Error" background="[255,255,255]" bold="false" executable="false" family="Roboto Mono" foreground="[255,0,0]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Title" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[207,51,19]" italic="false" opaque="false" readonly="false" size="36" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Normal" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Caption Reference" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Section" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[195,69,11]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Input Placeholder" background="[255,255,255]" bold="true" executable="true" family="Courier New" foreground="[200,0,200]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="true"/>
+<Font name="Text-orange colored" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[235,132,3]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Equation Label" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text_color_red" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[255,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text_color_blue" background="[255,255,255]" bold="false" executable="false" family="Avenir Next" foreground="[38,120,192]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Hyperlink" background="[255,255,255]" bold="false" executable="false" family="Montserrat" foreground="[0,204,255]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Caption Text" background="[255,255,255]" bold="true" executable="false" family="Montserrat" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Layout name="Heading 1" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="8" spacebelow="4" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Warning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 4" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Line Printed Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 2" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="8" spacebelow="2" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Maple Output" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.3" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 3" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Diagnostic" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Ordered List 1" alignment="left" bullet="numeric" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix="."/>
+<Layout name="Text Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="newline" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Ordered List 2" alignment="left" bullet="alphabetic" firstindent="0" leftmargin="36" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix="."/>
+<Layout name="Ordered List 3" alignment="left" bullet="roman" firstindent="0" leftmargin="72" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix="."/>
+<Layout name="Ordered List 4" alignment="left" bullet="ALPHABETIC" firstindent="0" leftmargin="108" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix="."/>
+<Layout name="Ordered List 5" alignment="left" bullet="ROMAN" firstindent="0" leftmargin="144" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix="."/>
+<Layout name="Annotation Title" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="12" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="text-blue-colored" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="sub-Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="HyperlinkError" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="supra-title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="6" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="SubSubTitle" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="HyperlinkWarning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="SectionBlue" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Bullet Item" alignment="left" bullet="dot" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Maple Plot" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="List Item" alignment="left" bullet="indent" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Dash Item" alignment="left" bullet="dash" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Error" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="12" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Normal" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Section" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="6" linebreak="newline" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Subtitle" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="12" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Text_color_red" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Author" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="8" spacebelow="8" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Pencil-style name="Pencil 1" pen-color="[0,0,0]" pen-height="1.0" pen-width="1.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 2" pen-color="[0,0,255]" pen-height="1.0" pen-width="1.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 3" pen-color="[0,0,0]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 4" pen-color="[0,0,255]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 5" pen-color="[255,0,0]" pen-height="5.0" pen-width="5.0" pen-opacity="1.0"/>
+<Highlighter-style name="Highlighter 5" pen-color="[255,255,0]" pen-height="48.0" pen-width="48.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 3" pen-color="[51,255,0]" pen-height="24.0" pen-width="24.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 4" pen-color="[0,255,255]" pen-height="32.0" pen-width="32.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 1" pen-color="[255,153,255]" pen-height="12.0" pen-width="8.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 2" pen-color="[255,204,0]" pen-height="14.0" pen-width="14.0" pen-opacity="0.8"/>
+</Styles>
+<Startup-Code startupcode=""/>
+<Task-table>
+    <Task-category name="&lt;default&gt;"/>
+</Task-table>
+<Task>
+<TaskVariable name="mu" description=""/>
+<TaskVariable name="gamma" description=""/>
+</Task><Table visible="true" editable="true" exterior="bottom" pagebreak="cell" showlabel="false" title="" plotalignlists="" hiddenborderdisplay="worksheet" interior="none" postexecute="advance" drawcaption="false" drawtitle="false" width="100.0%" captionalignment="0" showinput="false" captionposition="1" id="Table0" alignment="left" randomized="false" labelreference="L10412" showgroup="false" order="row"><Table-Column weight="10" separator="true"></Table-Column><Table-Column weight="190" separator="true"></Table-Column><Table-Row align="top" separator="true"><Table-Cell padding="5" visible="true" fillcolor="[255,255,255]" rowspan="1" backgroundstyle="0" columnspan="1"><Text-field style="Text" layout="Normal"></Text-field></Table-Cell><Table-Cell padding="5" visible="true" fillcolor="[255,255,255]" rowspan="1" backgroundstyle="0" columnspan="1">
+<Group labelreference="L10414" drawlabel="true">
+<Input><Text-field style="Subtitle" layout="Subtitle">Tyre model</Text-field>
+</Input>
+<Input><Text-field style="Title" layout="Title">MF Pacejka model 1996 </Text-field>
+</Input>
+</Group><Text-field style="Author" layout="Author">Francesco Biral </Text-field><Text-field style="Author" layout="Author">release 1.0 - date: 05/02/2019
+release 2.0 - date: 19/03/2022
+</Text-field></Table-Cell></Table-Row></Table>
+<Group labelreference="L331" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Author" layout="Author"></Text-field>
+</Input>
+</Group>
+<Group hide-output="false" labelreference="L2" drawlabel="true">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">restart;
+with(plots):
+with(LinearAlgebra):
+
+interface(rtablesize=30):
+plots[setcolors](&quot;<Font opaque="true">spring</Font>&quot;):
+	
+plots[setoptions](axes=boxed,size=[800,300],axis[2]=[gridlines=[linestyle=dot]]
+                  #,labelfont= [TIMES,32], axesfont= [TIMES,16], titlefont= [TIMES,32], captionfont= [TIMES,32]
+                  );</Text-field>
+</Input>
+</Group>
+<Group labelreference="L17261" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">#alias(Sign = sign):</Text-field>
+</Input>
+</Group>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Description: 1996 Pacejka Tire model</Text-field></Title>
+<Group labelreference="L19715" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Required Inputs (Units and Sign Convention)
+<Font encoding="UTF-8"> \342\200\242 \316\272: slip ratio (%, i.e. 0.10 = 10%) where a </Font><Font bold="true">+ slip ratio generates a driving force</Font>
+<Font encoding="UTF-8">\342\200\242 Fz: normal force (N)
+\342\200\242 D\306\222z = (Fz \342\200\223 Fz0)/Fz0
+\342\200\242 Fz0 = Nominal Load as defined in Coefficient Tables in Appendix I
+\342\200\242 \316\261: slip angle (rad) where a </Font><Font bold="true">+ slip angle generates a positive lateral force</Font>
+<Font encoding="UTF-8">\342\200\242 \316\263: camber angle (rad) where a + camber angle indicates the top of the tire tipped right (same sign convention for left and right tires)
+\342\200\242 \316\273: multiplier, which should be left at 1.0 for most applications.
+</Font></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19714" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Resulting Outputs (Units and Sign Convention)
+<Font encoding="UTF-8">\342\200\242 Fy : Lateral Force (N)
+\342\200\242 Fx : Longitudinal Force (N)
+\342\200\242 Mz : Aligning Torque (N-m)
+</Font></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19717" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"><Font foreground="[255,0,0]">NOTE: instead of &quot;gamma&quot; &quot;phi&quot; is used since in Maple &quot;gamma&quot; is a constant 0.57.</Font>.
+</Text-field>
+</Input>
+</Group>
+<Group hide-output="false" labelreference="L19716" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font foreground="[255,0,0]">(*lambda__mu__x1 := 1:
+  lambda__mu__y1 := 1:
+  lambda__Fz0 := 1:
+*)</Font></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19798" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Procedure to extract 'lambda__' parameters in a list</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19799" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">extract_lambda_pars := proc(pars_list,$)
+  local tmp1, tmp, i;
+  tmp1 := StringTools:-SearchAll(&quot;lambda__&quot;,map(convert,pars_list,string));
+  tmp := []:
+  for i from 1 to nops(tmp1) do:
+   if numelems(tmp1[i]) &lt;&gt; 0 then
+     tmp:=[op(tmp), pars_list[i]]:
+    end:
+   end do:
+  tmp;
+  convert(convert(pars_list,set) minus convert(tmp,set),list), tmp;
+end:</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Model coefficients</Text-field></Title>
+<Group labelreference="L19728" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">The coefficients are function of [alpha, lambda, phi, Fz]</Text-field><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19868" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">common_pars :=  Fz01  = lambda__Fz0*Fz0,
+                dfz   = Fz/Fz01-1;</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19830" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">List of known variables in each MF calculation</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19831" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">#MF_vars := {kappa,alpha,phi,dfz,Fz,Fz0,R0, Fz01};
+#MF_vars := {kappa,alpha,phi,Fz,R0};MF_vars := {kappa,alpha,phi,Fz};</Text-field>
+</Input>
+</Group>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure longitudinal force</Text-field></Title>
+<Group labelreference="L19788" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Pure longitudinal force coefficients:</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19889" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Light blue colored coefficients are constant parameters to be optimised.
+Yellow colored parts are variables related functions
+Green colored part are scaling coefficients.</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19785" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF96_FX0_coeffs_eqns := [
+  
+<Font opaque="true" background="[204,255,255]">  common_pars,
+</Font>
+  <Font foreground="[255,102,0]">#&gt;&gt; pure longitudinal force</Font><Font foreground="[128,128,128]">
+</Font>  SHx   = (<Font foreground="[0,204,255]">pHx1</Font>+<Font foreground="[0,204,255]">pHx2</Font>*<Font foreground="[255,204,0]">dfz</Font>)*<Font foreground="[128,128,0]">lambda__Hx</Font>,
+  SVx   = <Font foreground="[255,204,0]">Fz</Font>*(<Font foreground="[0,204,255]">pVx1</Font>+<Font foreground="[0,204,255]">pVx2</Font>*<Font foreground="[255,204,0]">dfz</Font>)*<Font foreground="[128,128,0]">lambda__Vx*lambda__mu__x</Font>,
+  gamma__s = <Font foreground="[255,204,0]">phi</Font>*l<Font foreground="[128,128,0]">ambda__gamma__y</Font>,
+  <Font foreground="[128,128,128]"># equivalent slip</Font>
+  kappa__x = <Font foreground="[255,204,0]">kappa</Font>+SHx,
+  <Font foreground="[128,128,128]"># coefficients MF</Font><Font foreground="[51,102,255]">
+</Font>  Cx    = <Font foreground="[0,204,255]">pCx1</Font>*<Font foreground="[128,128,0]">lambda__Cx</Font>,
+  mu__x = (<Font foreground="[0,204,255]">pDx1</Font>+<Font foreground="[0,204,255]">pDx2</Font>*<Font foreground="[255,204,0]">dfz</Font>)*(1-<Font foreground="[0,204,255]">pDx3</Font>*(gamma__s)^2)*<Font foreground="[128,128,0]">lambda__mu__x</Font>,
+  Dx    = mu__x*<Font foreground="[255,204,0]">Fz</Font>, <Font foreground="[128,128,128]"># </Font><Font foreground="[255,0,0]">must be &gt;0</Font><Font foreground="[128,128,128]">
+</Font>  Kxk   = <Font foreground="[255,204,0]">Fz</Font>*(<Font foreground="[0,204,255]">pKx1</Font>+<Font foreground="[0,204,255]">pKx2</Font>*<Font foreground="[255,204,0]">dfz</Font>)*exp(<Font foreground="[255,0,0]">-</Font><Font foreground="[0,204,255]">pKx3</Font>*<Font foreground="[255,204,0]">dfz</Font>)*<Font foreground="[128,128,0]">lambda__Kxk</Font>, <Font foreground="[128,128,128]">#=Bx*Cx*Dx = diff(Fxo,Kx) at Kx=0 =CFk</Font>
+  Ex    = (<Font foreground="[0,204,255]">pEx1+pEx2</Font>*<Font foreground="[255,204,0]">dfz</Font>+<Font foreground="[0,204,255]">pEx3</Font>*<Font foreground="[255,204,0]">dfz</Font>^2)*(1-<Font foreground="[0,204,255]">pEx4</Font>*<Font foreground="[255,102,0]">Sign</Font>(kappa__x))*lambda__Ex,  <Font foreground="[128,128,128]"># </Font><Font foreground="[255,0,0]">must be &lt;= 1
+</Font>  Bx    = Kxk/(Cx*Dx)
+]: &lt;%&gt;;
+
+</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19795" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19796" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Extract list of parameters</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19789" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp1 := indets(MF96_FX0_coeffs_eqns,symbol): <Font foreground="[153,51,102]"># extract all symbols in the equation list</Font>
+MF96_FX0_coeffs := convert(map(lhs,MF96_FX0_coeffs_eqns),set):  <Font foreground="[153,51,102]"># extract all left hand side parameters</Font>
+tmp2            := MF_vars union % :            <Font foreground="[153,51,102]"># define all known or calculated parameters</Font> 
+MF96_FX0_pars   := convert(tmp1 minus tmp2,list):
+
+MF96_FX0_pars,MF96_FX0_lambda_pars := extract_lambda_pars(MF96_FX0_pars):
+&lt;op(MF96_FX0_coeffs)&gt;,&lt;MF96_FX0_pars&gt;, &lt;MF96_FX0_lambda_pars&gt;;
+
+
+
+
+</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure lateral force</Text-field></Title>
+<Group labelreference="L19811" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Pure lateral force coefficients:
+</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19809" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF96_FY0_coeffs_eqns := [
+
+<Font opaque="true" background="[204,255,255]">  common_pars,
+
+
+</Font>  <Font foreground="[255,102,0]">#&gt;&gt; pure lateral force</Font><Font foreground="[0,0,255]">
+  </Font>gamma__s = phi*lambda__gamma__y,
+  SHy      = (pHy1+pHy2*dfz+pHy3*<Font foreground="[255,102,0]">gamma__s</Font>)*lambda__Hy, <Font foreground="[128,128,128]">#+(Kyg0*gamma__s+SVyg)/(Kya+espilon__K)</Font>,
+  SVy      = Fz*(pVy1+pVy2*dfz+(pVy3+pVy4*dfz)*<Font foreground="[255,102,0]">gamma__s</Font>)*lambda__Vy*lambda__mu__y,
+  <Font foreground="[128,128,128]"># equivalent slips
+</Font>  alpha__y = alpha+SHy,
+  <Font foreground="[128,128,128]"># coefficients MF</Font><Font foreground="[51,102,255]">
+</Font>  Cy       = pCy1*lambda__Cy,
+  mu__y    = (pDy1+pDy2*dfz)*(1-pDy3*<Font foreground="[255,102,0]">gamma__s</Font>^2)*lambda__mu__y,
+  Dy       = mu__y*Fz, <Font foreground="[255,0,0]"># must be &gt;0
+</Font>  Ey       = (pEy1+pEy2*dfz)*(1-(pEy3+pEy4*<Font foreground="[255,102,0]">gamma__s</Font>)*Sign(alpha__y))*lambda__Ey,  <Font foreground="[255,0,0]"># must be &lt;= 1
+</Font>  Kya      = Fz01*pKy1*sin(2*arctan(Fz/Fz01/pKy2))*(1-pKy3*my_abs(<Font foreground="[255,102,0]">gamma__s</Font>))*lambda__Fz0*lambda__Kya,
+            <Font foreground="[128,128,128]">#=By*Cy*Dy = diff(Fyo,alpha) at alpha=0 =CFk</Font>
+  By       = Kya/(Cy*Dy)
+]: &lt;%&gt;;
+
+</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19804" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19810" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Extract list of parameters
+Three types pf list are created: one with the calculated parameters (lhs), one with constant parameters and one with scaling factors.</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19807" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp1            := indets(MF96_FY0_coeffs_eqns,symbol): <Font foreground="[153,51,102]"># extract all symbols in the equation list</Font>
+MF96_FY0_coeffs := convert(map(lhs,MF96_FY0_coeffs_eqns),set):  <Font foreground="[153,51,102]"># extract all left hand side parameters</Font>
+tmp2            := MF_vars union MF96_FY0_coeffs :                   <Font foreground="[153,51,102]"># define all known or calculated parameters</Font> 
+MF96_FY0_pars   := convert(tmp1 minus tmp2,list):
+
+MF96_FY0_pars,MF96_FY0_lambda_pars := extract_lambda_pars(MF96_FY0_pars):
+&lt;op(MF96_FY0_coeffs)&gt;,&lt;MF96_FY0_pars&gt;, &lt;MF96_FY0_lambda_pars&gt;;
+
+
+
+
+</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure and combined aligning moment Mz</Text-field></Title>
+<Group labelreference="L19827" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Pure and combined aligning moment coefficients:
+</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19821" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF96_MZ_coeffs_eqns := [
+
+<Font opaque="true" background="[204,255,255]">  common_pars,
+
+
+</Font>  <Font foreground="[255,102,0]">#&gt;&gt; pure aligning torque</Font>  
+  <Font foreground="[128,128,128]"># equivalent slips</Font><Font foreground="[51,102,255]">
+  </Font>gamma__z = phi*lambda__gamma__y,  SHf      = SHy+SVy/Kya,
+  SHt      = qHz1+qHz2*dfz+(qHz3+qHz4*dfz)*gamma__z,
+  alpha__t = alpha+SHt,
+  alpha__r = alpha+SHf,
+  <Font foreground="[128,128,128]"># coefficients MF</Font><Font foreground="[51,102,255]">
+ </Font> Bt      = (qBz1+qBz2*dfz+qBz3*dfz^2)*(1+qBz4*gamma__z+qBz5*my_abs(gamma__z))*lambda__Ky/lambda__mu__y,
+  Ct      = qCz1,
+  Dt      = Fz*(qDz1+qDz2*dfz)*(1+qDz3*gamma__z+qDz4*gamma__z^2)*R0/Fz0*lambda__t,
+  Et      = (qEz1+qEz2*dfz+qEz3*dfz^2)*(1+(qEz4+qEz5*gamma__z)*arctan(Bt*Ct*alpha__t)), <Font foreground="[128,128,128]" encoding="UTF-8">#(\342\211\2441)</Font>
+  Br      = (qBz9*lambda__Ky/lambda__mu__y+qBz10*By*Cy),
+  Dr      = Fz*(qDz6+qDz7*dfz+(qDz8+qDz9*dfz)*gamma__z)*R0*lambda__mu__y*lambda__Mr,
+  <Font foreground="[255,102,0]">#&gt;&gt; combined aligning torque</Font>    alpha__t__eq = arctan(sqrt(tan(alpha__t)^2 + (Kxk/Kya*kappa)^2 )) * Sign(alpha__t),
+  alpha__r__eq = arctan(sqrt(tan(alpha__r)^2 + (Kxk/Kya*kappa)^2 )) * Sign(alpha__r),  s = (sSz1 + sSz2*(fy/Fz0) + (sSz3 + sSz4*dfz)*gamma__z)*R0*lambda__s]: &lt;%&gt;;
+
+</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19823" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19824" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19828" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Extract list of parameters</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19825" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp1            := indets(MF96_MZ_coeffs_eqns,symbol): <Font foreground="[153,51,102]"># extract all symbols in the equation list</Font>
+MF96_MZ0_coeffs := convert(map(lhs,MF96_MZ_coeffs_eqns),set):  <Font foreground="[153,51,102]"># extract all left hand side parameters
+# define all known or calculated parameters - remove also previous calculated</Font>
+tmp2 := MF_vars union % 
+                union <Font opaque="true" background="[204,255,255]">convert(</Font>MF96_FY0_coeffs<Font opaque="true" background="[204,255,255]">,set)</Font>                union <Font opaque="true" background="[204,255,255]">convert(</Font>MF96_FX0_coeffs<Font opaque="true" background="[204,255,255]">,set)</Font>                union {fy}:   
+MF96_MZ_pars
+ := convert(tmp1 minus tmp2  <Font opaque="true" background="[204,255,255]">,list):
+</Font>
+MF96_MZ_pars
+,MF96_MZ_lambda_pars
+ := extract_lambda_pars(MF96_MZ_pars
+):
+&lt;op(MF96_MZ0_coeffs)&gt;, &lt;MF96_MZ_pars
+&gt;, &lt;MF96_MZ_lambda_pars
+&gt;;
+
+
+
+
+</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Combined longitudinal and lateral forces</Text-field></Title>
+<Group labelreference="L19832" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Pure longitudinal force coefficients:
+</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19838" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF96_FXFYCOMB_coeffs_eqns := [
+
+<Font opaque="true" background="[204,255,255]">  common_pars,
+
+
+</Font>  <Font foreground="[255,102,0]">#&gt;&gt; combined forces 
+</Font>  <Font foreground="[128,128,128]"># longitudinal</Font><Font foreground="[51,102,255]"> </Font>
+  SHxa = rHx1,
+  Bxa  = rBx1*cos(arctan(rBx2*kappa))*lambda__xa,
+  Cxa  = rCx1,
+  Dxa  = 1/(cos(Cxa*arctan(Bxa*SHxa))),
+  Gxa  = Dxa*cos(Cxa*arctan(Bxa*(alpha+SHxa))),
+  <Font foreground="[128,128,128]"># lateral</Font><Font foreground="[51,102,255]"> </Font>
+  SHyk = rHy1,
+  DVyk = mu__y*Fz*(rVy1+rVy2*dfz+rVy3*phi)*cos(arctan(rVy4*alpha)),
+  SVyk = DVyk*sin(rVy5*arctan(rVy6*kappa))*lambda__Vyk,
+  Byk  = rBy1*cos(arctan(rBy2*(alpha-rBy3)))*lambda__yk,
+  Cyk  = rCy1,
+  Dyk  = 1/(cos(Cyk*arctan(Byk*SHyk))),
+  Gyk  = Dyk*cos(Cyk*arctan(Byk*(kappa+SHyk))) 
+
+]: &lt;%&gt;;
+
+</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19834" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19837" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19833" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Extract list of parameters</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19836" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp1            := indets(MF96_FXFYCOMB_coeffs_eqns,symbol): <Font foreground="[153,51,102]"># extract all symbols in the equation list</Font>
+MF96_FXFYCOMB_coeffs := convert(map(lhs,MF96_FXFYCOMB_coeffs_eqns),set):  <Font foreground="[153,51,102]"># extract all left hand side parameters
+# define all known or calculated parameters - remove also previous calculated</Font>
+tmp2 := MF_vars union % 
+                union <Font opaque="true" background="[204,255,255]">convert(</Font>MF96_FX0_coeffs<Font opaque="true" background="[204,255,255]">,set)</Font>
+                union <Font opaque="true" background="[204,255,255]">convert(</Font>MF96_FY0_coeffs<Font opaque="true" background="[204,255,255]">,set):</Font>   
+MF96_FXFYCOMB_pars := convert(tmp1 minus tmp2  <Font opaque="true" background="[204,255,255]">,list):
+</Font>
+MF96_FXFYCOMB_pars,MF96_FXFYCOMB_lambda_pars := extract_lambda_pars(MF96_FXFYCOMB_pars):
+&lt;op(MF96_FXFYCOMB_coeffs)&gt;, &lt;MF96_FXFYCOMB_pars&gt;, &lt;MF96_FXFYCOMB_lambda_pars&gt;;
+
+
+
+
+</Text-field>
+</Input>
+</Group>
+</Section>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Magic Formula</Text-field></Title><Presentation-Block>
+<Group view="code" labelreference="L19890" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Generic Magic formula to compute pure longitudinal and laterale forces and the combined forces.</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19845" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF := D*sin(C*arctan(B*x-E*(B*x-arctan(B*x))))+SV;</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" hide-output="false" labelreference="L19726" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF_fnc := (x,B,C,D,E,SV)-&gt;D*sin(C*arctan(B*x-E*(B*x-arctan(B*x))))+SV;
+codegen[makeproc](MF_fnc(x,B,C,D,E,SV),[x,B,C,D,E,SV]);
+</Text-field>
+</Input>
+</Group>
+<Group view="code" labelreference="L19881" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">#CodeGeneration[Matlab](MF_fnc,optimize);</Text-field>
+</Input>
+</Group>
+<Group view="code" labelreference="L19933" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Generic formula for combined forces</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19934" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MFCOMB_fnc := (G,F,S) -&gt; G*F + S;</Text-field>
+</Input>
+</Group></Presentation-Block><Presentation-Block>
+<Group view="code" labelreference="L19949" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Generic formula for self-aligning moment (pure and combined)</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19950" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MZ_fnc := (t,FY,MZR,s,FX) -&gt; -t*FY + MZR + s*FX;</Text-field>
+</Input>
+</Group></Presentation-Block><Presentation-Block>
+<Group view="code" labelreference="L19891" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Stiffness (ie derivative of tyre forces w.r.t to parameter)</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19778" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">diff(MF_fnc(x,B,C,D,E,SV),x);
+MF_stiffnes_fnc := unapply(%,[x,B,C,D,E,SV]);
+
+codegen[makeproc](MF_stiffnes_fnc(x,B,C,D,E,SV),[x,B,C,D,E,SV]);</Text-field>
+</Input>
+</Group>
+<Group view="code" labelreference="L19935" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Generic formula for computing self-aligning moment pneumatic trail t</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19936" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">PT_fnc := (alpha__t,alpha,B,C,D,E) -&gt; D*cos(C*arctan(B*alpha__t-E*(B*alpha__t-arctan(B*alpha__t))))*cos(alpha);</Text-field>
+</Input>
+</Group></Presentation-Block><Presentation-Block>
+<Group view="code" labelreference="L19943" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Generic formula for computing self-aligning residual moment M_zr</Text-field>
+</Input>
+</Group>
+<Group view="code" hide-input="false" labelreference="L19942" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MZR_fnc := (alpha__r,alpha,B,D) -&gt; D*cos(arctan(B*alpha__r))*cos(alpha);</Text-field>
+</Input>
+</Group></Presentation-Block>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Matlab code generation</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Auxiliary procedure to generate Matlab code</Text-field></Title>
+<Group labelreference="L19856" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Procedure to convert a list of symbols into a list of strings</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19855" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">convert_list_to_string := proc(L::list(symbol),$)
+
+  local tmp, i :
+  tmp := &quot;&quot;:
+  for i from 1 to nops(L)-1 do
+    tmp := cat(tmp,convert(L[i],string), &quot;, &quot;);
+  end:
+  tmp := cat(tmp,convert(L[-1],string));
+
+end:</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19850" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Procedure to print generated code</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19892" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">comment: string of comment printed in the matlab file,         
+fnc_name: (string) function name
+in_args:  list of input arguments
+out_args: list of output arguments
+code_header: pre code to be computed before main code 
+code_body: main code 
+outfile: if true prints the putput on a file    
+outdir: output directory. The default is &quot;./tyre_lib/&quot;,
+print_generated_code: if true print out the generated code.</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19847" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">print_procedure := proc(comment::string,         
+                        fnc_name::string, 
+                        in_args::list(symbol), 
+                        out_args::list(symbol), 
+                        code_header::string, 
+                        code_body::string,
+                        {outfile::boolean:=false,
+                         outdir::string:=&quot;./tyre_lib/&quot;,
+                         print_generated_code::booblean:=true},
+                        $)
+
+  local tmp_s,tmp1,tmp2, res_file, fd ;
+
+  tmp1 := convert_list_to_string(out_args);
+  tmp2 := convert_list_to_string(in_args);
+
+  tmp_s := String( 
+<Font encoding="UTF-8">      sprintf(&quot;%% %s\134n&quot;, comment),
+      sprintf(&quot;function [%s] = %s(%s)\134n&quot;, </Font>tmp1, fnc_name, tmp2),
+      sprintf(&quot;<Font encoding="UTF-8">\134n %% precode\134n\134n&quot;),
+      sprintf(&quot;%s\134n&quot;,StringTools:-Indent(</Font>code_header,2)),
+      s<Font encoding="UTF-8">printf(&quot;\134n %% main code\134n\134n&quot;),
+      sprintf(&quot;%s\134n&quot;,</Font>StringTools:-Indent(code_body,2)),
+<Font encoding="UTF-8">      sprintf(&quot; end\134n&quot;</Font>)
+      ):
+  if print_generated_code then 
+<Font encoding="UTF-8">    printf(&quot;%s\134n&quot;,</Font>tmp_s);
+  end:
+  
+  if outfile then
+    if not(FileTools:-<Font opaque="false" subscript="false" underline="false" superscript="false" bold="true" foreground="[19,82,186]" italic="false" executable="true" selection-placeholder="false" size="12" readonly="false" background="[255,255,255]" style="Help Maple Name" placeholder="false" family="Consolas" font_style_name="Help Maple Name">IsDirectory(</Font>outdir<Font opaque="false" subscript="false" underline="false" superscript="false" bold="true" foreground="[19,82,186]" italic="false" executable="true" selection-placeholder="false" size="12" readonly="false" background="[255,255,255]" style="Help Maple Name" placeholder="false" family="Consolas" font_style_name="Help Maple Name">)</Font> ) then 
+      FileTools:-MakeDirectory(outdir);
+    end:
+    res_file := cat(outdir,cat(fnc_name, &quot;.m&quot;)); print(res_file);
+    <Font encoding="UTF-8">printf(&quot;Writing output file: %s\134n&quot;,</Font>res_file);
+    fd := fopen(res_file, WRITE);
+    fprintf(fd, &quot;%s&quot;,tmp_s);
+    fclose(fd);
+    <Font encoding="UTF-8">printf(&quot;done!\134n&quot;</Font>);
+  end:
+
+end proc:</Text-field>
+</Input>
+</Group>
+</Section>
+<Group labelreference="L19907" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal">Auxliary fucntion substitutio</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19917" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">SUBS_SIGN_ABS := [my_abs = abs, Sign = sign];</Text-field>
+</Input>
+</Group>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Tyre data structure</Text-field></Title>
+<Group hide-input="false" labelreference="L19909" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">all_lambda_pars := convert( MF96_FXFYCOMB_lambda_pars, set) union 
+                   convert( MF96_FY0_lambda_pars, set ) union 
+                   convert(  MF96_FX0_lambda_pars, set) union                   convert(  MF96_MZ_lambda_pars, set)  union                   convert(  MF96_FXFYCOMB_lambda_pars, set);</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19974" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">all_pars := convert( MF96_FXFYCOMB_pars, set) union 
+                   convert( MF96_FY0_pars, set ) union 
+                   convert(  MF96_FX0_pars, set) union
+                   convert(  MF96_MZ_pars, set)  union
+                   convert(  MF96_FXFYCOMB_pars, set);nops(%);</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19908" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">cat( 
+     op(map(x-&gt;sprintf(&quot;tyre_data.%-15s = 0; %% %-15s<Font encoding="UTF-8">\134n&quot;,convert(x,string)</Font>,convert(x,string)),all_pars)),
+     op(map(x-&gt;sprintf(&quot;tyre_data.%-15s = 1; %% %-15s<Font encoding="UTF-8">\134n&quot;,convert(x,string)</Font>,convert(x,string)),all_lambda_pars))
+    ):
+
+
+printf(&quot;%s&quot;,%)
+</Text-field>
+</Input>
+</Group>
+</Section>
+<Group labelreference="L19857" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Text" layout="Normal"></Text-field>
+</Input>
+</Group>
+<Group labelreference="L19869" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Magic formula</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19885" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MF_fnc(x,B,C,D,E,SV);</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19851" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code_eqn := MF_fnc(x,B,C,D,E,SV);
+code     := CodeGeneration[Matlab](code_eqn, resultname='mf_res', optimize = true,output=string);
+
+
+print_procedure(&quot;Implement the Magic formula&quot;,
+                &quot;magic_formula&quot;,
+                [x,B,C,D,E,SV],
+                [mf_res],
+                &quot;&quot;,    <Font foreground="[153,51,102]"># no precode</Font>
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19938" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pneumatic Trail formula</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19939" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">PT_fnc(alpha__t,alpha,B,C,D,E);</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19940" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code_eqn := PT_fnc(alpha__t,alpha,B,C,D,E);
+code     := CodeGeneration[Matlab](code_eqn, resultname='trail', optimize = true,output=string);
+
+
+print_procedure(&quot;Implement the Pneumatic Trail formula&quot;,
+                &quot;pneumatic_trail&quot;,
+                [alpha__t,alpha,B,C,D,E],
+                [trail],
+                &quot;&quot;,    <Font foreground="[153,51,102]"># no precode</Font>
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19946" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Self-aligning Residual Moment formula</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19945" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MZR_fnc(alpha__r,alpha,B,D);</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19947" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code_eqn := MZR_fnc(alpha__r,alpha,B,D);
+code     := CodeGeneration[Matlab](code_eqn, resultname='mzr', optimize = true,output=string);
+
+
+print_procedure(&quot;Implement the self-aligning residual moment formula&quot;,
+                &quot;residual_mzr&quot;,
+                [alpha__r,alpha,B,D],
+                [mzr],
+                &quot;&quot;,    <Font foreground="[153,51,102]"># no precode</Font>
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19870" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Magic formula stiffness</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19861" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code_eqn := MF_stiffnes_fnc(x,B,C,D,E,SV);
+code     := CodeGeneration[Matlab](code_eqn, resultname='mf_res', optimize = true,output=string);
+
+
+print_procedure(&quot;Magic formula - stiffness&quot;,
+                &quot;magic_formula_stiffness&quot;,
+                [x,B,C,D,E,SV],
+                [mf_res],
+                &quot;&quot;, <Font foreground="[153,51,102]"># no precode</Font>
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure longitudinal force</Text-field></Title>
+<Group labelreference="L19871" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure Longitudinal force coefficients</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19864" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code     := CodeGeneration[Matlab](subs(SUBS_SIGN_ABS, MF96_FX0_coeffs_eqns), resultname='mf_res', optimize = false,output=string);
+
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FX0_pars):
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FX0_lambda_pars):
+header_code:= cat(op(%%),op(%));
+
+print_procedure(&quot;Coefficients for Magic Formula pure longitudinal force&quot;,
+                &quot;MF96_FX0_coeffs&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FX0_coeffs,list),
+                [kappa__x, Bx, Cx, Dx, Ex, SVx,Kxk],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19873" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure Longitudinal force </Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19874" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := magic_formula(kappa__x,Bx,Cx,Dx,Ex,SVx);
+code     := CodeGeneration[Matlab](tmp, resultname='fx0', optimize = false,output=string);
+
+header_code:= &quot;[kappa__x, Bx, Cx, Dx, Ex, SVx] = MF96_FX0_coeffs(kappa, alpha, phi, Fz, tyre_data);&quot;;
+
+print_procedure(&quot;Pure longitudinal force FX0&quot;,
+                &quot;MF96_FX0&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FX0_coeffs,list),
+                [fx0],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure lateral force</Text-field></Title>
+<Group labelreference="L19913" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure Lateral force coefficients</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19916" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code     := CodeGeneration[Matlab](subs(SUBS_SIGN_ABS,MF96_FY0_coeffs_eqns), resultname='mf_res', optimize = false,output=string);
+
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FY0_pars):
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FY0_lambda_pars):
+header_code:= cat(op(%%),op(%));
+
+print_procedure(&quot;Coefficients for Magic Formula pure lateral force&quot;,
+                &quot;MF96_FY0_coeffs&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FY0_coeffs,list),
+                [alpha__y, By, Cy, Dy, Ey, SVy,Kya,SHy,mu__y],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19915" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure Lateral force </Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19914" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := magic_formula(alpha__y,By,Cy,Dy,Ey,SVy);
+code     := CodeGeneration[Matlab](tmp, resultname='fy0', optimize = false,output=string);
+
+header_code:= &quot;[alpha__y,By,Cy,Dy,Ey,SVy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);&quot;;
+
+print_procedure(&quot;Pure lateral force FY0&quot;,
+                &quot;MF96_FY0&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FY0_coeffs,list),
+                [fy0],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Pure and Combined Self-Aligning Moment</Text-field></Title>
+<Group labelreference="L19932" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure  and Combined Self Aligning Moment coefficients</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19931" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code     := CodeGeneration[Matlab](subs(SUBS_SIGN_ABS, MF96_MZ_coeffs_eqns), resultname='mf_res', optimize = false,output=string);
+
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_MZ_pars
+):
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_MZ_lambda_pars
+):
+<Font encoding="UTF-8">header_code:= cat(op(%%),op(%),&quot;\134n\134n&quot;,                               &quot;if sSz1 ~= 0\134n&quot;,                               &quot;\134t fy = MF96_FY(kappa, alpha, phi, Fz, tyre_data);\134n&quot;,                               &quot;else\134n&quot;,                               &quot;\134t fy = 0;\134n&quot;,                               &quot;end\134n\134n&quot;,                               &quot;</Font>[alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data)<Font encoding="UTF-8">;\134n</Font>&quot;,                               &quot;<Font encoding="UTF-8">[kappa__x, Bx, Cx, Dx, Ex, SVx, Kxk] = MF96_FX0_coeffs(kappa, alpha, phi, Fz, tyre_data);\134n&quot;</Font>);
+
+print_procedure(&quot;Coefficients for Magic Formula pure self-aligning moment&quot;,
+                &quot;MF96_MZ_coeffs&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FY0_coeffs,list),
+                [Br,Bt,Ct,Dr,Dt,Et,alpha__r,alpha__t,alpha__t__eq,alpha__r__eq,s],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19929" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Pure Self Aligning Moment</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19930" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := MZ_fnc(t,fy0,mzr,0,0) ;
+code     := CodeGeneration[Matlab](tmp, resultname='mz0', optimize = false,output=string);
+
+header_code:= cat(&quot;fy0 = MF96_FY0(kappa, alpha, phi, Fz, tyre_data)<Font encoding="UTF-8">;\134n&quot;,                                 &quot;</Font>[Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, alpha__t__eq, alpha__r__eq, s] = MF96_MZ_coeffs(kappa, alpha, phi, Fz, tyre_data)<Font encoding="UTF-8">;\134n&quot;,                                 &quot;</Font>t = pneumatic_trail(alpha__t, alpha, Bt, Ct, Dt, Et)<Font encoding="UTF-8">;\134n&quot;,                                 &quot;</Font>mzr = residual_mzr(alpha__r, alpha, Br, Dr);&quot;);
+
+print_procedure(&quot;Pure self-aligning moment MZ0&quot;,
+                &quot;MF96_MZ0&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_MZ0_coeffs,list),
+                [mz0],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19972" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Combined Self Aligning Moment</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19973" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := MZ_fnc(t__eq,fy_prime,mzr__eq,s,fx) ;
+code     := CodeGeneration[Matlab](tmp, resultname='mz', optimize = false,output=string);
+
+header_code:= cat(&quot;fy_prime = MF96_FYP(kappa, alpha, phi, Fz, tyre_data)<Font encoding="UTF-8">;\134n&quot;,
+                                 &quot;fx = MF96_FX(kappa, alpha, phi, Fz, tyre_data);\134n&quot;,</Font>                                 &quot;[Br, Bt, Ct, Dr, Dt, Et, alpha__r, alpha__t, alpha__t__eq, alpha__r__eq, s] = MF96_MZ_coeffs(kappa, alpha, phi, Fz, tyre_data)<Font encoding="UTF-8">;\134n&quot;,
+</Font>                                 &quot;t__eq = pneumatic_trail(alpha__t__eq, alpha, Bt, Ct, Dt, Et)<Font encoding="UTF-8">;\134n&quot;,
+</Font>                                 &quot;mzr__eq = residual_mzr(alpha__r__eq, alpha, Br, Dr);&quot;);
+
+print_procedure(&quot;Combined self-aligning moment MZ0&quot;,
+                &quot;MF96_MZ&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_MZ_coeffs,list),
+                [mz],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19928" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal"></Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Combined forces coefficients</Text-field></Title>
+<Group labelreference="L19924" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19925" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">code     := CodeGeneration[Matlab](MF96_FXFYCOMB_coeffs_eqns, resultname='mf_res', optimize = false,output=string);
+
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FXFYCOMB_pars):
+<Font encoding="UTF-8">map(x-&gt;sprintf(&quot;%-15s = tyre_data.%s;\134n&quot;,convert(x,string)</Font>,convert(x,string)),MF96_FXFYCOMB_lambda_pars):
+<Font encoding="UTF-8">header_code:= cat(op(%%),op(%),&quot;\134n&quot;,                                &quot;[alpha__y, By, Cy, Dy, Ey, SVy, Kya, SHy, mu__y] = MF96_FY0_coeffs(kappa, alpha, phi, Fz, tyre_data);\134n</Font>&quot;);
+
+print_procedure(&quot;Coefficients for Magic Formula combined forces&quot;,
+                &quot;MF96_FXFYCOMB_coeffs&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FXFYCOMB_coeffs,list),
+                [Gxa,Gyk,SVyk],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Combined longitudinal force</Text-field></Title>
+<Group labelreference="L19918" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19919" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := MFCOMB_fnc(Gxa, fx0, 0);
+code     := CodeGeneration[Matlab](tmp, resultname='fx', optimize = false,output=string);
+
+header_code:= cat(&quot;<Font encoding="UTF-8">fx0 = MF96_FX0(kappa, alpha, phi, Fz, tyre_data);\134n&quot;,                                &quot;[Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_data);</Font>&quot;);
+
+print_procedure(&quot;Combined longitudinal force FX&quot;,
+                &quot;MF96_FX&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FX0_coeffs,list),
+                [fx],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+</Section>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Combined lateral force</Text-field></Title>
+<Group hide-input="false" labelreference="L19911" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := MFCOMB_fnc(Gyk, fy0, SVyk);
+code     := CodeGeneration[Matlab](tmp, resultname='fy', optimize = false,output=string);
+
+header_code:= cat(&quot;<Font encoding="UTF-8">fy0 = MF96_FY0(kappa, alpha, phi, Fz, tyre_data);\134n&quot;,
+</Font>                                &quot;[Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_data);&quot;);
+
+print_procedure(&quot;Combined lateral force FY&quot;,
+                &quot;MF96_FY&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FX0_coeffs,list),
+                [fy],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19969" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field style="Heading 3" layout="Heading 3">Combined lateral force Fy_prime = Fy - SVyk (used to compute the combined self-align moment)</Text-field>
+</Input>
+</Group>
+<Group hide-input="false" labelreference="L19968" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">tmp      := MFCOMB_fnc(Gyk, fy0, 0);
+code     := CodeGeneration[Matlab](tmp, resultname='fy_prime', optimize = false,output=string);
+
+header_code:= cat(&quot;<Font encoding="UTF-8">fy0 = MF96_FY0(kappa, alpha, phi, Fz, tyre_data);\134n&quot;,
+</Font>                                &quot;[Gxa, Gyk, SVyk] = MF96_FXFYCOMB_coeffs(kappa, alpha, phi, Fz, tyre_data);&quot;);
+
+print_procedure(&quot;Combined lateral force FY_prime (without vertical shift, used for computing combined S-A moment MZ)&quot;,
+                &quot;MF96_FYP&quot;,
+                [kappa,alpha,phi,Fz, tyre_data],
+                #convert(MF96_FX0_coeffs,list),
+                [fy_prime],
+                header_code,
+                code,
+                outfile= true
+);</Text-field>
+</Input>
+</Group>
+<Group labelreference="L19970" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal"></Text-field>
+</Input>
+</Group>
+</Section>
+</Section>
+</Worksheet>
