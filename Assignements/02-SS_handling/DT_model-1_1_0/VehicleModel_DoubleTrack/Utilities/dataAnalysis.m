@@ -557,5 +557,9 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     hold off
     
+      %% Plot lateral load transfer
+    % -------------------------------
+    % Expressions used to obtain the lateral load trasfer at front and rear
+
 end
     
