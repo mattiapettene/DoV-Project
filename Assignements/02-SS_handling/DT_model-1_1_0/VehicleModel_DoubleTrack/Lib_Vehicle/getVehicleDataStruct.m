@@ -52,7 +52,7 @@ front_suspension.Karb_f   = 195.4*180/pi; % [Nm/rad] anti-roll bar stiffness
 front_suspension.stroke_f = 0.06;         % [m] maximum front damper stroke
 front_suspension.K_es_f   = 50000;        % [N/m] front damper's end-stops stiffness
 front_suspension.C_es_f   = 2000;         % [N*s/m] front damper's end-stops damping
-front_suspension.h_rc_f   = 0.056;        % [m] front roll center height     
+front_suspension.h_rc_f   = new_vehicle.h_rf; %0.056;        % [m] front roll center height     
 front_suspension.z__rlx_f = 0.175;        % [m] spring free length
 
 suspension.camber_gain    = 0.997836;     % [-] camber gain constant (linear fitting from suspension kinematic model)

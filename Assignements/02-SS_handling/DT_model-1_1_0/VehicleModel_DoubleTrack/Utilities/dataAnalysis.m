@@ -560,6 +560,50 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
       %% Plot lateral load transfer
     % -------------------------------
     % Expressions used to obtain the lateral load trasfer at front and rear
+    
+    %% Normalized axle characteristic
+
+    alphaR = (alpha_rr + alpha_rl)/2;
+    alphaF = (alpha_fr + alpha_fl)/2;
+
+    delta_alpha = alphaR - alphaF;
+    
+    Fyr = m * Ay_ss * (Lf/L);
+    Fyf = m * Ay_ss * (Lr/L);
+
+    Fzr_0 = m * (Lf/L) * g;
+    Fzf_0 = m * (Lr/L) * g;
+
+    Fyr_norm = Fyr/Fzr_0;
+    Fyf_norm = Fyf/Fzf_0;
+
+    figure('Name','Test','NumberTitle','off'), clf
+    hold on
+
+    plot(time_sim,alphaR,'LineWidth',2)
+    grid on
+    title('$\alpha_{R}$ [deg]')
+    xlim([0 time_sim(end)])
+
+    hold off
+
+    figure('Name','Test','NumberTitle','off'), clf
+    hold on
+    plot(time_sim, Fyr_norm,'LineWidth',2)
+    grid on
+    title('$Fyr$ [deg]')
+    xlim([0 time_sim(end)])
+
+    figure('Name','Test','NumberTitle','off'), clf
+    hold on
+    plot(alphaR, Fyr_norm,'LineWidth',2)
+    grid on
+    title('$Fyr vs alphaR$ [deg]')
+
+    %% Yaw rate gain - Beta gain
+    % -------------------------------
+    % 
+    
 
 end
     
