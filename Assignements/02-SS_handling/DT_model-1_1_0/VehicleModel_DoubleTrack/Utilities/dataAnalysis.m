@@ -557,5 +557,92 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     hold off
     
+      %% Plot lateral load transfer
+    % -------------------------------
+    % Expressions used to obtain the lateral load trasfer at front and rear
+    
+    %% Normalized axle characteristic
+
+    Fzr_0 = m * (Lf/L) * g;
+    Fzf_0 = m * (Lr/L) * g;
+
+    % Side slips - from double track
+    alphaR_dt = (alpha_rr + alpha_rl)/2;
+    alphaF_dt = (alpha_fr + alpha_fl)/2;
+    delta_alpha_dt = alphaR_dt - alphaF_dt;
+
+    % Side slips - single track
+    delta_st = (delta_fr + delta_fl) / 2;
+    alphaR_st = - rad2deg(beta) + rad2deg(Omega./u) * Lr;
+    alphaF_st = delta_st - rad2deg(beta) - rad2deg(Omega./u) * Lf;
+    delta_alpha_st = alphaR_st - alphaF_st;
+
+
+    figure('Name','Side slips single track','NumberTitle','off'), clf
+    hold on
+
+    plot(time_sim, alphaR_dt, 'LineWidth',2)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, alphaF_dt, 'LineWidth',2)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, alphaR_st, '--', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, alphaF_st, '--', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    grid on
+    legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ singke track'})
+    xlabel('$t$ [s]')
+    ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+
+    title('Side slips $\alpha_{R}, \alpha_{F}$')
+
+    % ------------------------------------------------------------------
+    
+    % Lateral forces - from double track
+
+    % Lateral forces - single track
+    Fyr_st = m * Ay_ss * (Lf/L);
+    Fyf_st = m * Ay_ss * (Lr/L);
+    Fyr_st_norm = Fyr_st/Fzr_0;
+    Fyf_st_norm = Fyf_st/Fzf_0;
+
+    Fyr_dt = (Fy_rr+Fy_rl)/2;
+    Fyf_dt = (Fy_fr+Fy_fl)/2;
+    Fyr_dt_norm = Fyr_dt/Fzr_0;
+    Fyf_dt_norm = Fyf_dt/Fzr_0;
+
+    figure('Name','Normalized lateral forces','NumberTitle','off'), clf
+    hold on
+
+    plot(time_sim,Fyr_dt_norm,'LineWidth',2)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim,Fyf_dt_norm,'LineWidth',2)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, Fyr_st_norm, '-', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, Fyf_st_norm, '--', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    grid on
+    legend({'$Fyr$ double track','$Fyf$ double track', '$Fyr$ single track', '$Fyf$ single track'})
+    xlabel('$t$ [s]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
+
+    title('Normalized lateral forces')
+
+
+
+    %% Yaw rate gain - Beta gain
+    % -------------------------------
+    % 
+    
+
 end
     

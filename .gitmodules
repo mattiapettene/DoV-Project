@@ -1,0 +1,6 @@
+[submodule "—recurse-submodules"]
+	path = —recurse-submodules
+	url = git@github.com:ebertolazzi/Clothoids.git
+[submodule "Assignements/02-SS_handling/DT_model-1_1_0/VehicleModel_DoubleTrack/Clothoids"]
+	path = Assignements/02-SS_handling/DT_model-1_1_0/VehicleModel_DoubleTrack/Clothoids
+	url = git@github.com:ebertolazzi/Clothoids.git
