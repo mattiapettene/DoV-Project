@@ -17,6 +17,8 @@ tire.Vlow_lat                  = 8;    % [m/s] speed threshold to use low-speed 
 
 load_MF96_tyre_data;
 
+% Load the new vehicle data for a formula SAE car
+student_vehicle_data;
 
 % ----------------------------------------------------------------
 %  ___                           _            ___       _        
@@ -36,7 +38,7 @@ rear_suspension.Karb_r    = 0;     % [Nm/rad] anti-roll bar stiffness
 rear_suspension.stroke_r  = 0.06;  % [m] maximum rear damper stroke
 rear_suspension.K_es_r    = 50000; % [N/m] rear damper's end-stops stiffness
 rear_suspension.C_es_r    = 2000;  % [N*s/m] rear damper's end-stops damping
-rear_suspension.h_rc_r    = 0.033; % [m] rear roll center height   
+rear_suspension.h_rc_r    = new_vehicle.h_rr; % 0.033; % [m] rear roll center height   
 rear_suspension.z__rlx_r  = 0.175; % [m] spring free length
 rear_suspension.reg_fact  = 1e5;   % [1/m] regularized sign steepness factor (equal for front and rear)
 
@@ -74,8 +76,7 @@ chassis.is_yy = 0.9*85;     % [kg*m^2] chassis moment of inertia about y axis
 chassis.is_zz = 1300;       % [kg*m^2] chassis moment of inertia about z axis
 chassis.is_xz = 0.9*60;     % [kg*m^2] chassis product of inertia xz
 
-% Load the new vehicle data for a formula SAE car
-student_vehicle_data;
+
 
 % ----------------------------------------------------------------
 %  _   _                                   ___       _        
