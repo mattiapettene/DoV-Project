@@ -563,8 +563,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     
     %% Normalized axle characteristic
 
-    Fzr_0 = m * (Lf/L) * g;
-    Fzf_0 = m * (Lr/L) * g;
 
     % Side slips - from double track
     alphaR_dt = (alpha_rr + alpha_rl)/2;
@@ -594,7 +592,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlim([0 time_sim(end)])
 
     grid on
-    legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ singke track'})
+    legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ single track'})
     xlabel('$t$ [s]')
     ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
 
@@ -603,39 +601,32 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     % ------------------------------------------------------------------
     
     % Lateral forces - from double track
+    Fz0R = Fz_rr + Fz_rl;
+    Fz0F = Fz_fr + Fz_fl;
 
-    % Lateral forces - single track
-    Fyr_st = m * Ay_ss * (Lf/L);
-    Fyf_st = m * Ay_ss * (Lr/L);
-    Fyr_st_norm = Fyr_st/Fzr_0;
-    Fyf_st_norm = Fyf_st/Fzf_0;
+    Fyr_dt = Fy_rl + Fy_rr;
+    Fyf_dt = sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr;
+    Fyr_dt_norm = Fyr_dt./Fz0R;
+    Fyf_dt_norm = Fyf_dt./Fz0F;
 
-    Fyr_dt = (Fy_rr+Fy_rl)/2;
-    Fyf_dt = (Fy_fr+Fy_fl)/2;
-    Fyr_dt_norm = Fyr_dt/Fzr_0;
-    Fyf_dt_norm = Fyf_dt/Fzr_0;
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
     hold on
 
-    plot(time_sim,Fyr_dt_norm,'LineWidth',2)
-    xlim([0 time_sim(end)])
+    plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2)
 
-    plot(time_sim,Fyf_dt_norm,'LineWidth',2)
-    xlim([0 time_sim(end)])
-
-    plot(time_sim, Fyr_st_norm, '-', 'LineWidth', 1)
-    xlim([0 time_sim(end)])
-
-    plot(time_sim, Fyf_st_norm, '--', 'LineWidth', 1)
-    xlim([0 time_sim(end)])
+    plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2)
 
     grid on
-    legend({'$Fyr$ double track','$Fyf$ double track', '$Fyr$ single track', '$Fyf$ single track'})
-    xlabel('$t$ [s]')
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
 
     title('Normalized lateral forces')
+
+
+    %% Handling diagram
+    
 
 
 
