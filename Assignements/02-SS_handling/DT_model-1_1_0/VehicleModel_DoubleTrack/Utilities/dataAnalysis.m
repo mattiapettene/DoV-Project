@@ -556,9 +556,11 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     end
     grid on
     hold off
-    % ------------------------------------------------------------------------------------------------------------------
-    %% Lateral load transfer (model used : FLEXIBLE CHASSIS DOUBLE TRACK 2 MASSES SOLUTION PAG 56 SLIDES 10)
     
+      %% Plot lateral load transfer
+    % -------------------------------
+    % Expressions used to obtain the lateral load trasfer at front and rear
+
     mr = m*Lf/L;
     mf = m*Lr/L;
 
@@ -585,8 +587,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 %   Plot the nominal  -------------------------------
     figure('Name','Lateral load transfer plot','NumberTitle','off'), clf
-    xlim([-1, 31]);
-    ylim([-10, 80]);
     hold on
     plot(time_sim(2:end), delta_f_z_r,'Color',color('red'),'LineWidth',3)
     xlabel('$t$ [s]')
@@ -605,8 +605,8 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     hold on
     plot(Ay, delta_f_z_r,'Color',color('red'),'LineWidth',3)
-    xlabel('$Ay$ [m/s**2]')
-    ylabel('$delta_fz$ [N]')
+    xlabel('$ay [m/s^2]$')
+    ylabel('$\delta_fz$ [N]')
     title('Lateral load transfer plot','FontSize',18)
     grid on
     plot(Ay, delta_f_z_f,'Color',color('blue'),'LineWidth',3)
@@ -637,40 +637,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlim([0 time_sim(end)])
     
     % ---------------------------------
-
-    % % Normalized stiffness of the chassis
-    % epsilon_phi_c = vehicle_data.chassis.k_phi_c/(vehicle_data.front_suspension.Ks_f + vehicle_data.rear_suspension.Ks_r);
-    % 
-    % 
-    % % due to no data hrf = hrr = hGs
-    % 
-    % delta_fz_r = (Ay/Wr)*((Lf*hrr*m/L)+((epsilon_phi_c*(epsilon_phi-1))/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*(hGs*mf) + ...
-    %     (epsilon_phi_c^2 + (epsilon_phi_c-1)*epsilon_phi - epsilon_phi_c)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c)*hGs*mr);
-    % delta_fz_r_ss = (Ay_ss/Wr)*((Lf*hrr*m/L)+((epsilon_phi_c*(epsilon_phi-1))/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*(hGs*mf) + ...
-    %     (epsilon_phi_c^2 + (epsilon_phi_c-1)*epsilon_phi - epsilon_phi_c)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c)*hGs*mr);
-    % 
-    % delta_fz_f = (Ay/Wf)*((Lr*hrr*m/L)+((-epsilon_phi^2 +(epsilon_phi_c+1)*epsilon_phi)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*(hGs*mf) - ...
-    %     ((epsilon_phi_c*epsilon_phi)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*hGs*mr);
-    % delta_fz_f_ss = (Ay_ss/Wf)*((Lr*hrr*m/L)+((-epsilon_phi^2 +(epsilon_phi_c+1)*epsilon_phi)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*(hGs*mf) - ...
-    %     ((epsilon_phi_c*epsilon_phi)/(epsilon_phi^2 - epsilon_phi - epsilon_phi_c))*hGs*mr);
-    % 
-    % %  Plot the nominal  -------------------------------
-    % figure('Name','Lateral load transfer plot','NumberTitle','off'), clf
-    % xlim([-1, 31]);
-    % ylim([-50, 130]);
-    % hold on
-    % plot(time_sim(2:end), delta_fz_r,'Color',color('red'),'LineWidth',3)
-    % xlabel('$t$ [s]')
-    % ylabel('$delta_fz$ [N]')
-    % title('Lateral load transfer plot','FontSize',18)
-    % grid on
-    % plot(time_sim(2:end), delta_fz_f,'Color',color('blue'),'LineWidth',3)
-    % 
-    % plot(time_sim, delta_fz_r_ss,'--', 'Color','yellow', 'LineWidth',2)
-    % plot(time_sim, delta_fz_f_ss,'--', 'Color', 'green', 'LineWidth',2)
-    % hold off
-    % legend('Deltafzr', 'Deltafzf', 'Deltafzr steady state', 'Deltafzf steady state','Location', 'northeast')
-
+    
 %% Normalized axle characteristic
 
 
@@ -732,29 +699,35 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
 
-    title('Normalized lateral forces')
+    title('Normalized lateral forces')
+    % ------------------------------------------------------------------------------------------------------------------
+    %% Understeering gradient (theoretical and fitted)
+    
+    %% Yaw rate gain - Beta gain
+    % -------------------------------
+    yaw_rate_gain_data = Omega./(delta_D*pi/180);
 
+    figure('Name','Yaw rate gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
+    grid on
+    title('$\Omega/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\Omega/\delta$ [1/s]');
+    hold off
+    
+    %% Beta gain
+    % -------------------------------
+    beta_gain_data = beta./(delta_D*pi/180);
 
+    figure('Name','Beta gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,beta_gain_data,'LineWidth',2)
+    grid on
+    title('$\beta/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\beta/\delta_H$');
+    hold off
 
-     % ------------------------------------------------------------------------------------------------------------------
-    %% Understeering gradient (theoretical and fitted) da definizione metterei -delta alfa/delta ay
-
-    % figure('Name','Understeering gradient','NumberTitle','off'), clf
-    % 
-    % kus =  -(m/L^2)*(Lf/((kappa_rr(2:end) + kappa_fl(2:end))/2)-(Lr/((kappa_fr(2:end) +kappa_fl(2:end))/2)));
-    % 
-    % p = polyfit(-delta_alpha,Ay/g,3);
-    % 
-    % %plot(Ay/g, kus*Ay ,'LineWidth',2) % this the understeering gradient in the linear zone (low lateral normalized acceleration)
-    % grid on
-    % title('$Understeering gradient$ [N]')
-    % xlabel('$t$ [s]')
-    % xlim([0 time_sim(end)])
-    % hold on
-    % % grid on
-    % % title('$Understeering gradient$ [N]')
-    % % xlabel('$t$ [s]')
-    % % xlim([0 time_sim(end)])    
-    % hold off
 end
-
+    

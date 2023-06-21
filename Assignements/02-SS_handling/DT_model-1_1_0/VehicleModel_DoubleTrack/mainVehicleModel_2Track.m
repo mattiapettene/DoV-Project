@@ -28,15 +28,37 @@ vehicle_data = getVehicleDataStruct();
 % pacejkaParam = loadPacejkaParam();
 
 % ----------------------------
-%% Define initial conditions for the simulation
+%% Define initial conditions for the simulation and type of test
 % ----------------------------
+% Description:
+% - the simulation time is increased: Tf = 150s in order to see better results.
+% - if switch_test_type = 1 -> speed ramp test at constant steering angle
+% - if switch_test_type = 2 -> steer ramp test at constant forward speed
+% Parameters description for each test:
+% - t1 = time at which the transient ends, during t1 -> the desired
+%           velocity is reached (thanks to PID);
+% - t2 = time at which the ramp (during ramp test) ends -> after t2 the
+%           imposed velocity/steer remains constant up to Tf
+% - ax_imposed = longitudinal acceleration (low value) imposed during the
+%           speed ramp test
+% - steer_angle_slope = the gradient of the steer angle during steer ramp test is imposed equal
+%           to 0.2 (in order to achive 20 deg of steer angle at the end of
+%           simulation)
+
 V0 = 50/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
 
-% ----------------------------
-%% Define the desired speed
-% ----------------------------
-V_des = 50/3.6; % Initial speed
+V_init = V0;
+ax_imposed = 0.12; %m/s^2
+Tf = 150;
+t1 = Tf/10;
+t2 = Tf - Tf/10;
+steer_angle_slope = 0.2;
+
+const_steer_angle = 10; % [deg]
+const_v_des = 50/3.6; % [m/s]
+
+switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
 
 % ----------------------------
 %% Simulation parameters
