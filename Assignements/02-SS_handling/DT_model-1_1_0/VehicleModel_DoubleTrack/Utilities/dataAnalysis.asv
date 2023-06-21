@@ -642,14 +642,14 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 
     % Side slips - from double track
-    alphaR_dt = deg2rad((alpha_rr + alpha_rl)/2);
-    alphaF_dt = deg2rad((alpha_fr + alpha_fl)/2);
+    alphaR_dt = (alpha_rr + alpha_rl)/2;
+    alphaF_dt = (alpha_fr + alpha_fl)/2;
     delta_alpha_dt = alphaR_dt - alphaF_dt;
 
     % Side slips - single track
-    delta_st = deg2rad((delta_fr + delta_fl)/2);
-    alphaR_st = - (beta) + (Omega./u) * Lr;
-    alphaF_st = delta_st - (beta) - (Omega./u) * Lf;
+    delta_st = (delta_fr + delta_fl) / 2;
+    alphaR_st = - rad2deg(beta) + rad2deg(Omega./u) * Lr;
+    alphaF_st = delta_st - rad2deg(beta) - rad2deg(Omega./u) * Lf;
     delta_alpha_st = alphaR_st - alphaF_st;
 
 
@@ -671,7 +671,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ single track'})
     xlabel('$t$ [s]')
-    ylabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
 
     title('Side slips $\alpha_{R}, \alpha_{F}$')
 
@@ -690,29 +690,30 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     Fyr_dt_norm = Fyr_dt./Fz0R;
     Fyf_dt_norm = Fyf_dt./Fz0F;
 
-    Fyr_dt_0 = Fyr_dt./Fzr_0;
-    Fyf_dt_0 = Fyf_dt./Fzf_0;
+    Fyr_dt_0 = Fyr_dt./Fz0R;
+    Fyf_dt_0 = Fyf_dt./Fz0F;
+
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
     hold on
 
-    plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2)
+    plot(alphaR_dt,Fyr_dt,'LineWidth',2)
 
-    plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2)
+    plot(alphaF_dt,Fyf_dt,'LineWidth',2)
 
     grid on
     legend({'$Fyr$','$Fyf$'})
-    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
 
-    title('Normalized lateral forces')
+    title('Normalized lateral forces')
 
     % ------------------------------------------------------------------------------------------------------------------
 
     %% Cornering stiffnesses - normalized (1/deg)
     
     % Cut vectors
-    cut_value_n = 0.0001;
+    cut_value_n = 0.01;
     index_n = find(alphaR_dt > cut_value_n);
     cut_index_n = index_n(1) - 1;
 
@@ -729,12 +730,9 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     C_alpha_R_norm = mR_n(1);
     C_alpha_F_norm = mF_n(1);
     
-    x_n = linspace(0, 0.01, 10);
+    x_n = linspace(0, 0.6, 10);
     yR_n = C_alpha_R_norm*x_n;
     yF_n = C_alpha_F_norm*x_n;
-    
-    kus_norm = (1/(L*9.81))*(1/C_alpha_F_norm - 1/C_alpha_R_norm);
-    fprintf('Kus normalized = %f\n', kus_norm);
 
     figure('Name','Nomalized cornering stiffnesses','NumberTitle','off'), clf
     hold on
@@ -747,8 +745,8 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     plot(x_n, yF_n, "Color", 'black', 'LineWidth',1);
 
     grid on
-    legend({'$Fyr/Fzr0_{real}$','$Fyf/Fzf0_{real}$','$Fyr/Fzr0$','$Fyf/Fzf0$'})
-    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
 
     title('Normalized cornering stiffnesses')
@@ -756,8 +754,8 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     %% Cornering stiffnesses - not normalized (N/rad)
 
     % Convert side slips to rad
-    alphaR_dt_rad = alphaR_dt;
-    alphaF_dt_rad = alphaF_dt;
+    alphaR_dt_rad = deg2rad(alphaR_dt);
+    alphaF_dt_rad = deg2rad(alphaF_dt);
     delta_alpha_dt_rad = alphaR_dt_rad - alphaF_dt_rad;
 
     % Cut vectors
