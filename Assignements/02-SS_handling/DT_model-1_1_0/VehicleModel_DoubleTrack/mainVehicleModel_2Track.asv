@@ -17,12 +17,6 @@
 % ----------------------------
 initialize_environment;
 
-% Set LaTeX as default interpreter for axis labels, ticks and legends
-set(0,'defaulttextinterpreter','latex')
-set(groot, 'defaultAxesTickLabelInterpreter','latex');
-set(groot, 'defaultLegendInterpreter','latex');
-
-
 % ----------------------------
 %% Load vehicle data
 % ----------------------------
@@ -51,17 +45,17 @@ vehicle_data = getVehicleDataStruct();
 %           to 0.2 (in order to achive 20 deg of steer angle at the end of
 %           simulation)
 
-V0 = 30/3.6; % Initial speed
+V0 = 20/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
 
 V_init = V0;
-ax_imposed = 0.13; %m/s^2
-Tf = 200;
-t1 = Tf/100;
-t2 = Tf - Tf/100;
+ax_imposed = 0.; %m/s^2
+Tf = 150;
+t1 = Tf/10;
+t2 = Tf - Tf/10;
 steer_angle_slope = 0.2;
 
-const_steer_angle = 6; % [deg]
+const_steer_angle = 15; % [deg]
 const_v_des = 50/3.6; % [m/s]
 
 switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
