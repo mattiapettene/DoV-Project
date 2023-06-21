@@ -560,50 +560,174 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
       %% Plot lateral load transfer
     % -------------------------------
     % Expressions used to obtain the lateral load trasfer at front and rear
+
+    mr = m*Lf/L;
+    mf = m*Lr/L;
+
+    hrr =  vehicle_data.rear_suspension.h_rc_r; % rolling arm rear
+    hrf = vehicle_data.front_suspension.h_rc_f; % rolling arm front
+    hGs = vehicle_data.vehicle.hGs; % distance roll axis-com
+
+    hr = hrf + (hrr-hrf)*Lf/(Lr+Lf);  % [m] height from ground of the projection of the CoM G on the roll axis
+    hs = hGs - hr; %Distance of the rolling axis from the ground (of the com)
+
+
+    % Normalized stiffness of suspension
+    epsilon_phi = (vehicle_data.front_suspension.Ks_f )/((vehicle_data.front_suspension.Ks_f ) + (vehicle_data.rear_suspension.Ks_r));
+
     
-    %% Normalized axle characteristic
+    % RIGID CHASSIS DOUBLE TRACK-SOLUTION
 
-    alphaR = (alpha_rr + alpha_rl)/2;
-    alphaF = (alpha_fr + alpha_fl)/2;
-
-    delta_alpha = alphaR - alphaF;
+    delta_f_z_r = m * Ay * ((hs*(1-epsilon_phi)/Wr) + (Lf * hrr)/(Wr * L));
+    delta_f_z_r_ss = m * Ay_ss * ((hs*(1-epsilon_phi)/Wr) + (Lf * hrr)/(Wr * L));
     
-    Fyr = m * Ay_ss * (Lf/L);
-    Fyf = m * Ay_ss * (Lr/L);
+    delta_f_z_f = m * Ay * ((hs *epsilon_phi)/(Wf) + (Lr * hrf)/(Wf * L));
+    delta_f_z_f_ss = m * Ay_ss * ((hs *epsilon_phi)/(Wf) + (Lr * hrf)/(Wf * L));
 
-    Fzr_0 = m * (Lf/L) * g;
-    Fzf_0 = m * (Lr/L) * g;
 
-    Fyr_norm = Fyr/Fzr_0;
-    Fyf_norm = Fyf/Fzf_0;
-
-    figure('Name','Test','NumberTitle','off'), clf
+%   Plot the nominal  -------------------------------
+    figure('Name','Lateral load transfer plot','NumberTitle','off'), clf
     hold on
-
-    plot(time_sim,alphaR,'LineWidth',2)
+    plot(time_sim(2:end), delta_f_z_r,'Color',color('red'),'LineWidth',3)
+    xlabel('$t$ [s]')
+    ylabel('$delta_fz$ [N]')
+    title('Lateral load transfer plot','FontSize',18)
     grid on
-    title('$\alpha_{R}$ [deg]')
-    xlim([0 time_sim(end)])
+    plot(time_sim(2:end), delta_f_z_f,'Color',color('blue'),'LineWidth',3)
 
+    plot(time_sim(2:end), (Fz_rr(2:end) - Fz_rl(2:end))/2 ,'--', 'Color','black', 'LineWidth',2)
+    plot(time_sim(2:end), (Fz_fr(2:end) - Fz_fl(2:end))/2 ,'--', 'Color', 'green', 'LineWidth',2)
     hold off
+    legend('Deltafzr theoretical', 'Deltafzf theoretical', 'Deltafzr measured', 'Deltafzf measured','Location', 'southeast')
 
-    figure('Name','Test','NumberTitle','off'), clf
+    % Plot the nominal IN FUNCTION OF THE LATERAL ACCELERATION  -------------------------------
+    figure('Name','Lateral load transfer plot ACCELERATION ON X','NumberTitle','off'), clf
+
     hold on
-    plot(time_sim, Fyr_norm,'LineWidth',2)
+    plot(Ay, delta_f_z_r,'Color',color('red'),'LineWidth',3)
+    xlabel('$ay [m/s^2]$')
+    ylabel('$\delta_fz$ [N]')
+    title('Lateral load transfer plot','FontSize',18)
     grid on
-    title('$Fyr$ [deg]')
+    plot(Ay, delta_f_z_f,'Color',color('blue'),'LineWidth',3)
+
+    plot(Ay, (Fz_rr(2:end) - Fz_rl(2:end))/2 ,'--', 'Color','black', 'LineWidth',2)
+    plot(Ay, (Fz_fr(2:end) - Fz_fl(2:end))/2 ,'--', 'Color', 'green', 'LineWidth',2)
+    hold off
+    legend('Deltafzr theoretical', 'Deltafzf theoretical', 'Deltafzr measured', 'Deltafzf measured','Location', 'southeast')
+
+% Plot vertical tire loads difference 
+    % ---------------------------------
+    
+    figure('Name','Veridications delta fz','NumberTitle','off'), clf
+    % --- Fz_rr --- %
+    subplot(1, 2, 1);
+    plot(time_sim(2:end), Fz_rr(2:end) - Fz_rl(2:end) -2*delta_f_z_r ,'LineWidth',2)
+    grid on
+    title('$Verification Fz_{r}$ [N]')
+    xlabel('$t$ [s]')
+    xlim([0 time_sim(end)])
+    % --- Fz_rl --- %
+    
+    subplot(1, 2, 2);
+    plot(time_sim(2:end), Fz_fr(2:end) - Fz_fl(2:end) -2*delta_f_z_f ,'LineWidth',2)
+    grid on
+    title('$Verification Fz_{f}$ [N]')
+    xlabel('$t$ [s]')
+    xlim([0 time_sim(end)])
+    
+    % ---------------------------------
+    
+%% Normalized axle characteristic
+
+
+    % Side slips - from double track
+    alphaR_dt = (alpha_rr + alpha_rl)/2;
+    alphaF_dt = (alpha_fr + alpha_fl)/2;
+    delta_alpha_dt = alphaR_dt - alphaF_dt;
+
+    % Side slips - single track
+    delta_st = (delta_fr + delta_fl) / 2;
+    alphaR_st = - rad2deg(beta) + rad2deg(Omega./u) * Lr;
+    alphaF_st = delta_st - rad2deg(beta) - rad2deg(Omega./u) * Lf;
+    delta_alpha_st = alphaR_st - alphaF_st;
+
+
+    figure('Name','Side slips single track','NumberTitle','off'), clf
+    hold on
+
+    plot(time_sim, alphaR_dt, 'LineWidth',2)
     xlim([0 time_sim(end)])
 
-    figure('Name','Test','NumberTitle','off'), clf
-    hold on
-    plot(alphaR, Fyr_norm,'LineWidth',2)
-    grid on
-    title('$Fyr vs alphaR$ [deg]')
+    plot(time_sim, alphaF_dt, 'LineWidth',2)
+    xlim([0 time_sim(end)])
 
+    plot(time_sim, alphaR_st, '--', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    plot(time_sim, alphaF_st, '--', 'LineWidth', 1)
+    xlim([0 time_sim(end)])
+
+    grid on
+    legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ single track'})
+    xlabel('$t$ [s]')
+    ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+
+    title('Side slips $\alpha_{R}, \alpha_{F}$')
+
+    % ------------------------------------------------------------------
+    
+    % Lateral forces - from double track
+    Fz0R = Fz_rr + Fz_rl;
+    Fz0F = Fz_fr + Fz_fl;
+
+    Fyr_dt = Fy_rl + Fy_rr;
+    Fyf_dt = sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr;
+    Fyr_dt_norm = Fyr_dt./Fz0R;
+    Fyf_dt_norm = Fyf_dt./Fz0F;
+
+
+    figure('Name','Normalized lateral forces','NumberTitle','off'), clf
+    hold on
+
+    plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2)
+
+    plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2)
+
+    grid on
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
+
+    title('Normalized lateral forces')
+    % ------------------------------------------------------------------------------------------------------------------
+    %% Understeering gradient (theoretical and fitted)
+    
     %% Yaw rate gain - Beta gain
     % -------------------------------
-    % 
+    yaw_rate_gain_data = Omega./(delta_D*pi/180);
+
+    figure('Name','Yaw rate gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
+    grid on
+    title('$\Omega/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\Omega/\delta$ [1/s]');
+    hold off
     
+    %% Beta gain
+    % -------------------------------
+    beta_gain_data = beta./(delta_D*pi/180);
+
+    figure('Name','Beta gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,beta_gain_data,'LineWidth',2)
+    grid on
+    title('$\beta/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\beta/\delta_H$');
+    hold off
 
 end
     
