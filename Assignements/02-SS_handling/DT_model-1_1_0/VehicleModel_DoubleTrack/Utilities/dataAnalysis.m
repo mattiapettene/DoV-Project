@@ -115,7 +115,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     desired_steer_atWheel = delta_D/tau_D;
 
 
-    % ---------------------------------
+    %---------------------------------
     %% PLOTS
     % ---------------------------------
 
@@ -136,7 +136,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     title('steering angle $\delta_D$ [deg]')
     xlim([0 time_sim(end)])
-    
+
     % ---------------------------------
     %% Plot vehicle motion
     % ---------------------------------
@@ -301,7 +301,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     title('$Fx_{fl}$ [N]')
     xlim([0 time_sim(end)])
-    
+
     % linkaxes(ax,'x')
     clear ax
 
@@ -416,7 +416,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     % linkaxes(ax,'x')
     clear ax
-    
+
     % ---------------------------------
     %% Plot wheel camber
     % ---------------------------------
@@ -448,7 +448,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     % linkaxes(ax,'x')
     clear ax
-    
+
     % ---------------------------------
     %% Plot accelerations, chassis side slip angle and curvature
     % ---------------------------------
@@ -701,7 +701,103 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     title('Normalized lateral forces')
     % ------------------------------------------------------------------------------------------------------------------
-    %% Understeering gradient (theoretical and fitted)
+    %% Handling diagram 
+
+    % Compute the difference DeltaAlpha between rear and front side slip
+    % angle
+    figure('Name','Handling diagram [deg] ','NumberTitle','off'), clf
+
+    % size(Ay)
+    % size(delta_alpha_dt)
+
+    x1 = Ay(6000)/g;
+    y1 = -delta_alpha_dt(5999);
+
+    x2 = Ay(7001)/g;
+    y2 = -delta_alpha_dt(7000);
+
+    coefficients = polyfit([x1, x2], [y1, y2], 1);
+    slope = coefficients(1);
+    fprintf('the slope is %f degrees\n', slope);
+    intercept = coefficients(2);
+
+    % Creazione della retta
+    y = slope * (Ay/g) + intercept;
+    
+    % Plot dei punti e della retta
+    plot(Ay/g, y, 'r');  % Retta
+    hold on;
+    scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
+
+    
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2)
+   
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [deg]')
+    xlabel('$Ay/g$ [-]')
+    grid on
+    legend({'$-DeltaAlpha$','$tangent$'})
+    hold off;
+
+
+
+
+    %-------------------------------------------------------------------
+    % Compute the difference DeltaAlpha between rear and front side slip
+    % angle
+    figure('Name','Handling diagram [rad] ','NumberTitle','off'), clf
+
+    % size(Ay)
+    % size(delta_alpha_dt)
+
+    x1 = Ay(6000)/g;
+    y1 = -delta_alpha_dt(5999)*(pi/180);
+
+    x2 = Ay(7001)/g;
+    y2 = -delta_alpha_dt(7000)*(pi/180);
+
+    coefficients = polyfit([x1, x2], [y1, y2], 1);
+    slope = coefficients(1);
+    fprintf('the slope is %f rad\n', slope);
+    intercept = coefficients(2);
+
+    % Creazione della retta
+    y = slope * (Ay/g) + intercept;
+    
+    % Plot dei punti e della retta
+    scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
+
+    
+    plot(Ay/g, -delta_alpha_dt(2:end)*(pi/180),'Color',color('blue'),'LineWidth',2)   
+    hold on;
+    plot(Ay/g, y, 'Color',color('red'),'LineWidth',2);
+    legend({'$-DeltaAlpha$','$tangent$'})
+
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [rad]')
+    xlabel('$Ay/g$ [-]')
+    grid on;
+    hold off;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     %% Yaw rate gain - Beta gain
     % -------------------------------
