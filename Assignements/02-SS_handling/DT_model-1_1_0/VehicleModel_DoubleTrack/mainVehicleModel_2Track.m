@@ -55,7 +55,7 @@ V0 = 30/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
 
 V_init = V0;
-ax_imposed = 0.13; %m/s^2
+ax_imposed = 0.125; %m/s^2
 Tf = 200;
 t1 = Tf/100;
 t2 = Tf - Tf/100;
