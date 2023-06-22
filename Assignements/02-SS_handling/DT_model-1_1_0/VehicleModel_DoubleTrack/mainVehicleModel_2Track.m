@@ -1,4 +1,4 @@
-% ----------------------------------------------------------------
+% ---------------------------------------------------------------
 %% Main script for a basic simulation framework with a double track vehcile model
 %  authors: 
 %  rev. 1.0 Mattia Piccinini & Gastone Pietro Papini Rosati

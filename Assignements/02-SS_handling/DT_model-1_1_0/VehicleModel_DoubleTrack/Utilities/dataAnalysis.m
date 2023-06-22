@@ -712,7 +712,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     % ------------------------------------------------------------------------------------------------------------------
     % ------------------------------------------------------------------------------------------------------------------
-    %% Handling diagram 
+    % Handling diagram 
 
     % Compute the difference DeltaAlpha between rear and front side slip
     % angle
@@ -755,17 +755,15 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 
     %-------------------------------------------------------------------
-    % Compute the difference DeltaAlpha between rear and front side slip
-    % angle
-    
+    %% Handling diagram 
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
 
     % Cut vectors
-    cut_value_start = 0.08; %Selection of the starting linearizing point (Normalized acceleration value)
+    cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
     index_start = find((Ay/g) > cut_value_start);
     cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
 
-    cut_value_end = 0.12; %Selection of the ending linearizing point (Normalized acceleration value)
+    cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
     index_end = find((Ay/g) > cut_value_end);
     cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
 
@@ -779,12 +777,18 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     y_cut_l = -delta_alpha_dt((cut_index_start-1):(cut_index_end-1));
 
     coefficients = polyfit(x_cut_l, y_cut_l, 1);
+    
+    fprintf('Il coefficiente 1 della parte lineare vale = %f\n', coefficients(1));
+    fprintf('Il coefficiente 0 della parte lineare vale = %f\n', coefficients(2));
+    
+        
     slope = coefficients(1);
     intercept = coefficients(2);
 
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
     fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
+    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
     plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
     hold on;
 
@@ -793,15 +797,58 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     ylabel('$-Delta Alpha$ [rad]')
     xlabel('$Ay/g$ [-]')
     grid on
-    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
-    legend({'$-DeltaAlpha$','$tangent$','$neutral steering$'});
+    legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
     hold off;
 
 
     % Fitting of the NON LINEAR ZONE
     
 
+figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
 
+    % Cut vectors
+    cut_value_start_nl = cut_value_end; %Selection of the starting linearizing point is the end of the previous linear zone (Normalized acceleration value)
+    index_start_nl = find((Ay/g) > cut_value_start_nl);
+    cut_index_start_nl = index_start_nl(1) - 1; %Selection of the starting linearizing point (index value)
+
+    
+    % the ending value correspond directly to the final point of the curvature
+    cut_index_end_nl = numel(Ay)-1; %Selection of the ending linearizing point (index value)
+
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start_nl);
+    fprintf('Il cut index  end vale %d \n', cut_index_end_nl);
+   
+
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_nl = Ay(cut_index_start_nl:cut_index_end_nl)/g;
+    y_cut_nl = -delta_alpha_dt((cut_index_start_nl-1):(cut_index_end_nl-1));
+    
+    %Generation of the new curve
+    dim = 3;
+    p_nl = polyfit(x_cut_nl, y_cut_nl, dim);
+    y_nl = polyval(p_nl, x_cut_nl);
+   
+    for c=1:(dim+1)
+        fprintf('Il coefficiente %d della parte NON lineare vale = %f\n',(dim+1-c), p_nl(c));
+    end
+
+    % Creazione della curve
+    plot(Ay/g, zeros(size(Ay)), 'Color', color('yellow'),'LineWidth',2);
+    hold on;
+
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',3);
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    plot(Ay(1:cut_index_end)/g, y(1:cut_index_end), '--', 'Color',color('red'),'LineWidth',2);
+    plot(x_cut_nl, y_nl, '--', 'color',[1 0.5 0] , 'LineWidth',2);
+    
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [rad]')
+    xlabel('$Ay/g$ [-]')
+    grid on
+    
+    legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
+    hold off;
 
 
 
@@ -819,31 +866,31 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 
     
-    %% Yaw rate gain - Beta gain
-    % -------------------------------
-    yaw_rate_gain_data = Omega./(delta_D*pi/180);
-
-    figure('Name','Yaw rate gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
-    grid on
-    title('$\Omega/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\Omega/\delta$ [1/s]');
-    hold off
-    
-    %% Beta gain
-    % -------------------------------
-    beta_gain_data = beta./(delta_D*pi/180);
-
-    figure('Name','Beta gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,beta_gain_data,'LineWidth',2)
-    grid on
-    title('$\beta/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\beta/\delta_H$');
-    hold off
+    % %% Yaw rate gain - Beta gain
+    % % -------------------------------
+    % yaw_rate_gain_data = Omega./(delta_D*pi/180);
+    % 
+    % figure('Name','Yaw rate gain vs u','NumberTitle','off')
+    % hold on
+    % plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
+    % grid on
+    % title('$\Omega/\delta_H$ vs $u$');
+    % xlabel('u [km/h]');
+    % ylabel('$\Omega/\delta$ [1/s]');
+    % hold off
+    % 
+    % %% Beta gain
+    % % -------------------------------
+    % beta_gain_data = beta./(delta_D*pi/180);
+    % 
+    % figure('Name','Beta gain vs u','NumberTitle','off')
+    % hold on
+    % plot(u*3.6,beta_gain_data,'LineWidth',2)
+    % grid on
+    % title('$\beta/\delta_H$ vs $u$');
+    % xlabel('u [km/h]');
+    % ylabel('$\beta/\delta_H$');
+    % hold off
 
 end
     
