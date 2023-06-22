@@ -642,14 +642,14 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 
     % Side slips - from double track
-    alphaR_dt = (alpha_rr + alpha_rl)/2;
-    alphaF_dt = (alpha_fr + alpha_fl)/2;
+    alphaR_dt = deg2rad((alpha_rr + alpha_rl)/2);
+    alphaF_dt = deg2rad((alpha_fr + alpha_fl)/2);
     delta_alpha_dt = alphaR_dt - alphaF_dt;
 
     % Side slips - single track
-    delta_st = (delta_fr + delta_fl) / 2;
-    alphaR_st = - rad2deg(beta) + rad2deg(Omega./u) * Lr;
-    alphaF_st = delta_st - rad2deg(beta) - rad2deg(Omega./u) * Lf;
+    delta_st = deg2rad((delta_fr + delta_fl)/2);
+    alphaR_st = - (beta) + (Omega./u) * Lr;
+    alphaF_st = delta_st - (beta) - (Omega./u) * Lf;
     delta_alpha_st = alphaR_st - alphaF_st;
 
 
@@ -671,20 +671,29 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ single track'})
     xlabel('$t$ [s]')
-    ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+    ylabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
 
     title('Side slips $\alpha_{R}, \alpha_{F}$')
 
     % ------------------------------------------------------------------
     
     % Lateral forces - from double track
+    
+    % Real vertical load 
     Fz0R = Fz_rr + Fz_rl;
     Fz0F = Fz_fr + Fz_fl;
+    
+    % Static vetical load
+    Fzr_0_static = m * (Lf/L) * g;
+    Fzf_0_static = m * (Lr/L) * g;
 
+    % Real forces on the axis
     Fyr_dt = Fy_rl + Fy_rr;
     Fyf_dt = sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr;
-    Fyr_dt_norm = Fyr_dt./Fz0R;
-    Fyf_dt_norm = Fyf_dt./Fz0F;
+    
+    % Static load normalization
+    Fyr_dt_norm = Fyr_dt./Fzr_0_static;
+    Fyf_dt_norm = Fyf_dt./Fzf_0_static;
 
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
@@ -696,49 +705,51 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     grid on
     legend({'$Fyr$','$Fyf$'})
-    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
 
-    title('Normalized lateral forces')
+    title('Normalized lateral forces')
+
+    % ------------------------------------------------------------------------------------------------------------------
     % ------------------------------------------------------------------------------------------------------------------
     %% Handling diagram 
 
     % Compute the difference DeltaAlpha between rear and front side slip
     % angle
-    figure('Name','Handling diagram [deg] ','NumberTitle','off'), clf
-
-    % size(Ay)
-    % size(delta_alpha_dt)
-
-    x1 = Ay(6000)/g;
-    y1 = -delta_alpha_dt(5999);
-
-    x2 = Ay(7001)/g;
-    y2 = -delta_alpha_dt(7000);
-
-    coefficients = polyfit([x1, x2], [y1, y2], 1);
-    slope = coefficients(1);
-    fprintf('the slope is %f degrees\n', slope);
-    intercept = coefficients(2);
-
-    % Creazione della retta
-    y = slope * (Ay/g) + intercept;
-    
-    % Plot dei punti e della retta
-    plot(Ay/g, y, 'r');  % Retta
-    hold on;
-    scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
-
-    
-    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2)
-   
-    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
-    title('Handling diagram')
-    ylabel('$-Delta Alpha$ [deg]')
-    xlabel('$Ay/g$ [-]')
-    grid on
-    legend({'$-DeltaAlpha$','$tangent$'})
-    hold off;
+    % figure('Name','Handling diagram [Rad] ','NumberTitle','off'), clf
+    % 
+    % % size(Ay)
+    % % size(delta_alpha_dt)
+    % 
+    % x1 = Ay(80000)/g;
+    % y1 = -delta_alpha_dt(79999);
+    % 
+    % x2 = Ay(80001)/g;
+    % y2 = -delta_alpha_dt(80000);
+    % 
+    % coefficients = polyfit([x1, x2], [y1, y2], 1);
+    % slope = coefficients(1);
+    % fprintf('the slope is %f rad NEW \n', slope);
+    % intercept = coefficients(2);
+    % 
+    % % Creazione della retta
+    % y = slope * (Ay/g) + intercept;
+    % 
+    % % Plot dei punti e della retta
+    % plot(Ay/g, y, 'r');  % Retta
+    % hold on;
+    % scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
+    % 
+    % 
+    % plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2)
+    % 
+    % plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    % title('Handling diagram')
+    % ylabel('$-Delta Alpha$ [rad]')
+    % xlabel('$Ay/g$ [-]')
+    % grid on
+    % legend({'$-DeltaAlpha$','$tangent$'})
+    % hold off;
 
 
 
@@ -746,46 +757,55 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     %-------------------------------------------------------------------
     % Compute the difference DeltaAlpha between rear and front side slip
     % angle
-    figure('Name','Handling diagram [rad] ','NumberTitle','off'), clf
+    
+    figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
 
-    % size(Ay)
-    % size(delta_alpha_dt)
+    % Cut vectors
+    cut_value_start = 0.08; %Selection of the starting linearizing point (Normalized acceleration value)
+    index_start = find((Ay/g) > cut_value_start);
+    cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
 
-    x1 = Ay(6000)/g;
-    y1 = -delta_alpha_dt(5999)*(pi/180);
+    cut_value_end = 0.12; %Selection of the ending linearizing point (Normalized acceleration value)
+    index_end = find((Ay/g) > cut_value_end);
+    cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
 
-    x2 = Ay(7001)/g;
-    y2 = -delta_alpha_dt(7000)*(pi/180);
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start);
+    fprintf('Il cut index  end vale %d \n', cut_index_end);
+   
 
-    coefficients = polyfit([x1, x2], [y1, y2], 1);
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_l = Ay(cut_index_start:cut_index_end)/g;
+    y_cut_l = -delta_alpha_dt((cut_index_start-1):(cut_index_end-1));
+
+    coefficients = polyfit(x_cut_l, y_cut_l, 1);
     slope = coefficients(1);
-    fprintf('the slope is %f rad\n', slope);
     intercept = coefficients(2);
 
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
-    
-    % Plot dei punti e della retta
-    scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
-
-    
-    plot(Ay/g, -delta_alpha_dt(2:end)*(pi/180),'Color',color('blue'),'LineWidth',2)   
+    fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
     hold on;
-    plot(Ay/g, y, 'Color',color('red'),'LineWidth',2);
-    legend({'$-DeltaAlpha$','$tangent$'})
 
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
     title('Handling diagram')
     ylabel('$-Delta Alpha$ [rad]')
     xlabel('$Ay/g$ [-]')
-    grid on;
+    grid on
+    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
+    legend({'$-DeltaAlpha$','$tangent$','$neutral steering$'});
     hold off;
 
 
+    % Fitting of the NON LINEAR ZONE
+    
 
 
 
 
 
+   
 
 
 
