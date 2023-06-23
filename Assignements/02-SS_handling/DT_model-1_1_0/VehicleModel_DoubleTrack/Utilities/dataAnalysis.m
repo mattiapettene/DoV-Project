@@ -926,17 +926,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
     fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
-    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
-    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
-    hold on;
-
-    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
-    title('Handling diagram')
-    ylabel('$-Delta Alpha$ [rad]')
-    xlabel('$Ay/g$ [-]')
-    grid on
-    legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
-    hold off;
 
 
     % Fitting of the NON LINEAR ZONE
