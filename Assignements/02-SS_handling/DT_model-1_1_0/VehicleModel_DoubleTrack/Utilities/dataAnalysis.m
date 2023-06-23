@@ -1,4 +1,4 @@
-function dataAnalysis(model_sim,vehicle_data,Ts)
+function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     % ----------------------------------------------------------------
     %% Post-Processing and Data Analysis
@@ -15,6 +15,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     m  = vehicle_data.vehicle.m;   % [kg] Vehicle Mass
     g  = vehicle_data.vehicle.g;   % [m/s^2] Gravitational acceleration
     tau_D = vehicle_data.steering_system.tau_D;  % [-] steering system ratio (pinion-rack)
+    tau_H = 1/tau_D;
 
     % ---------------------------------
     %% Extract data from simulink model
@@ -637,19 +638,18 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlim([0 time_sim(end)])
     
     % ---------------------------------
-    
-%% Normalized axle characteristic
+    %% Normalized axle characteristic
 
 
     % Side slips - from double track
-    alphaR_dt = (alpha_rr + alpha_rl)/2;
-    alphaF_dt = (alpha_fr + alpha_fl)/2;
+    alphaR_dt = deg2rad((alpha_rr + alpha_rl)/2);
+    alphaF_dt = deg2rad((alpha_fr + alpha_fl)/2);
     delta_alpha_dt = alphaR_dt - alphaF_dt;
 
     % Side slips - single track
-    delta_st = (delta_fr + delta_fl) / 2;
-    alphaR_st = - rad2deg(beta) + rad2deg(Omega./u) * Lr;
-    alphaF_st = delta_st - rad2deg(beta) - rad2deg(Omega./u) * Lf;
+    delta_st = deg2rad((delta_fr + delta_fl)/2);
+    alphaR_st = - (beta) + (Omega./u) * Lr;
+    alphaF_st = delta_st - (beta) - (Omega./u) * Lf;
     delta_alpha_st = alphaR_st - alphaF_st;
 
 
@@ -671,66 +671,322 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     legend({'$\alpha_{R}$ double track','$\alpha_{F}$ double track', '$\alpha_{R}$ single track', '$\alpha_{F}$ single track'})
     xlabel('$t$ [s]')
-    ylabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+    ylabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
 
     title('Side slips $\alpha_{R}, \alpha_{F}$')
 
     % ------------------------------------------------------------------
     
     % Lateral forces - from double track
+    
+    % Real vertical load 
     Fz0R = Fz_rr + Fz_rl;
     Fz0F = Fz_fr + Fz_fl;
+    
+    % Static vetical load
+    Fzr_0_static = m * (Lf/L) * g;
+    Fzf_0_static = m * (Lr/L) * g;
 
+    % Real forces on the axis
     Fyr_dt = Fy_rl + Fy_rr;
     Fyf_dt = sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr;
-    Fyr_dt_norm = Fyr_dt./Fz0R;
-    Fyf_dt_norm = Fyf_dt./Fz0F;
+
+    % Static forces
+    Fyr_static = m .* Ay_ss .* (Lf/L);
+    Fyf_static = m .* Ay_ss .* (Lr/L);
+    
+    % Static load normalization
+    Fyr_dt_norm = Fyr_dt./Fzr_0_static;
+    Fyf_dt_norm = Fyf_dt./Fzf_0_static;
+
+    Fyr_static_norm = Fyr_static/Fzr_0_static;
+    Fyf_static_norm = Fyf_static/Fzf_0_static;
+
 
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
     hold on
+
     plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2)
+
     plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2)
+
     grid on
     legend({'$Fyr$','$Fyf$'})
-    title('Normalized axle characteristics')
-    xlabel('$\alpha_{R}$, $\alpha_{F}$ [deg]')
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
+
+    title('Normalized lateral forces')
+
+    % -----------------------------------------------------------------
+    
+    alpha_R_plot = alphaR_dt(1:end-1);
+    alpha_F_plot = alphaF_dt(1:end-1);
+
+    figure('Name','Real lateral forces vs static lateral forces','NumberTitle','off'), clf
+    hold on
+
+    plot(alphaR_dt,Fyr_dt_norm, 'Color', 'blue', 'LineWidth',2)
+
+    plot(alphaF_dt,Fyf_dt_norm, 'Color', 'red','LineWidth',2)
+
+    plot(alphaR_dt,Fyr_static_norm, '--', 'Color', 'blue','LineWidth',2)
+
+    plot(alphaF_dt,Fyf_static_norm, '--', 'Color', 'red', 'LineWidth',2)
+
+    grid on
+    legend({'$Fyr$','$Fyf$', '$Fyr_{static}$', '$Fyf_{static}$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$, $Fyr_{static}/Fz0$, $Fyf_{static}/Fz0$ [-]')
+
+    title('Real lateral forces vs static lateral forces')
+
+
+
     % ------------------------------------------------------------------------------------------------------------------
-    %% Handling diagram
-    % Compute the difference DeltaAlpha between rear and front side slip
-    % angle
-    figure('Name','Handling diagram ','NumberTitle','off'), clf
+    
+    %% Cornering stiffnesses - normalized (1/rad) - diff
+    % Trovo le cornering stiffnesses con la formula teorica: 
+    % C_alpha_i = d(mu_i)/d(alpha_i)
 
-    % size(Ay)
-    % size(delta_alpha_dt)
+    C_alpha_R_diff = diff(Fyr_dt_norm)./diff(alphaR_dt);
+    C_alpha_F_diff = diff(Fyf_dt_norm)./diff(alphaF_dt);
 
-    x1 = Ay(6000)/g;
-    y1 = -delta_alpha_dt(5999);
+   
+    %% Cornering stiffnesses - normalized (1/rad) - fitting
+    % Trovo le cornering stiffnesses fittando la axle characteristics in un
+    % breve tratto all'origine, la cui pendenza è C_alpha_i
+    
+    % Cut vectors
+    cut_value_n = 0.0001;
+    index_n = find(alphaR_dt > cut_value_n);
+    cut_index_n = index_n(1) - 1;
 
-    x2 = Ay(7001)/g;
-    y2 = -delta_alpha_dt(7000);
+    alphaR_dt_cut_n = alphaR_dt(1:cut_index_n);
+    Fyr_dt_norm_cut_n = Fyr_dt_norm(1:cut_index_n);
 
-    coefficients = polyfit([x1, x2], [y1, y2], 1);
+    alphaF_dt_cut_n = alphaF_dt(1:cut_index_n);
+    Fyf_dt_norm_cut_n = Fyf_dt_norm(1:cut_index_n);
+
+    % Fitting to compute the slope
+    mR_n = polyfit(alphaR_dt_cut_n, Fyr_dt_norm_cut_n, 1);
+    mF_n = polyfit(alphaF_dt_cut_n, Fyf_dt_norm_cut_n, 1);
+
+    C_alpha_R_fitted = mR_n(1);
+    C_alpha_F_fitted = mF_n(1);
+    
+    x_n = linspace(0, 0.01, 10);
+    yR_n = C_alpha_R_fitted*x_n;
+    yF_n = C_alpha_F_fitted*x_n;
+    
+    
+    
+    figure('Name','Nomalized cornering stiffnesses','NumberTitle','off'), clf
+    hold on
+    
+    plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2);
+    plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2);
+    plot(x_n, yR_n, "Color", 'black', 'LineWidth',1);
+    plot(x_n, yF_n, "Color", 'black', 'LineWidth',1);
+
+    grid on
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
+
+    title('Normalized cornering stiffnesses')
+    
+    %% Cornering stiffnesses - not normalized (N/rad) - fitting
+    % Trovo le cornering stiffnesses fittando le curve non normalizzate
+    % della axle characteristics, la cui pendenza è Ky_i
+
+
+    % Cut vectors
+    cut_value_rad = 0.0001;
+    index = find(alphaR_dt > cut_value_rad);
+    cut_index = index(1) - 1;
+
+    alphaR_dt_cut = alphaR_dt(1:cut_index);
+    Fyr_dt_cut = Fyr_dt(1:cut_index);
+
+    alphaF_dt_cut = alphaF_dt(1:cut_index);
+    Fyf_dt_cut = Fyf_dt(1:cut_index);
+
+    % Fitting to compute the slope
+    mR = polyfit(alphaR_dt_cut, Fyr_dt_cut, 1);
+    mF = polyfit(alphaF_dt_cut, Fyf_dt_cut, 1);
+
+    KyR = mR(1);
+    KyF = mF(1);
+
+    x = linspace(0, 0.01, 10);
+    yR = KyR*x;
+    yF = KyF*x;
+
+    figure('Name','Cornering stiffnesses','NumberTitle','off'), clf
+    hold on
+
+    plot(alphaR_dt,Fyr_dt,'LineWidth',2);
+    plot(alphaF_dt,Fyf_dt,'LineWidth',2);
+    plot(x, yR, "Color", 'black', 'LineWidth',1);
+    plot(x, yF, "Color", 'black', 'LineWidth',1);
+
+    grid on
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr$, $Fyf$ [N]')
+
+    title('Cornering stiffnesses')
+
+
+    %% Understeering gradients theoretical
+
+    if switch_test_type  == 1
+    
+        % 1) Kus (C) - diff
+        kus_C_diff = (1/(L*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        
+        % 2) Kus (C) - fitted
+        kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        
+        % 3) Kus (K) - fitted
+        kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
+
+    elseif switch_test_type == 2
+    
+        % 1) Kus (C) - diff
+        kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        
+        % 2) Kus (C) - fitted
+        kus_C_fitted = -(1/(L*tau_H*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        
+        % 3) Kus (K) - fitted
+        kus_K_fitted = -(m/(L*tau_H))*(Lf/KyR - Lr/KyF);
+
+    else
+
+        fprintf('Error\n');
+
+    end
+
+
+    %% Print values
+
+    i = cut_index_n + 1000;
+
+    fprintf('CalphaR - diff = %.2f (1/rad)\n', C_alpha_R_diff(i));
+    fprintf('CalphaF - diff = %.2f (1/rad)\n', C_alpha_F_diff(i));
+    
+    fprintf('CalphaR - fitted = %.2f (1/rad)\n', C_alpha_R_fitted);
+    fprintf('CalphaF - fitted = %.2f (1/rad)\n', C_alpha_F_fitted);
+
+    fprintf('KyR = %.2f (N/rad)\n', KyR);
+    fprintf('KyF = %.2f (N/rad)\n', KyF);
+
+    fprintf('Kus (C) diff = %f\n', kus_C_diff(i));
+    fprintf('Kus (C) fitted = %f\n', kus_C_fitted);
+    fprintf('Kus (K) fitted = %f\n', kus_K_fitted);
+
+
+    save('kus.mat', 'C_alpha_R_diff', 'C_alpha_F_diff', 'kus_C_diff', ...
+        'C_alpha_R_fitted', 'C_alpha_F_fitted', 'kus_C_fitted', ...
+        'KyR', 'KyF', 'kus_K_fitted');
+
+    %------------------------------------------------------------------
+%% Handling diagram 
+    figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
+
+    % Cut vectors
+    cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+    index_start = find((Ay/g) > cut_value_start);
+    cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
+
+    cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    index_end = find((Ay/g) > cut_value_end);
+    cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
+
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start);
+    fprintf('Il cut index  end vale %d \n', cut_index_end);
+   
+
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_l = Ay(cut_index_start:cut_index_end)/g;
+    y_cut_l = -delta_alpha_dt((cut_index_start-1):(cut_index_end-1));
+
+    coefficients = polyfit(x_cut_l, y_cut_l, 1);
+    
+    fprintf('Il coefficiente 1 della parte lineare vale = %f\n', coefficients(1));
+    fprintf('Il coefficiente 0 della parte lineare vale = %f\n', coefficients(2));
+    
+        
     slope = coefficients(1);
-    fprintf('the slope is %f degrees\n', slope);
-    fprintf('the slope is %f degrees\n', (slope*pi/180));
     intercept = coefficients(2);
 
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
-    
-    % Plot dei punti e della retta
-    plot(Ay/g, y, 'r');  % Retta
+    fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
+    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
     hold on;
-    scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
-    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2)
+
     plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
     title('Handling diagram')
-    ylabel('$-Delta Alpha$ [deg]')
+    ylabel('$-Delta Alpha$ [rad]')
     xlabel('$Ay/g$ [-]')
     grid on
-    legend({'$-DeltaAlpha$','$tangent$'})
+    legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
+    hold off;
+
+
+    % Fitting of the NON LINEAR ZONE
+    
+
+figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
+
+    % Cut vectors
+    cut_value_start_nl = cut_value_end; %Selection of the starting linearizing point is the end of the previous linear zone (Normalized acceleration value)
+    index_start_nl = find((Ay/g) > cut_value_start_nl);
+    cut_index_start_nl = index_start_nl(1) - 1; %Selection of the starting linearizing point (index value)
+
+    
+    % the ending value correspond directly to the final point of the curvature
+    cut_index_end_nl = numel(Ay)-1; %Selection of the ending linearizing point (index value)
+
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start_nl);
+    fprintf('Il cut index  end vale %d \n', cut_index_end_nl);
+   
+
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_nl = Ay(cut_index_start_nl:cut_index_end_nl)/g;
+    y_cut_nl = -delta_alpha_dt((cut_index_start_nl-1):(cut_index_end_nl-1));
+    
+    %Generation of the new curve
+    dim = 3;
+    p_nl = polyfit(x_cut_nl, y_cut_nl, dim);
+    y_nl = polyval(p_nl, x_cut_nl);
+   
+    for c=1:(dim+1)
+        fprintf('Il coefficiente %d della parte NON lineare vale = %f\n',(dim+1-c), p_nl(c));
+    end
+
+    % Creazione della curve
+    plot(Ay/g, zeros(size(Ay)), 'Color', color('yellow'),'LineWidth',2);
+    hold on;
+
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',3);
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    plot(Ay(1:cut_index_end)/g, y(1:cut_index_end), '--', 'Color',color('red'),'LineWidth',2);
+    plot(x_cut_nl, y_nl, '--', 'color',[1 0.5 0] , 'LineWidth',2);
+    
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [rad]')
+    xlabel('$Ay/g$ [-]')
+    grid on
+    
+    legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
+    hold off;
 
     %% Understeering gradient (theoretical and fitted)
     
