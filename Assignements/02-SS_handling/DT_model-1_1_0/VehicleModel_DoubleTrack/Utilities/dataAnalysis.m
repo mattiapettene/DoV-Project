@@ -1,4 +1,4 @@
-function dataAnalysis(model_sim,vehicle_data,Ts)
+function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     % ----------------------------------------------------------------
     %% Post-Processing and Data Analysis
@@ -15,6 +15,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     m  = vehicle_data.vehicle.m;   % [kg] Vehicle Mass
     g  = vehicle_data.vehicle.g;   % [m/s^2] Gravitational acceleration
     tau_D = vehicle_data.steering_system.tau_D;  % [-] steering system ratio (pinion-rack)
+    tau_H = 1/tau_D;
 
     % ---------------------------------
     %% Extract data from simulink model
@@ -115,7 +116,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     desired_steer_atWheel = delta_D/tau_D;
 
 
-    %---------------------------------
+    % ---------------------------------
     %% PLOTS
     % ---------------------------------
 
@@ -136,7 +137,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     title('steering angle $\delta_D$ [deg]')
     xlim([0 time_sim(end)])
-
+    
     % ---------------------------------
     %% Plot vehicle motion
     % ---------------------------------
@@ -301,7 +302,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     grid on
     title('$Fx_{fl}$ [N]')
     xlim([0 time_sim(end)])
-
+    
     % linkaxes(ax,'x')
     clear ax
 
@@ -416,7 +417,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     % linkaxes(ax,'x')
     clear ax
-
+    
     % ---------------------------------
     %% Plot wheel camber
     % ---------------------------------
@@ -448,7 +449,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     % linkaxes(ax,'x')
     clear ax
-
+    
     % ---------------------------------
     %% Plot accelerations, chassis side slip angle and curvature
     % ---------------------------------
@@ -637,8 +638,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlim([0 time_sim(end)])
     
     % ---------------------------------
-    
-%% Normalized axle characteristic
+    %% Normalized axle characteristic
 
 
     % Side slips - from double track
@@ -690,10 +690,18 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     % Real forces on the axis
     Fyr_dt = Fy_rl + Fy_rr;
     Fyf_dt = sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr;
+
+    % Static forces
+    Fyr_static = m .* Ay_ss .* (Lf/L);
+    Fyf_static = m .* Ay_ss .* (Lr/L);
     
     % Static load normalization
     Fyr_dt_norm = Fyr_dt./Fzr_0_static;
     Fyf_dt_norm = Fyf_dt./Fzf_0_static;
+
+    Fyr_static_norm = Fyr_static/Fzr_0_static;
+    Fyf_static_norm = Fyf_static/Fzf_0_static;
+
 
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
@@ -710,52 +718,182 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     title('Normalized lateral forces')
 
+    % -----------------------------------------------------------------
+    
+    alpha_R_plot = alphaR_dt(1:end-1);
+    alpha_F_plot = alphaF_dt(1:end-1);
+
+    figure('Name','Real lateral forces vs static lateral forces','NumberTitle','off'), clf
+    hold on
+
+    plot(alphaR_dt,Fyr_dt_norm, 'Color', 'blue', 'LineWidth',2)
+
+    plot(alphaF_dt,Fyf_dt_norm, 'Color', 'red','LineWidth',2)
+
+    plot(alphaR_dt,Fyr_static_norm, '--', 'Color', 'blue','LineWidth',2)
+
+    plot(alphaF_dt,Fyf_static_norm, '--', 'Color', 'red', 'LineWidth',2)
+
+    grid on
+    legend({'$Fyr$','$Fyf$', '$Fyr_{static}$', '$Fyf_{static}$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$, $Fyr_{static}/Fz0$, $Fyf_{static}/Fz0$ [-]')
+
+    title('Real lateral forces vs static lateral forces')
+
+
+
     % ------------------------------------------------------------------------------------------------------------------
-    % ------------------------------------------------------------------------------------------------------------------
-    % Handling diagram 
+    
+    %% Cornering stiffnesses - normalized (1/rad) - diff
+    % Trovo le cornering stiffnesses con la formula teorica: 
+    % C_alpha_i = d(mu_i)/d(alpha_i)
 
-    % Compute the difference DeltaAlpha between rear and front side slip
-    % angle
-    % figure('Name','Handling diagram [Rad] ','NumberTitle','off'), clf
-    % 
-    % % size(Ay)
-    % % size(delta_alpha_dt)
-    % 
-    % x1 = Ay(80000)/g;
-    % y1 = -delta_alpha_dt(79999);
-    % 
-    % x2 = Ay(80001)/g;
-    % y2 = -delta_alpha_dt(80000);
-    % 
-    % coefficients = polyfit([x1, x2], [y1, y2], 1);
-    % slope = coefficients(1);
-    % fprintf('the slope is %f rad NEW \n', slope);
-    % intercept = coefficients(2);
-    % 
-    % % Creazione della retta
-    % y = slope * (Ay/g) + intercept;
-    % 
-    % % Plot dei punti e della retta
-    % plot(Ay/g, y, 'r');  % Retta
-    % hold on;
-    % scatter([x1, x2], [y1, y2], 'red', 'filled');  % Punti
-    % 
-    % 
-    % plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2)
-    % 
-    % plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
-    % title('Handling diagram')
-    % ylabel('$-Delta Alpha$ [rad]')
-    % xlabel('$Ay/g$ [-]')
-    % grid on
-    % legend({'$-DeltaAlpha$','$tangent$'})
-    % hold off;
+    C_alpha_R_diff = diff(Fyr_dt_norm)./diff(alphaR_dt);
+    C_alpha_F_diff = diff(Fyf_dt_norm)./diff(alphaF_dt);
+
+   
+    %% Cornering stiffnesses - normalized (1/rad) - fitting
+    % Trovo le cornering stiffnesses fittando la axle characteristics in un
+    % breve tratto all'origine, la cui pendenza è C_alpha_i
+    
+    % Cut vectors
+    cut_value_n = 0.0001;
+    index_n = find(alphaR_dt > cut_value_n);
+    cut_index_n = index_n(1) - 1;
+
+    alphaR_dt_cut_n = alphaR_dt(1:cut_index_n);
+    Fyr_dt_norm_cut_n = Fyr_dt_norm(1:cut_index_n);
+
+    alphaF_dt_cut_n = alphaF_dt(1:cut_index_n);
+    Fyf_dt_norm_cut_n = Fyf_dt_norm(1:cut_index_n);
+
+    % Fitting to compute the slope
+    mR_n = polyfit(alphaR_dt_cut_n, Fyr_dt_norm_cut_n, 1);
+    mF_n = polyfit(alphaF_dt_cut_n, Fyf_dt_norm_cut_n, 1);
+
+    C_alpha_R_fitted = mR_n(1);
+    C_alpha_F_fitted = mF_n(1);
+    
+    x_n = linspace(0, 0.01, 10);
+    yR_n = C_alpha_R_fitted*x_n;
+    yF_n = C_alpha_F_fitted*x_n;
+    
+    
+    
+    figure('Name','Nomalized cornering stiffnesses','NumberTitle','off'), clf
+    hold on
+    
+    plot(alphaR_dt,Fyr_dt_norm,'LineWidth',2);
+    plot(alphaF_dt,Fyf_dt_norm,'LineWidth',2);
+    plot(x_n, yR_n, "Color", 'black', 'LineWidth',1);
+    plot(x_n, yF_n, "Color", 'black', 'LineWidth',1);
+
+    grid on
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
+
+    title('Normalized cornering stiffnesses')
+    
+    %% Cornering stiffnesses - not normalized (N/rad) - fitting
+    % Trovo le cornering stiffnesses fittando le curve non normalizzate
+    % della axle characteristics, la cui pendenza è Ky_i
 
 
+    % Cut vectors
+    cut_value_rad = 0.0001;
+    index = find(alphaR_dt > cut_value_rad);
+    cut_index = index(1) - 1;
+
+    alphaR_dt_cut = alphaR_dt(1:cut_index);
+    Fyr_dt_cut = Fyr_dt(1:cut_index);
+
+    alphaF_dt_cut = alphaF_dt(1:cut_index);
+    Fyf_dt_cut = Fyf_dt(1:cut_index);
+
+    % Fitting to compute the slope
+    mR = polyfit(alphaR_dt_cut, Fyr_dt_cut, 1);
+    mF = polyfit(alphaF_dt_cut, Fyf_dt_cut, 1);
+
+    KyR = mR(1);
+    KyF = mF(1);
+
+    x = linspace(0, 0.01, 10);
+    yR = KyR*x;
+    yF = KyF*x;
+
+    figure('Name','Cornering stiffnesses','NumberTitle','off'), clf
+    hold on
+
+    plot(alphaR_dt,Fyr_dt,'LineWidth',2);
+    plot(alphaF_dt,Fyf_dt,'LineWidth',2);
+    plot(x, yR, "Color", 'black', 'LineWidth',1);
+    plot(x, yF, "Color", 'black', 'LineWidth',1);
+
+    grid on
+    legend({'$Fyr$','$Fyf$'})
+    xlabel('$\alpha_{R}$, $\alpha_{F}$ [rad]')
+    ylabel('$Fyr$, $Fyf$ [N]')
+
+    title('Cornering stiffnesses')
 
 
-    %-------------------------------------------------------------------
-    %% Handling diagram 
+    %% Understeering gradients theoretical
+
+    if switch_test_type  == 1
+    
+        % 1) Kus (C) - diff
+        kus_C_diff = (1/(L*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        
+        % 2) Kus (C) - fitted
+        kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        
+        % 3) Kus (K) - fitted
+        kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
+
+    elseif switch_test_type == 2
+    
+        % 1) Kus (C) - diff
+        kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        
+        % 2) Kus (C) - fitted
+        kus_C_fitted = -(1/(L*tau_H*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        
+        % 3) Kus (K) - fitted
+        kus_K_fitted = -(m/(L*tau_H))*(Lf/KyR - Lr/KyF);
+
+    else
+
+        fprintf('Error\n');
+
+    end
+
+
+    %% Print values
+
+    i = cut_index_n + 1000;
+
+    fprintf('CalphaR - diff = %.2f (1/rad)\n', C_alpha_R_diff(i));
+    fprintf('CalphaF - diff = %.2f (1/rad)\n', C_alpha_F_diff(i));
+    
+    fprintf('CalphaR - fitted = %.2f (1/rad)\n', C_alpha_R_fitted);
+    fprintf('CalphaF - fitted = %.2f (1/rad)\n', C_alpha_F_fitted);
+
+    fprintf('KyR = %.2f (N/rad)\n', KyR);
+    fprintf('KyF = %.2f (N/rad)\n', KyF);
+
+    fprintf('Kus (C) diff = %f\n', kus_C_diff(i));
+    fprintf('Kus (C) fitted = %f\n', kus_C_fitted);
+    fprintf('Kus (K) fitted = %f\n', kus_K_fitted);
+
+
+    save('kus.mat', 'C_alpha_R_diff', 'C_alpha_F_diff', 'kus_C_diff', ...
+        'C_alpha_R_fitted', 'C_alpha_F_fitted', 'kus_C_fitted', ...
+        'KyR', 'KyF', 'kus_K_fitted');
+
+    %------------------------------------------------------------------
+%% Handling diagram 
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
 
     % Cut vectors
@@ -850,47 +988,33 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
     hold off;
 
-
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
+    %% Understeering gradient (theoretical and fitted)
     
-    % %% Yaw rate gain - Beta gain
-    % % -------------------------------
-    % yaw_rate_gain_data = Omega./(delta_D*pi/180);
-    % 
-    % figure('Name','Yaw rate gain vs u','NumberTitle','off')
-    % hold on
-    % plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
-    % grid on
-    % title('$\Omega/\delta_H$ vs $u$');
-    % xlabel('u [km/h]');
-    % ylabel('$\Omega/\delta$ [1/s]');
-    % hold off
-    % 
-    % %% Beta gain
-    % % -------------------------------
-    % beta_gain_data = beta./(delta_D*pi/180);
-    % 
-    % figure('Name','Beta gain vs u','NumberTitle','off')
-    % hold on
-    % plot(u*3.6,beta_gain_data,'LineWidth',2)
-    % grid on
-    % title('$\beta/\delta_H$ vs $u$');
-    % xlabel('u [km/h]');
-    % ylabel('$\beta/\delta_H$');
-    % hold off
+    %% Yaw rate gain - Beta gain
+    % -------------------------------
+    yaw_rate_gain_data = Omega./(delta_D*pi/180);
+
+    figure('Name','Yaw rate gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
+    grid on
+    title('$\Omega/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\Omega/\delta$ [1/s]');
+    hold off
+    
+    %% Beta gain
+    % -------------------------------
+    beta_gain_data = beta./(delta_D*pi/180);
+
+    figure('Name','Beta gain vs u','NumberTitle','off')
+    hold on
+    plot(u*3.6,beta_gain_data,'LineWidth',2)
+    grid on
+    title('$\beta/\delta_H$ vs $u$');
+    xlabel('u [km/h]');
+    ylabel('$\beta/\delta_H$');
+    hold off
 
 end
     

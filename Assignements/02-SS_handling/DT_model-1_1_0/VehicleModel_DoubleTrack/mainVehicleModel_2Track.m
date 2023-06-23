@@ -1,4 +1,4 @@
-% ---------------------------------------------------------------
+% ----------------------------------------------------------------
 %% Main script for a basic simulation framework with a double track vehcile model
 %  authors: 
 %  rev. 1.0 Mattia Piccinini & Gastone Pietro Papini Rosati
@@ -16,6 +16,12 @@
 %% Initialization
 % ----------------------------
 initialize_environment;
+
+% Set LaTeX as default interpreter for axis labels, ticks and legends
+set(0,'defaulttextinterpreter','latex')
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+
 
 % ----------------------------
 %% Load vehicle data
@@ -45,20 +51,18 @@ vehicle_data = getVehicleDataStruct();
 %           to 0.2 (in order to achive 20 deg of steer angle at the end of
 %           simulation)
 
-V0 = 50/3.6; % Initial speed
+V0 = 30/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
+V_final = 110/3.6; % [m/s]
+t1_speed = 2;
+t1_steering = 20;
+const_steer_angle = 8; % [deg]
 
-V_init = V0;
-ax_imposed = 0.12; %m/s^2
-Tf = 150;
-t1 = Tf/10;
-t2 = Tf - Tf/10;
-steer_angle_slope = 0.2;
+t1_ramp_steer = 15;
+deltaH_final = 25; % [deg]
+const_v_des = 80/3.6; % [m/s]
 
-const_steer_angle = 10; % [deg]
-const_v_des = 50/3.6; % [m/s]
-
-switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
+switch_test_type = 2; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
 
 % ----------------------------
 %% Simulation parameters
@@ -81,5 +85,6 @@ fprintf('The total simulation time was %.2f seconds\n',elapsed_time_simulation)
 % ----------------------------
 %% Post-Processing
 % ----------------------------
-dataAnalysis(model_sim,vehicle_data,Ts);
-vehicleAnimation(model_sim,vehicle_data,Ts);
+dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type);
+%vehicleAnimation(model_sim,vehicle_data,Ts);
+%effect_suspensions(vehicle_data,Ts,Tf);
