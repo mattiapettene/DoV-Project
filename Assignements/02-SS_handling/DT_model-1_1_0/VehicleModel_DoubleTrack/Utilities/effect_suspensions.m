@@ -1,4 +1,4 @@
-function effect_suspensions(vehicle_data)
+function effect_suspensions(vehicle_data,Ts,Tf)
     
     % Do a for cycle with different ratios for the suspensions:
     epsilon_phi_original = (vehicle_data.front_suspension.Ks_f)/(vehicle_data.front_suspension.Ks_f + vehicle_data.rear_suspension.Ks_r);
@@ -7,8 +7,8 @@ function effect_suspensions(vehicle_data)
     Ks_f_vec = ((vehicle_data.rear_suspension.Ks_r)*epsilon_phi_vec)./(ones(1,5) -epsilon_phi_vec)
     
     % Dovranno essere importati!
-    time_sim = 120;
-    dt = 0.5e-4;
+    time_sim = Tf;
+    dt = Ts;
 
     alphaR_dt = zeros(round((time_sim/dt),TieBreaker="tozero") + 1,5);
     alphaF_dt = zeros(round((time_sim/dt),TieBreaker="tozero") + 1,5);
@@ -51,6 +51,7 @@ function effect_suspensions(vehicle_data)
         Fyf_dt_norm(:,i) = (sin(delta_fl).*Fx_fl + Fy_fl + sin(delta_fr).*Fx_fr + Fy_fr)./(Fz_fr + Fz_fl);
 
         delta_alpha_dt(:,i) = alphaR_dt(:,i) - alphaF_dt(:,i);
+        fprintf('Size of Ay: %4.2f - size of v = %4.2f - size of omega = %4.2f - size of u = %4.2f \n',size(Ay),size(diff(v(1:end,i))/dt),size(Omega),size(u));
         Ay(:,i) = diff(v(1:end,i))/dt + Omega(2:end,i).*u(2:end,i);
 
     end
