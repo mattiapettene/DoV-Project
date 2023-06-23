@@ -1,4 +1,4 @@
-function dataAnalysis(model_sim,vehicle_data,Ts)
+function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     % ----------------------------------------------------------------
     %% Post-Processing and Data Analysis
@@ -16,7 +16,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     g  = vehicle_data.vehicle.g;   % [m/s^2] Gravitational acceleration
     tau_D = vehicle_data.steering_system.tau_D;  % [-] steering system ratio (pinion-rack)
     tau_H = 1/tau_D;
-    g = 9.81;
 
     % ---------------------------------
     %% Extract data from simulink model
@@ -639,8 +638,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     xlim([0 time_sim(end)])
     
     % ---------------------------------
-    
-%% Normalized axle characteristic
+    %% Normalized axle characteristic
 
 
     % Side slips - from double track
@@ -760,7 +758,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
     % breve tratto all'origine, la cui pendenza è C_alpha_i
     
     % Cut vectors
-    cut_value_n = 0.0001;
+    cut_value_n = 0.005;
     index_n = find(alphaR_dt > cut_value_n);
     cut_index_n = index_n(1) - 1;
 
@@ -804,7 +802,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
 
     % Cut vectors
-    cut_value_rad = 0.0001;
+    cut_value_rad = 0.005;
     index = find(alphaR_dt > cut_value_rad);
     cut_index = index(1) - 1;
 
@@ -843,27 +841,43 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     %% Understeering gradients theoretical
 
-    if switch_test_type  == 1
+    i = cut_index_n + 1000;
+
+    if switch_test_type  == 1 
+
+        % ------- KUS TEST 1 ---------------------------------------------
+
+        fprintf('numero test %d\n', switch_test_type);
     
         % 1) Kus (C) - diff
         kus_C_diff = (1/(L*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        fprintf('Kus (C) diff = drho/day = %f\n', kus_C_diff(i));
         
         % 2) Kus (C) - fitted
         kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        fprintf('Kus (C) fitted = drho/day = %f\n', kus_C_fitted);
         
         % 3) Kus (K) - fitted
         kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
+        fprintf('Kus (K) fitted = drho/day = %f\n', kus_K_fitted);
 
     elseif switch_test_type == 2
+
+        % ------- KUS TEST 2 ---------------------------------------------
+
+        fprintf('numero test %d\n', switch_test_type);
     
-         % 1) Kus (C) - diff
-        kus_C_diff = (1/(L*tau_H*)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        % 1) Kus (C) - diff
+        kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        fprintf('Kus (C) diff = dDeltaH/day = %f\n', kus_C_diff(i));
         
         % 2) Kus (C) - fitted
-        kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        kus_C_fitted = -(1/(L*tau_H*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        fprintf('Kus (C) fitted = dDeltaH/day = %f\n', kus_C_fitted);
         
         % 3) Kus (K) - fitted
-        kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
+        kus_K_fitted = -(m/(L*tau_H))*(Lf/KyR - Lr/KyF);
+        fprintf('Kus (K) fitted = dDeltaH/day = %f\n', kus_K_fitted);
 
     else
 
@@ -871,11 +885,8 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     end
 
-   
 
     %% Print values
-
-    i = cut_index_n + 1000;
 
     fprintf('CalphaR - diff = %.2f (1/rad)\n', C_alpha_R_diff(i));
     fprintf('CalphaF - diff = %.2f (1/rad)\n', C_alpha_F_diff(i));
@@ -885,20 +896,112 @@ function dataAnalysis(model_sim,vehicle_data,Ts)
 
     fprintf('KyR = %.2f (N/rad)\n', KyR);
     fprintf('KyF = %.2f (N/rad)\n', KyF);
-
-    fprintf('Kus (C) diff = %f\n', kus_C_diff(i));
-    fprintf('Kus (C) fitted = %f\n', kus_C_fitted);
-    fprintf('Kus (K) fitted = %f\n', kus_K_fitted);
+    
+    fprintf('KyR test = %.2f (N/rad)\n', C_alpha_R_fitted*Fz0R);
+    fprintf('KyF test = %.2f (N/rad)\n', C_alpha_F_fitted*Fz0F);
 
 
     save('kus.mat', 'C_alpha_R_diff', 'C_alpha_F_diff', 'kus_C_diff', ...
         'C_alpha_R_fitted', 'C_alpha_F_fitted', 'kus_C_fitted', ...
         'KyR', 'KyF', 'kus_K_fitted');
+    %------------------------------------------------------------------
+
+%% Handling diagram 
+    figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
+
+    % Cut vectors
+    cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+    index_start = find((Ay/g) > cut_value_start);
+    cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
+
+    cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    index_end = find((Ay/g) > cut_value_end);
+    cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
+
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start);
+    fprintf('Il cut index  end vale %d \n', cut_index_end);
+   
+
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_l = Ay(cut_index_start:cut_index_end)/g;
+    y_cut_l = -delta_alpha_dt((cut_index_start-1):(cut_index_end-1));
+
+    coefficients = polyfit(x_cut_l, y_cut_l, 1);
+    
+    fprintf('Il coefficiente 1 della parte lineare vale = %f\n', coefficients(1));
+    fprintf('Il coefficiente 0 della parte lineare vale = %f\n', coefficients(2));
+    
+        
+    slope = coefficients(1);
+    intercept = coefficients(2);
+
+    % Creazione della retta
+    y = slope * (Ay/g) + intercept;
+    fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
+    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
+    hold on;
+
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [rad]')
+    xlabel('$Ay/g$ [-]')
+    grid on
+    legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
+    hold off;
 
 
+    % Fitting of the NON LINEAR ZONE
+    
 
+figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
 
+    % Cut vectors
+    cut_value_start_nl = cut_value_end; %Selection of the starting linearizing point is the end of the previous linear zone (Normalized acceleration value)
+    index_start_nl = find((Ay/g) > cut_value_start_nl);
+    cut_index_start_nl = index_start_nl(1) - 1; %Selection of the starting linearizing point (index value)
 
+    
+    % the ending value correspond directly to the final point of the curvature
+    cut_index_end_nl = numel(Ay)-1; %Selection of the ending linearizing point (index value)
+
+  
+    fprintf('Il cut index  start vale %d \n', cut_index_start_nl);
+    fprintf('Il cut index  end vale %d \n', cut_index_end_nl);
+   
+
+    % Fitting to compute the tangent (LINEAR ZONE)
+    x_cut_nl = Ay(cut_index_start_nl:cut_index_end_nl)/g;
+    y_cut_nl = -delta_alpha_dt((cut_index_start_nl-1):(cut_index_end_nl-1));
+    
+    %Generation of the new curve
+    dim = 3;
+    p_nl = polyfit(x_cut_nl, y_cut_nl, dim);
+    y_nl = polyval(p_nl, x_cut_nl);
+   
+    for c=1:(dim+1)
+        fprintf('Il coefficiente %d della parte NON lineare vale = %f\n',(dim+1-c), p_nl(c));
+    end
+
+    % Creazione della curve
+    plot(Ay/g, zeros(size(Ay)), 'Color', color('yellow'),'LineWidth',2);
+    hold on;
+
+    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',3);
+    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    plot(Ay(1:cut_index_end)/g, y(1:cut_index_end), '--', 'Color',color('red'),'LineWidth',2);
+    plot(x_cut_nl, y_nl, '--', 'color',[1 0.5 0] , 'LineWidth',2);
+    
+    title('Handling diagram')
+    ylabel('$-Delta Alpha$ [rad]')
+    xlabel('$Ay/g$ [-]')
+    grid on
+    
+    legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
+    hold off;
+
+    %% Understeering gradient (theoretical and fitted)
     
     %% Yaw rate gain - Beta gain
     % -------------------------------
