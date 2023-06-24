@@ -1057,7 +1057,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
         beta_gain_data = beta./(delta_D*pi/180);
 
-        beta_gain_linear = ((Lr*tau_H)/L)-((m/(L^2))*(Lf^2/KyR + Lr^2/KyF)*tau_H*((u.^2)./(ones(size(u)) + slope*(u.^2)/g)));
+        beta_gain_linear = ((Lr*tau_H)/L)-((m/(L^2))*(Lf^2/KyR + Lr^2/KyF)*tau_H*((u.^2)./(L*ones(size(u)) + slope*(u.^2)/g)));
 
         figure('Name','Beta gain vs u','NumberTitle','off')
         hold on
