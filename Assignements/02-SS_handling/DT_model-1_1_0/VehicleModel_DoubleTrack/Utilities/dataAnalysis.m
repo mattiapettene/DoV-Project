@@ -758,7 +758,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     % breve tratto all'origine, la cui pendenza è C_alpha_i
     
     % Cut vectors
-    cut_value_n = 0.0001;
+    cut_value_n = 0.005;
     index_n = find(alphaR_dt > cut_value_n);
     cut_index_n = index_n(1) - 1;
 
@@ -802,7 +802,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
 
     % Cut vectors
-    cut_value_rad = 0.0001;
+    cut_value_rad = 0.005;
     index = find(alphaR_dt > cut_value_rad);
     cut_index = index(1) - 1;
 
@@ -841,27 +841,43 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     %% Understeering gradients theoretical
 
-    if switch_test_type  == 1
+    i = cut_index_n + 1000;
+
+    if switch_test_type  == 1 
+
+        % ------- KUS TEST 1 ---------------------------------------------
+
+        fprintf('numero test %d\n', switch_test_type);
     
         % 1) Kus (C) - diff
         kus_C_diff = (1/(L*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        fprintf('Kus (C) diff = drho/day = %f\n', kus_C_diff(i));
         
         % 2) Kus (C) - fitted
         kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        fprintf('Kus (C) fitted = drho/day = %f\n', kus_C_fitted);
         
         % 3) Kus (K) - fitted
         kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
+        fprintf('Kus (K) fitted = drho/day = %f\n', kus_K_fitted);
 
     elseif switch_test_type == 2
+
+        % ------- KUS TEST 2 ---------------------------------------------
+
+        fprintf('numero test %d\n', switch_test_type);
     
         % 1) Kus (C) - diff
         kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        fprintf('Kus (C) diff = dDeltaH/day = %f\n', kus_C_diff(i));
         
         % 2) Kus (C) - fitted
         kus_C_fitted = -(1/(L*tau_H*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
+        fprintf('Kus (C) fitted = dDeltaH/day = %f\n', kus_C_fitted);
         
         % 3) Kus (K) - fitted
-        kus_K_fitted = -(m/(L*tau_H))*(Lf/KyR - Lr/KyF);
+        kus_K_fitted = -(m/(L^2)*tau_H)*(Lf/KyR - Lr/KyF);
+        fprintf('Kus (K) fitted = dDeltaH/day = %f\n', kus_K_fitted);
 
     else
 
@@ -872,8 +888,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     %% Print values
 
-    i = cut_index_n + 1000;
-
     fprintf('CalphaR - diff = %.2f (1/rad)\n', C_alpha_R_diff(i));
     fprintf('CalphaF - diff = %.2f (1/rad)\n', C_alpha_F_diff(i));
     
@@ -883,25 +897,30 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     fprintf('KyR = %.2f (N/rad)\n', KyR);
     fprintf('KyF = %.2f (N/rad)\n', KyF);
 
-    fprintf('Kus (C) diff = %f\n', kus_C_diff(i));
-    fprintf('Kus (C) fitted = %f\n', kus_C_fitted);
-    fprintf('Kus (K) fitted = %f\n', kus_K_fitted);
-
 
     save('kus.mat', 'C_alpha_R_diff', 'C_alpha_F_diff', 'kus_C_diff', ...
         'C_alpha_R_fitted', 'C_alpha_F_fitted', 'kus_C_fitted', ...
         'KyR', 'KyF', 'kus_K_fitted');
+    %------------------------------------------------------------------
 
     %------------------------------------------------------------------
 %% Handling diagram 
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
+    
+    if switch_test_type==1
+         cut_value_start = 0.005; %Selection of the starting linearizing point (Normalized acceleration value)
+         cut_value_end = 0.05; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    elseif switch_test_type==2
+        cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+        cut_value_end = 0.47; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    end
 
-    % Cut vectors
-    cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+
+    % Cut vector vere linearize the first piece
+   
     index_start = find((Ay/g) > cut_value_start);
     cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
-
-    cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+   
     index_end = find((Ay/g) > cut_value_end);
     cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
 
@@ -926,12 +945,23 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
     fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
+    % plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
+    % plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
+    % hold on;
+    % 
+    % plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    % title('Handling diagram')
+    % ylabel('$-Delta Alpha$ [rad]')
+    % xlabel('$Ay/g$ [-]')
+    % grid on
+    % legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
+    % hold off;
 
 
     % Fitting of the NON LINEAR ZONE
     
 
-figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
+%figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
 
     % Cut vectors
     cut_value_start_nl = cut_value_end; %Selection of the starting linearizing point is the end of the previous linear zone (Normalized acceleration value)
@@ -941,8 +971,8 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     
     % the ending value correspond directly to the final point of the curvature
     cut_index_end_nl = numel(Ay)-1; %Selection of the ending linearizing point (index value)
-
-  
+    
+   
     fprintf('Il cut index  start vale %d \n', cut_index_start_nl);
     fprintf('Il cut index  end vale %d \n', cut_index_end_nl);
    
@@ -952,7 +982,7 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     y_cut_nl = -delta_alpha_dt((cut_index_start_nl-1):(cut_index_end_nl-1));
     
     %Generation of the new curve
-    dim = 3;
+    dim = 4;
     p_nl = polyfit(x_cut_nl, y_cut_nl, dim);
     y_nl = polyval(p_nl, x_cut_nl);
    
@@ -965,7 +995,7 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     hold on;
 
     plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',3);
-    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    plot(Ay/g, y, 'color', [0 0 0],'LineWidth',1);
     plot(Ay(1:cut_index_end)/g, y(1:cut_index_end), '--', 'Color',color('red'),'LineWidth',2);
     plot(x_cut_nl, y_nl, '--', 'color',[1 0.5 0] , 'LineWidth',2);
     
@@ -976,34 +1006,70 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     
     legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
     hold off;
-
-    %% Understeering gradient (theoretical and fitted)
     
-    %% Yaw rate gain - Beta gain
-    % -------------------------------
-    yaw_rate_gain_data = Omega./(delta_D*pi/180);
 
-    figure('Name','Yaw rate gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
-    grid on
-    title('$\Omega/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\Omega/\delta$ [1/s]');
-    hold off
+
+    % find the acceleration of the final data accelereation
+    % fine = size(delta_alpha_dt);
+    % index_lim = find((Ay/g) > -delta_alpha_dt(fine-1));
+    % lim_acc = Ay(index_lim -1)/g;
+
+    fprintf('---------------\n');
+    fprintf('ay_lin_lim = %f\n',cut_value_start_nl);
+    fprintf('ay_max = %f\n', Ay(end)/g);
+    fprintf('---------------\n');
     
-    %% Beta gain
-    % -------------------------------
-    beta_gain_data = beta./(delta_D*pi/180);
+ %% Yaw rate gain - Beta gain
+    % -----------------------Activate this calculation only if computing the speed ramp test-------------------------------
+   
+    if(switch_test_type==1)
 
-    figure('Name','Beta gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,beta_gain_data,'LineWidth',2)
-    grid on
-    title('$\beta/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\beta/\delta_H$');
-    hold off
+    %Yaw
+
+        
+        yaw_rate_gain_data = Omega./(delta_D*pi/180);
+
+        Yaw_gain_linear = (u*tau_H)./(L*(ones(size(u)) + slope*(u.^2)/9.81));
+
+    
+        figure('Name','Yaw rate gain vs u','NumberTitle','off')
+        hold on
+        plot(u*3.6,yaw_rate_gain_data,'LineWidth',3)
+        plot(u*3.6,Yaw_gain_linear,'--', 'Color', color('red'), 'LineWidth',2)
+        grid on
+        title('$\Omega/\delta_H$ vs $u$');
+        xlabel('u [km/h]');
+        ylabel('$\Omega/\delta$ [1/s]');
+        legend({'Yaw rate (sperimental)', 'Yaw rate (linear)'}, 'Location', 'northwest');
+        hold off
+              
+        
+        % Yaw gain builded using the linear kus value obtained using the
+        % linear slope of the fitted line in the linear zone
+        %figure('Name','LINEARE DA UNIRE','NumberTitle','off')
+        % Yaw_gain_linear = (u*tau_H)./(L*(ones(size(u)) + slope*(u.^2)/9.81));
+        % 
+        % plot(u*3.6,Yaw_gain_linear,'LineWidth',2)
+      %  legend({'Yaw gain','Yaw gain linearized'}, 'Location', 'southwest');
+        
+
+    %Beta
+
+        beta_gain_data = beta./(delta_D*pi/180);
+
+        beta_gain_linear = ((Lr*tau_H)/L)-((m/(L^2))*(Lf^2/KyR + Lr^2/KyF)*tau_H*((u.^2)./(ones(size(u)) + slope*(u.^2)/g)));
+
+        figure('Name','Beta gain vs u','NumberTitle','off')
+        hold on
+        plot(u*3.6,beta_gain_data,'LineWidth',3)
+        plot(u*3.6,beta_gain_linear,'--', 'Color', color('red'), 'LineWidth',2)
+        grid on
+        title('$\beta/\delta_H$ vs $u$');
+        xlabel('u [km/h]');
+        ylabel('$\beta/\delta_H$');
+        legend({'Beta gain (sperimental)', 'Beta gain (linear)'}, 'Location', 'northwest');
+        hold off
+    end
 
 end
     
