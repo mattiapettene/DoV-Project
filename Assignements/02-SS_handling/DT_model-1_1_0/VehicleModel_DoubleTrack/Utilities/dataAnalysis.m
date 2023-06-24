@@ -895,13 +895,21 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     %------------------------------------------------------------------
 %% Handling diagram 
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
+    
+    if switch_test_type==1
+         cut_value_start = 0.005; %Selection of the starting linearizing point (Normalized acceleration value)
+         cut_value_end = 0.05; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    elseif switch_test_type==2
+        cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+        cut_value_end = 0.47; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+    end
 
-    % Cut vectors
-    cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
+
+    % Cut vector vere linearize the first piece
+   
     index_start = find((Ay/g) > cut_value_start);
     cut_index_start = index_start(1) - 1; %Selection of the starting linearizing point (index value)
-
-    cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+   
     index_end = find((Ay/g) > cut_value_end);
     cut_index_end = index_end(1) - 1; %Selection of the ending linearizing point (index value)
 
@@ -926,23 +934,23 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     % Creazione della retta
     y = slope * (Ay/g) + intercept;
     fprintf('Il kus calcolato nella regione lineare del fitting vale %f\n', slope);
-    plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
-    plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
-    hold on;
-
-    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
-    title('Handling diagram')
-    ylabel('$-Delta Alpha$ [rad]')
-    xlabel('$Ay/g$ [-]')
-    grid on
-    legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
-    hold off;
+    % plot(Ay/g, zeros(size(Ay)),'Color', color('red'),'LineWidth',2);
+    % plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',2);
+    % hold on;
+    % 
+    % plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    % title('Handling diagram')
+    % ylabel('$-Delta Alpha$ [rad]')
+    % xlabel('$Ay/g$ [-]')
+    % grid on
+    % legend({'$neutral steering$','$-DeltaAlpha$','$tangent$'});
+    % hold off;
 
 
     % Fitting of the NON LINEAR ZONE
     
 
-figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
+%figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
 
     % Cut vectors
     cut_value_start_nl = cut_value_end; %Selection of the starting linearizing point is the end of the previous linear zone (Normalized acceleration value)
@@ -952,8 +960,8 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     
     % the ending value correspond directly to the final point of the curvature
     cut_index_end_nl = numel(Ay)-1; %Selection of the ending linearizing point (index value)
-
-  
+    
+   
     fprintf('Il cut index  start vale %d \n', cut_index_start_nl);
     fprintf('Il cut index  end vale %d \n', cut_index_end_nl);
    
@@ -963,7 +971,7 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     y_cut_nl = -delta_alpha_dt((cut_index_start_nl-1):(cut_index_end_nl-1));
     
     %Generation of the new curve
-    dim = 3;
+    dim = 4;
     p_nl = polyfit(x_cut_nl, y_cut_nl, dim);
     y_nl = polyval(p_nl, x_cut_nl);
    
@@ -976,7 +984,7 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     hold on;
 
     plot(Ay/g, -delta_alpha_dt(2:end),'Color',color('blue'),'LineWidth',3);
-    plot(Ay/g, y, 'Color',color('green'),'LineWidth',2);
+    plot(Ay/g, y, 'color', [0 0 0],'LineWidth',1);
     plot(Ay(1:cut_index_end)/g, y(1:cut_index_end), '--', 'Color',color('red'),'LineWidth',2);
     plot(x_cut_nl, y_nl, '--', 'color',[1 0.5 0] , 'LineWidth',2);
     
@@ -987,34 +995,69 @@ figure('Name','Handling diagram NON LINEAR','NumberTitle','off'), clf
     
     legend({'Neutral steering','-DeltaAlpha','Tangent','Linear fitted','Non linear fitted'}, 'Location', 'southwest');
     hold off;
+    
 
-    %% Understeering gradient (theoretical and fitted)
+
+    % find the acceleration of the final data accelereation
+    % fine = size(delta_alpha_dt);
+    % index_lim = find((Ay/g) > -delta_alpha_dt(fine-1));
+    % lim_acc = Ay(index_lim -1)/g;
+
+    fprintf('---------------\n');
+    fprintf('ay_lin_lim = %f\n',cut_value_start_nl);
+    fprintf('ay_max = %f\n', Ay(end)/g);
+    fprintf('---------------\n');
     
     %% Yaw rate gain - Beta gain
-    % -------------------------------
-    yaw_rate_gain_data = Omega./(delta_D*pi/180);
+    % -----------------------Activate this calculation only if computing the speed ramp test-------------------------------
+   
+    if(switch_test_type==1)
 
-    figure('Name','Yaw rate gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,yaw_rate_gain_data,'LineWidth',2)
-    grid on
-    title('$\Omega/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\Omega/\delta$ [1/s]');
-    hold off
+    %Yaw
+
+        
+        yaw_rate_gain_data = Omega./(delta_D*pi/180);
+
+        Yaw_gain_linear = (u*tau_H)./(L*(ones(size(u)) + slope*(u.^2)/9.81));
+
     
-    %% Beta gain
-    % -------------------------------
-    beta_gain_data = beta./(delta_D*pi/180);
+        figure('Name','Yaw rate gain vs u','NumberTitle','off')
+        hold on
+        plot(u*3.6,yaw_rate_gain_data,'LineWidth',3)
+        plot(u*3.6,Yaw_gain_linear,'--', 'Color', color('red'), 'LineWidth',2)
+        grid on
+        title('$\Omega/\delta_H$ vs $u$');
+        xlabel('u [km/h]');
+        ylabel('$\Omega/\delta$ [1/s]');
+        legend({'Yaw rate (sperimental)', 'Yaw rate (linear)'}, 'Location', 'northwest');
+        hold off
+              
+        
+        % Yaw gain builded using the linear kus value obtained using the
+        % linear slope of the fitted line in the linear zone
+        %figure('Name','LINEARE DA UNIRE','NumberTitle','off')
+        % Yaw_gain_linear = (u*tau_H)./(L*(ones(size(u)) + slope*(u.^2)/9.81));
+        % 
+        % plot(u*3.6,Yaw_gain_linear,'LineWidth',2)
+      %  legend({'Yaw gain','Yaw gain linearized'}, 'Location', 'southwest');
+        
 
-    figure('Name','Beta gain vs u','NumberTitle','off')
-    hold on
-    plot(u*3.6,beta_gain_data,'LineWidth',2)
-    grid on
-    title('$\beta/\delta_H$ vs $u$');
-    xlabel('u [km/h]');
-    ylabel('$\beta/\delta_H$');
-    hold off
+    %Beta
 
+        beta_gain_data = beta./(delta_D*pi/180);
+
+        beta_gain_linear = ((Lr*tau_H)/L)-((m/(L^2))*(Lf^2/KyR + Lr^2/KyF)*tau_H*((u.^2)./(L*ones(size(u)) + slope*(u.^2)/g)));
+
+        figure('Name','Beta gain vs u','NumberTitle','off')
+        hold on
+        plot(u*3.6,beta_gain_data,'LineWidth',3)
+        plot(u*3.6,beta_gain_linear,'--', 'Color', color('red'), 'LineWidth',2)
+        grid on
+        title('$\beta/\delta_H$ vs $u$');
+        xlabel('u [km/h]');
+        ylabel('$\beta/\delta_H$');
+        legend({'Beta gain (sperimental)', 'Beta gain (linear)'}, 'Location', 'southwest');
+        hold off
+    end
 end
     

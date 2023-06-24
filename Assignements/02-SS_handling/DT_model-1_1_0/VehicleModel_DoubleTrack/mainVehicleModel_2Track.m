@@ -62,7 +62,7 @@ t1_ramp_steer = 15;
 deltaH_final = 25; % [deg]
 const_v_des = 80/3.6; % [m/s]
 
-switch_test_type = 2; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
+switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
 
 % ----------------------------
 %% Simulation parameters
