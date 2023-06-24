@@ -118,6 +118,7 @@ front_wheel.mass          = m_wf;
 front_wheel.iwd_f         = m_wf/12 * (3*rf^2 + w_wf^2); % [kg*m^2] inertia of the wheel 
 front_wheel.iwa_f         = 0.5; % [kg*m^2] inertia of the whole wheel assembly
 front_wheel.static_camber = new_vehicle.gamma_f;   % [deg] Static camber for rear wheels
+front_wheel.delta_f0      = new_vehicle.delta_f0;  % [deg] Static front toe angle
 
 m_uf = 2*m_wf;                   % [kg] Front unsprung mass
 front_unsprung.mass = m_uf;  

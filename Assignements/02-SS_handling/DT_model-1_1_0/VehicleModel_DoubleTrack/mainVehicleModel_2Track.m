@@ -22,7 +22,6 @@ set(0,'defaulttextinterpreter','latex')
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
-
 % ----------------------------
 %% Load vehicle data
 % ----------------------------
@@ -53,14 +52,14 @@ vehicle_data = getVehicleDataStruct();
 
 V0 = 30/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
-V_final = 110/3.6; % [m/s]
+V_final = 95/3.6; % [m/s]
 t1_speed = 2;
 t1_steering = 20;
-const_steer_angle = 8; % [deg]
+const_steer_angle = 13; % [deg]
 
 t1_ramp_steer = 15;
 deltaH_final = 25; % [deg]
-const_v_des = 80/3.6; % [m/s]
+const_v_des = 70/3.6; % [m/s]
 
 switch_test_type = 2; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
 
@@ -87,4 +86,8 @@ fprintf('The total simulation time was %.2f seconds\n',elapsed_time_simulation)
 % ----------------------------
 dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type);
 %vehicleAnimation(model_sim,vehicle_data,Ts);
-%effect_suspensions(vehicle_data,Ts,Tf);
+% effect_suspensions(vehicle_data,Ts,Tf);
+% vehicle_data = getVehicleDataStruct();
+% effect_toe(vehicle_data,Ts,Tf);
+% vehicle_data = getVehicleDataStruct();
+% effect_camber(vehicle_data,Ts,Tf);
