@@ -65,8 +65,8 @@ function effect_camber(vehicle_data,Ts,Tf)
     figure('Name','Normalized lateral forces for diff front camber angle','NumberTitle','off'), clf
     hold on
     for i = 1:5
-        plot(alphaR_dt(:,i),Fyr_dt_norm(:,i),'LineWidth',2, 'DisplayName',("Yr(ay) with $\epsilon_\phi$ = " + camber_vec(1,i)), 'Color', colorMap(i,:));
-        plot(alphaF_dt(:,i),Fyf_dt_norm(:,i),'LineWidth',2, 'DisplayName',("Yf(ay) with $\epsilon_\phi$ = " + camber_vec(1,i)), 'Color', colorMap(i,:));
+        plot(alphaR_dt(:,i),Fyr_dt_norm(:,i),'LineWidth',2, 'DisplayName',("Yr(ay) with $\gamma_{front}$ = " +(-camber_vec(1,i))), 'Color', colorMap(i,:));
+        plot(alphaF_dt(:,i),Fyf_dt_norm(:,i),'LineWidth',2, 'DisplayName',("Yf(ay) with $\gamma_{front}$ = " +(-camber_vec(1,i))), 'Color', colorMap(i,:));
         title({'Normalized lateral forces as function of $\gamma_{front}$', ' '})
         grid on
         ylabel('$Fyr/Fz0$, $Fyf/Fz0$ [-]')
@@ -78,7 +78,7 @@ function effect_camber(vehicle_data,Ts,Tf)
     figure('Name','Handling diagram for front camber angle','NumberTitle','off'), clf
     hold on
     for i = 1:5
-        plot(Ay(:,i)./g, -delta_alpha_dt(2:end,i), 'LineWidth',2, 'DisplayName',("$-\Delta\alpha(ay)$ with $\gamma_{front}$ = " + camber_vec(1,i)), 'Color', colorMap(i,:));
+        plot(Ay(:,i)./g, -delta_alpha_dt(2:end,i), 'LineWidth',2, 'DisplayName',("$-\Delta\alpha(ay)$ with $\gamma_{front}$ = " +(-camber_vec(1,i))), 'Color', colorMap(i,:));
         title({'Handling diagram as function of $\gamma_{front}$', ' '})
         grid on
         ylabel('$-\Delta\alpha$ [deg]')
