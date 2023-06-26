@@ -53,9 +53,9 @@ vehicle_data = getVehicleDataStruct();
 V0 = 30/3.6; % Initial speed
 X0 = loadInitialConditions(V0);
 V_final = 95/3.6; % [m/s]
-t1_speed = 2;
-t1_steering = 20;
-const_steer_angle = 13; % [deg]
+t1_speed = 5;%2
+t1_steering = 5; %20
+const_steer_angle = 15; %13 [deg]
 
 t1_ramp_steer = 15;
 deltaH_final = 25; % [deg]
