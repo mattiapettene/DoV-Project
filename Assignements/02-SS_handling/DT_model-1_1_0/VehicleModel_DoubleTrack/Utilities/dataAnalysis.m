@@ -933,7 +933,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     
     if switch_test_type==1
          cut_value_start = 0.005; %Selection of the starting linearizing point (Normalized acceleration value)
-         cut_value_end = 0.05; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+         cut_value_end = 0.17; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
     elseif switch_test_type==2
         cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
         cut_value_end = 0.47; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
