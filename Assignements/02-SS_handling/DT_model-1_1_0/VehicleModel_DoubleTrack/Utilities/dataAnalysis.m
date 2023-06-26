@@ -640,8 +640,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     % ---------------------------------
     %% Normalized axle characteristic
 
-
-    % Side slips - from double track
+     % Side slips - from double track
     alphaR_dt = deg2rad((alpha_rr + alpha_rl)/2);
     alphaF_dt = deg2rad((alpha_fr + alpha_fl)/2);
     delta_alpha_dt = alphaR_dt - alphaF_dt;
@@ -702,6 +701,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     Fyr_static_norm = Fyr_static/Fzr_0_static;
     Fyf_static_norm = Fyf_static/Fzf_0_static;
 
+    deltaH = (delta_fl + delta_fr)/2;
 
 
     figure('Name','Normalized lateral forces','NumberTitle','off'), clf
@@ -740,7 +740,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     ylabel('$Fyr/Fz0$, $Fyf/Fz0$, $Fyr_{static}/Fz0$, $Fyf_{static}/Fz0$ [-]')
 
     title('Real lateral forces vs static lateral forces')
-
 
 
     % ------------------------------------------------------------------------------------------------------------------
@@ -838,6 +837,35 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     title('Cornering stiffnesses')
 
+    %% Plots drho/day and ddeltaH/day
+
+
+    figure('Name','rho vs ay','NumberTitle','off'), clf
+    hold on
+
+    plot(Ay_ss, rho_ss, 'LineWidth',2);
+
+    grid on
+    legend({'$rho$'})
+    xlabel('$ay [m/s^2]$')
+    ylabel('$rho$')
+
+    title('rho vs ay')
+
+    
+
+    figure('Name','deltaH vs ay','NumberTitle','off'), clf
+    hold on
+
+    plot(Ay_ss, deltaH,'LineWidth',2);
+
+    grid on
+    legend({'$deltaH$'})
+    xlabel('$ay [m/s^2]$')
+    ylabel('$deltaH$')
+
+    title('deltaH vs ay')
+
 
     %% Understeering gradients theoretical
 
@@ -857,9 +885,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
         kus_C_fitted = (1/(L*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
         fprintf('Kus (C) fitted = drho/day = %f\n', kus_C_fitted);
         
-        % 3) Kus (K) - fitted
-        kus_K_fitted = (m/(L^2))*(Lf/KyR - Lr/KyF);
-        fprintf('Kus (K) fitted = drho/day = %f\n', kus_K_fitted);
 
     elseif switch_test_type == 2
 
@@ -875,9 +900,6 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
         kus_C_fitted = -(1/(L*tau_H*g))*(1/C_alpha_R_fitted - 1/C_alpha_F_fitted);
         fprintf('Kus (C) fitted = dDeltaH/day = %f\n', kus_C_fitted);
         
-        % 3) Kus (K) - fitted
-        kus_K_fitted = -(m/(L^2)*tau_H)*(Lf/KyR - Lr/KyF);
-        fprintf('Kus (K) fitted = dDeltaH/day = %f\n', kus_K_fitted);
 
     else
 
@@ -900,11 +922,13 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
 
     save('kus.mat', 'C_alpha_R_diff', 'C_alpha_F_diff', 'kus_C_diff', ...
         'C_alpha_R_fitted', 'C_alpha_F_fitted', 'kus_C_fitted', ...
-        'KyR', 'KyF', 'kus_K_fitted');
-    %------------------------------------------------------------------
+        'KyR', 'KyF');
 
     %------------------------------------------------------------------
+
+
 %% Handling diagram 
+
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
     
     if switch_test_type==1
