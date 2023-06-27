@@ -75,7 +75,7 @@ fprintf('The total simulation time was %.2f seconds\n',elapsed_time_simulation)
 %% Post-Processing
 % ----------------------------
 dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type);
-% vehicleAnimation(model_sim,vehicle_data,Ts);
+vehicleAnimation(model_sim,vehicle_data,Ts);
 % effect_suspensions(vehicle_data,Ts,Tf);
 % vehicle_data = getVehicleDataStruct();
 % effect_toe(vehicle_data,Ts,Tf);
