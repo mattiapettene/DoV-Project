@@ -1,0 +1,3 @@
+[submodule "Assignements/02-SS_handling/DT_model-1_1_0/VehicleModel_DoubleTrack/submodules/VehiCool"]
+	path = Assignements/02-SS_handling/DT_model-1_1_0/VehicleModel_DoubleTrack/submodules/VehiCool
+	url = git@github.com:DRIVEWISE/VehiCool.git
