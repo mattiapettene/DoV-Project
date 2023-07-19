@@ -40,18 +40,37 @@ vehicle_data = getVehicleDataStruct();
 % - if switch_test_type = 1 -> speed ramp test at constant steering angle
 % - if switch_test_type = 2 -> steer ramp test at constant forward speed
 
-V0 = 30/3.6; % Initial speed
-X0 = loadInitialConditions(V0);
+
 V_final = 95/3.6; % [m/s]
-t1_speed = 2;
-t1_steering = 20;
-const_steer_angle = 13; % [deg]
+t1_speed = 1;
+t1_steering = 0.5;
+const_steer_angle = 15; % [deg]
 
 t1_ramp_steer = 15;
 deltaH_final = 25; % [deg]
 const_v_des = 70/3.6; % [m/s]
 
-switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
+switch_test_type = 2; %1 = speed ramp test with const steer, 2 = steer ramp test  with const speed;
+
+if(switch_test_type==1)
+    proportional=0.0149079382355932;
+    integral=0.209186882089226;
+    derivative=0.206343298118274;
+    filter_coeff=2.92564365922541;
+   
+    V0 = 5/3.6; % Initial speed
+    X0 = loadInitialConditions(V0);
+elseif(switch_test_type==2)
+    proportional=0.0135879338655985;
+    integral=0.00180259308311908;
+    derivative=-0.000759112239547322;
+    filter_coeff=17.8997691747157;
+    
+    V0 = 30/3.6; % Initial speed
+    X0 = loadInitialConditions(V0);
+end
+
+
 
 % ----------------------------
 %% Simulation parameters
@@ -59,7 +78,11 @@ switch_test_type = 1; %1 = speed ramp test with const steer, 2 = steer ramp test
 simulationPars = getSimulationParams(); 
 Ts = simulationPars.times.step_size;  % integration step for the simulation (fixed step)
 T0 = simulationPars.times.t0;         % starting time of the simulation
-Tf = simulationPars.times.tf;         % stop time of the simulation
+if(switch_test_type==1)
+    Tf = 200;         % stop time of the simulation
+elseif(switch_test_type==2)
+    Tf = 80;
+end
 
 % ----------------------------
 %% Start Simulation
@@ -75,9 +98,9 @@ fprintf('The total simulation time was %.2f seconds\n',elapsed_time_simulation)
 %% Post-Processing
 % ----------------------------
 dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type);
-% vehicleAnimation(model_sim,vehicle_data,Ts);
-effect_suspensions(vehicle_data,Ts,Tf);
-% vehicle_data = getVehicleDataStruct();
-% effect_toe(vehicle_data,Ts,Tf);
-% vehicle_data = getVehicleDataStruct();
-% effect_camber(vehicle_data,Ts,Tf);
+%vehicleAnimation(model_sim,vehicle_data,Ts);
+% effect_suspensions(vehicle_data,Ts,Tf);
+%vehicle_data = getVehicleDataStruct();
+%effect_toe(vehicle_data,Ts,Tf);
+%vehicle_data = getVehicleDataStruct();
+%effect_camber(vehicle_data,Ts,Tf);

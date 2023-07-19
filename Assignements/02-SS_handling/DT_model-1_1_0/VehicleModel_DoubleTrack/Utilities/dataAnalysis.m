@@ -878,7 +878,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
         fprintf('numero test %d\n', switch_test_type);
     
         % 1) Kus (C) - diff
-        kus_C_diff = (1/(L*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
+        kus_C_diff = (1/(L*g))*(1./C_alpha_R_diff - 1./C_alpha_F_diff);
         fprintf('Kus (C) diff = drho/day = %f\n', kus_C_diff(i));
         
         % 2) Kus (C) - fitted
@@ -893,6 +893,7 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
         fprintf('numero test %d\n', switch_test_type);
     
         % 1) Kus (C) - diff
+        %kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
         kus_C_diff = -(1/(L*tau_H*g)*(1./C_alpha_R_diff - 1./C_alpha_F_diff));
         fprintf('Kus (C) diff = dDeltaH/day = %f\n', kus_C_diff(i));
         
@@ -932,8 +933,8 @@ function dataAnalysis(model_sim,vehicle_data,Ts,switch_test_type)
     figure('Name','Handling diagram [rad] FITTING ','NumberTitle','off'), clf
     
     if switch_test_type==1
-         cut_value_start = 0.005; %Selection of the starting linearizing point (Normalized acceleration value)
-         cut_value_end = 0.17; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
+         cut_value_start = 0.1; %Selection of the starting linearizing point (Normalized acceleration value)
+         cut_value_end = 0.4; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
     elseif switch_test_type==2
         cut_value_start = 0.05; %Selection of the starting linearizing point (Normalized acceleration value)
         cut_value_end = 0.47; %Selection of the ending linearizing point (Normalized acceleration value) --> THIS THE a_linear_lim
